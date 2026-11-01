@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۳ — مقدمه یادگیری تقویتی | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۳ — RL مقدمه</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="gamepad-2" style="width:14px;height:14px"></i> جلسه ۱۳ • فاز ۴ — RL</div>
+      <h1>مقدمه یادگیری تقویتی</h1>
+      <p class="subtitle-en">Reinforcement Learning · Agent · Environment · Reward<br>From Trial and Error to Intelligent Decisions</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۲</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="git-branch"></i></div><h3>جلسه ۱۲</h3><p>Transfer Learning، Fine-Tuning</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="gamepad-2"></i></div><h3>جلسه ۱۳ (امروز)</h3><p>RL، MDP، Q-Learning</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ RL چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ Agent، Environment، Reward</p></div>
+      <div class="card"><p style="margin:0">✅ Markov Decision Process (MDP)</p></div>
+      <div class="card"><p style="margin:0">✅ Exploration vs Exploitation</p></div>
+      <div class="card"><p style="margin:0">✅ Q-Learning مقدماتی</p></div>
+      <div class="card"><p style="margin:0">✅ Gymnasium</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🎮 چرا RL؟</h2>
+    <p style="font-size:16px">تا جلسه قبل، مدل‌های ما «نظارت‌شده» بودند: به مدل داده (ورودی) و برچسب (خروجی درست) می‌دادیم. اما در بسیاری از مسائل واقعی، <b>هیچ برچسب درستی وجود ندارد</b> — فقط می‌دانیم هدف چیست و باید خودمان راه رسیدن به آن را کشف کنیم.</p>
+    <p style="font-size:16px"><b>یادگیری تقویتی</b> الهام‌گرفته از یادگیری انسان است: از اشتباهات، از پاداش‌ها، از تجربه. این همان روشی است که DeepMind با آن Go را شکست داد، Tesla با آن خودران می‌سازد، و Boston Dynamics با آن ربات‌ها را آموزش می‌دهد.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="gamepad-2"></i></div>
+        <h3>بدون برچسب</h3>
+        <p>فقط پاداش و جریمه</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="clock"></i>
+        </div>
+        <h3>یادگیری از تجربه</h3>
+        <p>عمل → نتیجه → بازخورد</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="target"></i>
+        </div>
+        <h3>هدف‌محور</h3>
+        <p>بیشینه‌سازی پاداش</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="bot"></i>
+        </div>
+        <h3>کنترل و رباتیک</h3>
+        <p>عرصه اصلی RL</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: RL VS SUPERVISED -->
+<div class="slide" data-topic="RL vs Supervised">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ RL در برابر Supervised Learning</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>Supervised Learning</th><th>Reinforcement Learning</th></tr></thead>
+        <tbody>
+          <tr><td><b>داده</b></td><td>(x, y) — زوج ورودی-برچسب</td><td>تجربه (s, a, r, s')</td></tr>
+          <tr><td><b>بازخورد</b></td><td>می‌گوید جواب درست چیست</td><td>فقط پاداش/جریمه</td></tr>
+          <tr><td><b>هدف</b></td><td>کمینه‌سازی خطا</td><td>بیشینه‌سازی پاداش تجمعی</td></tr>
+          <tr><td><b>محیط</b></td><td>ایستا</td><td>پویا — تحت تأثیر اعمال</td></tr>
+          <tr><td><b>توالی</b></td><td>مستقل</td><td>وابسته به زمان</td></tr>
+          <tr><td><b>مثال</b></td><td>تشخیص گربه از تصویر</td><td>بازی Go، کنترل ربات</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      <b style="color:var(--gold)">💡 نکته کلیدی:</b> در RL، تصمیم فعلی روی پاداش‌های آینده اثر می‌گذارد.
+      <span class="lbl">این همان مفهوم «تأخیر در پاداش» است</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: AGENT ENVIRONMENT -->
+<div class="slide" data-topic="Agent و Environment">
+  <div class="slideInner">
+    <div class="eyebrow">اجزای اصلی</div>
+    <h2>🤖 Agent و Environment</h2>
+    <p>در هر مسئله RL دو جزء اصلی وجود دارد:</p>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">🤖 Agent (عامل)</h3>
+        <p>موجودی که یاد می‌گیرد و تصمیم می‌گیرد</p>
+        <p style="margin-top:8px">مثال: ربات، بازیکن، خودرو</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">🌍 Environment (محیط)</h3>
+        <p>دنیایی که Agent در آن عمل می‌کند</p>
+        <p style="margin-top:8px">مثال: صفحه شطرنج، جاده، کارخانه</p>
+      </div>
+    </div>
+    <img src="images/agent-environment-loop.png" alt="Agent-Environment loop" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">حلقه تعامل: Agent عمل می‌کند، Environment پاسخ می‌دهد</div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$s_t \xrightarrow{a_t} s_{t+1}, r_{t+1}$$
+      <span class="lbl">در هر گام: Agent عمل $a_t$ را از وضعیت $s_t$ انتخاب می‌کند؛ محیط وضعیت و پاداش جدید می‌دهد</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔄 حلقه Agent-Environment</h2>
+    <p>یک Agent را در محیط ساده ببینید: عمل → پاداش → وضعیت جدید</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Agent-Environment Loop</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim1_step"><i data-lucide="step-forward"></i> گام بعدی</button>
+        <button class="btnSecondary" id="sim1_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>وضعیت</small><b id="sim1_state">—</b></div>
+        <div class="simRes"><small>عمل</small><b id="sim1_action">—</b></div>
+        <div class="simRes"><small>پاداش تجمعی</small><b id="sim1_reward">0</b></div>
+        <div class="simRes"><small>گام</small><b id="sim1_step_n">0</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> «گام بعدی» را بزنید تا Agent در محیط حرکت کند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: MDP -->
+<div class="slide" data-topic="MDP">
+  <div class="slideInner">
+    <div class="eyebrow">چارچوب ریاضی</div>
+    <h2>📐 Markov Decision Process (MDP)</h2>
+    <p>MDP چارچوب ریاضی استاندارد برای مسائل RL است. یک MDP با ۵ عنصر تعریف می‌شود:</p>
+    <img src="images/mdp-diagram.png" alt="MDP" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">MDP: حالت‌ها، اعمال، پاداش‌ها، گذارها</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>نماد</th><th>نام</th><th>معنی</th></tr></thead>
+        <tbody>
+          <tr><td><b>$S$</b></td><td>States</td><td>مجموعه همه وضعیت‌های ممکن</td></tr>
+          <tr><td><b>$A$</b></td><td>Actions</td><td>مجموعه همه اعمال ممکن</td></tr>
+          <tr><td><b>$P$</b></td><td>Transition</td><td>احتمال رفتن از $s$ به $s'$ با $a$</td></tr>
+          <tr><td><b>$R$</b></td><td>Reward</td><td>پاداش هر گذار</td></tr>
+          <tr><td><b>$\gamma$</b></td><td>Discount</td><td>ضریب تخفیف (0 تا 1)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$\text{MDP} = \langle S, A, P, R, \gamma \rangle$$
+      <span class="lbl">تعریف ریاضی MDP</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: TERMS -->
+<div class="slide" data-topic="مفاهیم کلیدی">
+  <div class="slideInner">
+    <div class="eyebrow">مفاهیم کلیدی</div>
+    <h2>📚 State، Action، Reward، Policy، Value</h2>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="map-pin"></i></div>
+        <h3>State ($s$)</h3>
+        <p>وضعیت فعلی محیط — مثلاً موقعیت ربات</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="move"></i>
+        </div>
+        <h3>Action ($a$)</h3>
+        <p>عملی که Agent انجام می‌دهد — مثلاً حرکت به راست</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="star"></i>
+        </div>
+        <h3>Reward ($r$)</h3>
+        <p>بازخورد محیط — مثلاً +۱۰ برای رسیدن به هدف</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="git-branch"></i>
+        </div>
+        <h3>Policy ($\pi$)</h3>
+        <p>استراتژی Agent — کدام عمل در کدام وضعیت</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--pink);background:rgba(244,114,182,.15);border-color:rgba(244,114,182,.4)">
+          <i data-lucide="award"></i>
+        </div>
+        <h3>Value ($V$)</h3>
+        <p>پاداش مورد انتظار از یک وضعیت</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--blue);background:rgba(116,167,255,.15);border-color:rgba(116,167,255,.4)">
+          <i data-lucide="target"></i>
+        </div>
+        <h3>Q-Value ($Q$)</h3>
+        <p>پاداش مورد انتظار از یک (وضعیت، عمل)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: BELLMAN -->
+<div class="slide" data-topic="معادله Bellman">
+  <div class="slideInner">
+    <div class="eyebrow">قلب RL</div>
+    <h2>🧮 معادله Bellman</h2>
+    <p>معادله Bellman می‌گوید: «ارزش یک وضعیت = پاداش فعلی + ارزش تخفیف‌یافته‌ی بهترین وضعیت بعدی».</p>
+    <div class="formulaBox" style="font-size:19px">
+      $$V(s) = \max_a \left[ R(s,a) + \gamma V(s') \right]$$
+      <span class="lbl">معادله بهینگی Bellman برای Value</span>
+    </div>
+    <div class="formulaBox" style="font-size:19px">
+      $$Q(s,a) = R(s,a) + \gamma \max_{a'} Q(s', a')$$
+      <span class="lbl">معادله Bellman برای Q-Value</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>$\gamma = 0$</h3><p>فقط پاداش فوری مهم است</p></div>
+      <div class="card"><h3>$\gamma = 1$</h3><p>همه پاداش‌های آینده یکسان مهم‌اند</p></div>
+      <div class="card"><h3>$\gamma \approx 0.9$</h3><p>تعادل — معمولاً بهترین</p></div>
+    </div>
+    <p style="margin-top:16px;text-align:center;color:var(--muted);font-style:italic">
+      این معادله، پایه Q-Learning و Deep RL است. اگر آن را بفهمید، ۸۰٪ RL را فهمیده‌اید.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 10: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🗺 Grid World — پیاده‌روی تصادفی</h2>
+    <p>یک Agent تصادفی در Grid World حرکت می‌کند. هدف: رسیدن به ستاره طلایی.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="grid-3x3"></i> Random Walk in Grid World</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim2_step"><i data-lucide="step-forward"></i> گام</button>
+        <button class="btnSecondary" id="sim2_auto"><i data-lucide="play"></i> خودکار</button>
+        <button class="btnSecondary" id="sim2_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>موقعیت</small><b id="sim2_pos">(0,0)</b></div>
+        <div class="simRes"><small>گام‌ها</small><b id="sim2_steps">0</b></div>
+        <div class="simRes"><small>پاداش</small><b id="sim2_reward">0</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim2_status">در جست‌وجو</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> «خودکار» را بزنید تا Agent تصادفی حرکت کند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: EXPLORATION -->
+<div class="slide" data-topic="Exploration vs Exploitation">
+  <div class="slideInner">
+    <div class="eyebrow">دوراهی اصلی</div>
+    <h2>🧭 Exploration vs Exploitation</h2>
+    <p>اساسی‌ترین چالش در RL: آیا کاری را که می‌دانیم بهترین است انجام دهیم، یا چیزهای جدید امتحان کنیم؟</p>
+    <img src="images/exploration-exploitation.png" alt="Exploration vs Exploitation" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چپ: کشف مسیرهای جدید — راست: استفاده از مسیر شناخته‌شده</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">🔍 Exploration</h3>
+        <p>امتحان کردن اعمال جدید — ممکن است پاداش بهتری پیدا کنیم</p>
+        <p style="margin-top:8px"><b>ریسک:</b> ممکن است به دام بیفتیم</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">💰 Exploitation</h3>
+        <p>استفاده از بهترین عمل شناخته‌شده — تضمین پاداش فعلی</p>
+        <p style="margin-top:8px"><b>ریسک:</b> شاید راه بهتری وجود دارد</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$\varepsilon\text{-greedy} = \begin{cases} \text{random action} & \text{با احتمال } \varepsilon \\ \text{best action} & \text{با احتمال } 1-\varepsilon \end{cases}$$
+      <span class="lbl">استراتژی ε-greedy — ساده‌ترین راه تعادل</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: RL LOOP -->
+<div class="slide" data-topic="حلقه آموزش">
+  <div class="slideInner">
+    <div class="eyebrow">فرآیند یادگیری</div>
+    <h2>🔁 حلقه آموزش RL</h2>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">گام ۱</div>
+        <h3>مشاهده</h3>
+        <p>وضعیت فعلی $s_t$</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">گام ۲</div>
+        <h3>تصمیم</h3>
+        <p>انتخاب عمل $a_t$ با policy</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">گام ۳</div>
+        <h3>اجرا</h3>
+        <p>محیط پاسخ می‌دهد: $r$، $s'$</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">گام ۴</div>
+        <h3>یادگیری</h3>
+        <p>به‌روزرسانی Policy/Q-Value</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--pink)">
+        <div style="font-size:12px;color:var(--pink);font-weight:800;margin-bottom:8px">گام ۵</div>
+        <h3>تکرار</h3>
+        <p>تا رسیدن به بهینه</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🎲 Epsilon-Greedy تعاملی</h2>
+    <p>ε را تغییر دهید و ببینید Agent چطور بین Exploration و Exploitation تعادل برقرار می‌کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="dice-6"></i> Epsilon-Greedy Strategy</div>
+      <div class="simCanvasWrapper" style="height:380px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>ε (اکتشاف) <span class="sliderVal" id="sim3_eps_val">0.10</span></label>
+          <input type="range" id="sim3_eps" min="0" max="1" step="0.01" value="0.1">
+        </div>
+      </div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim3_step"><i data-lucide="step-forward"></i> گام</button>
+        <button class="btnSecondary" id="sim3_auto"><i data-lucide="play"></i> خودکار</button>
+        <button class="btnSecondary" id="sim3_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Exploration</small><b id="sim3_exp">0</b></div>
+        <div class="simRes"><small>Exploitation</small><b id="sim3_expl">0</b></div>
+        <div class="simRes"><small>پاداش</small><b id="sim3_total">0</b></div>
+        <div class="simRes"><small>گام</small><b id="sim3_step_n">0</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> ε را تغییر دهید و «خودکار» را بزنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: Q-LEARNING -->
+<div class="slide" data-topic="Q-Learning">
+  <div class="slideInner">
+    <div class="eyebrow">الگوریتم کلاسیک</div>
+    <h2>🎯 Q-Learning — مقدمه</h2>
+    <p>Q-Learning یکی از ساده‌ترین و پایه‌ای‌ترین الگوریتم‌های RL است. ایده: نگه‌داری یک جدول از Q-Value برای هر (وضعیت، عمل).</p>
+    <img src="images/q-learning-grid.png" alt="Q-Learning grid" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">جدول Q در Grid World — هر خانه مقدار Q و بهترین جهت</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a'} Q(s', a') - Q(s,a) \right]$$
+      <span class="lbl">به‌روزرسانی Q-Value — قلب Q-Learning</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>$\alpha$</h3><p>نرخ یادگیری — چقدر سریع Q را تغییر دهیم</p></div>
+      <div class="card"><h3>$\gamma$</h3><p>تخفیف — پاداش‌های آینده چقدر مهم</p></div>
+      <div class="card"><h3>$\varepsilon$</h3><p>اکتشاف — چقدر تصادفی عمل کنیم</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: Q-TABLE -->
+<div class="slide" data-topic="Q-Table">
+  <div class="slideInner">
+    <div class="eyebrow">ساختار داده</div>
+    <h2>📊 Q-Table</h2>
+    <p>Q-Table یک جدول دو‌بعدی است: سطرها = وضعیت‌ها، ستون‌ها = اعمال.</p>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>State ↓ / Action →</th><th>بالا</th><th>پایین</th><th>چپ</th><th>راست</th></tr></thead>
+        <tbody>
+          <tr><td><b>(0,0)</b></td><td>0.1</td><td>0.0</td><td>-0.2</td><td>0.8</td></tr>
+          <tr><td><b>(0,1)</b></td><td>0.0</td><td>0.3</td><td>0.2</td><td>1.2</td></tr>
+          <tr><td><b>(0,2)</b></td><td>-0.1</td><td>0.5</td><td>0.9</td><td>2.0</td></tr>
+          <tr><td><b>(1,0)</b></td><td>0.4</td><td>0.8</td><td>0.0</td><td>0.6</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="margin-top:16px;text-align:center;color:var(--muted)">
+      در هر وضعیت، عملی که بیشترین Q را دارد، بهترین است.
+    </p>
+    <div class="formulaBox" style="margin-top:16px">
+      $$\pi(s) = \arg\max_a Q(s,a)$$
+      <span class="lbl">Policy بهینه از Q-Table</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: RL TAXONOMY -->
+<div class="slide" data-topic="خانواده RL">
+  <div class="slideInner">
+    <div class="eyebrow">خانواده الگوریتم‌ها</div>
+    <h2>🌳 RL Family Tree</h2>
+    <img src="images/rl-taxonomy.png" alt="RL taxonomy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">سه شاخه اصلی: Value-Based، Policy-Based، Actor-Critic</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>خانواده</th><th>الگوریتم‌ها</th><th>ایده اصلی</th></tr></thead>
+        <tbody>
+          <tr><td><b>Value-Based</b></td><td>Q-Learning، DQN</td><td>یادگیری Q-Value</td></tr>
+          <tr><td><b>Policy-Based</b></td><td>REINFORCE، A2C</td><td>یادگیری مستقیم Policy</td></tr>
+          <tr><td><b>Actor-Critic</b></td><td>PPO، SAC، DDPG</td><td>ترکیب هر دو</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: APPLICATIONS -->
+<div class="slide" data-topic="کاربردها">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 RL در مکانیک و صنعت</h2>
+    <img src="images/rl-applications.png" alt="RL applications" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از ربات تا خودرو، از بازی تا بورس</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="bot"></i></div>
+        <h3>رباتیک</h3>
+        <p>کنترل بازو، راه‌رفتن، گرفتن اشیاء</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="car"></i>
+        </div>
+        <h3>خودران</h3>
+        <p>تصمیم‌گیری در ترافیک</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="settings"></i>
+        </div>
+        <h3>کنترل فرآیند</h3>
+        <p>بهینه‌سازی HVAC، راکتور</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="gamepad-2"></i>
+        </div>
+        <h3>بازی</h3>
+        <p>AlphaGo، Atari، Dota</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: GYMNASIUM -->
+<div class="slide" data-topic="Gymnasium">
+  <div class="slideInner">
+    <div class="eyebrow">کتابخانه استاندارد</div>
+    <h2>🎮 Gymnasium — محیط‌های آماده</h2>
+    <p>Gymnasium (جانشین OpenAI Gym) مجموعه‌ای از محیط‌های آماده برای آزمایش الگوریتم‌های RL است.</p>
+    <img src="images/gymnasium-logo.png" alt="Gymnasium" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Gymnasium — استاندارد صنعت RL</div>
+    <div class="cardGrid">
+      <div class="card"><h3>CartPole</h3><p>تعادل میله — شروع کلاسیک</p></div>
+      <div class="card"><h3>MountainCar</h3><p>ماشین در شیب</p></div>
+      <div class="card"><h3>LunarLander</h3><p>فرود روی ماه</p></div>
+      <div class="card"><h3>BipedalWalker</h3><p>راه‌رفتن دوپا</p></div>
+    </div>
+    <div class="codeTabs" style="margin-top:20px">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="gym-install">نصب</button>
+      </div>
+      <div class="codePane active" id="code-gym-install">
+<pre><span class="com"># نصب</span>
+pip install gymnasium
+
+<span class="com"># استفاده</span>
+<span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+env = gym.make(<span class="str">'CartPole-v1'</span>)
+state, info = env.reset()
+<span class="kw">for</span> _ <span class="kw">in</span> range(<span class="num">100</span>):
+    action = env.action_space.sample()  <span class="com"># تصادفی</span>
+    state, reward, done, truncated, info = env.step(action)
+    <span class="kw">if</span> done <span class="kw">or</span> truncated: <span class="kw">break</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: PYTHON CODE -->
+<div class="slide" data-topic="کد Python">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Q-Learning ساده — Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="ql">Q-Learning</button>
+      </div>
+      <div class="codePane active" id="code-ql">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+
+env = gym.make(<span class="str">'FrozenLake-v1'</span>, is_slippery=<span class="kw">False</span>)
+n_states = env.observation_space.n
+n_actions = env.action_space.n
+
+<span class="com"># Q-Table اولیه (صفر)</span>
+Q = np.zeros((n_states, n_actions))
+
+<span class="com"># هایپرپارامترها</span>
+alpha = <span class="num">0.1</span>
+gamma = <span class="num">0.99</span>
+epsilon = <span class="num">0.1</span>
+episodes = <span class="num">1000</span>
+
+<span class="kw">for</span> ep <span class="kw">in</span> range(episodes):
+    state, _ = env.reset()
+    done = <span class="kw">False</span>
+    <span class="kw">while not</span> done:
+        <span class="com"># ε-greedy</span>
+        <span class="kw">if</span> np.random.rand() &lt; epsilon:
+            action = env.action_space.sample()
+        <span class="kw">else</span>:
+            action = np.argmax(Q[state])
+
+        next_state, reward, done, _, _ = env.step(action)
+
+        <span class="com"># به‌روزرسانی Q</span>
+        Q[state, action] += alpha * (
+            reward + gamma * np.max(Q[next_state]) - Q[state, action]
+        )
+        state = next_state
+
+<span class="kw">print</span>(<span class="str">"Q-Table نهایی:"</span>)
+<span class="kw">print</span>(Q)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: MATLAB -->
+<div class="slide" data-topic="کد MATLAB">
+  <div class="slideInner">
+    <div class="eyebrow">MATLAB</div>
+    <h2>💻 Q-Learning در MATLAB</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab-ql">Q-Learning</button>
+      </div>
+      <div class="codePane active" id="code-matlab-ql">
+<pre><span class="com">% Q-Learning ساده</span>
+n_states = <span class="num">16</span>;
+n_actions = <span class="num">4</span>;
+Q = <span class="fn">zeros</span>(n_states, n_actions);
+
+alpha = <span class="num">0.1</span>;
+gamma = <span class="num">0.99</span>;
+epsilon = <span class="num">0.1</span>;
+episodes = <span class="num">1000</span>;
+
+<span class="kw">for</span> ep = <span class="num">1</span>:episodes
+    state = <span class="num">1</span>;  <span class="com">% شروع</span>
+    <span class="kw">while</span> state ~= n_states
+        <span class="com">% ε-greedy</span>
+        <span class="kw">if</span> <span class="fn">rand</span> &lt; epsilon
+            action = <span class="fn">randi</span>(n_actions);
+        <span class="kw">else</span>
+            [~, action] = <span class="fn">max</span>(Q(state, :));
+        <span class="kw">end</span>
+
+        <span class="com">% شبیه‌سازی انتقال (باید سفارشی شود)</span>
+        [next_state, reward] = <span class="fn">step</span>(state, action);
+
+        <span class="com">% به‌روزرسانی</span>
+        Q(state, action) = Q(state, action) + alpha * ...
+            (reward + gamma * <span class="fn">max</span>(Q(next_state, :)) - Q(state, action));
+
+        state = next_state;
+    <span class="kw">end</span>
+<span class="kw">end</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۱۳</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{MDP} = \langle S, A, P, R, \gamma \rangle$$
+      <span class="lbl">تعریف MDP</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$V(s) = \max_a \left[ R(s,a) + \gamma V(s') \right]$$
+      <span class="lbl">معادله بهینگی Bellman</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$Q(s,a) \leftarrow Q(s,a) + \alpha \left[ r + \gamma \max_{a'} Q(s', a') - Q(s,a) \right]$$
+      <span class="lbl">به‌روزرسانی Q-Learning</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\pi(s) = \arg\max_a Q(s,a)$$
+      <span class="lbl">Policy بهینه</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۳</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>تفاوت RL و Supervised Learning چیست؟</li>
+          <li><span class="exNum">۲</span>Agent و Environment را توضیح دهید.</li>
+          <li><span class="exNum">۳</span>State، Action، Reward، Policy چه هستند؟</li>
+          <li><span class="exNum">۴</span>Exploration vs Exploitation چیست؟</li>
+          <li><span class="exNum">۵</span>معادله Bellman چه می‌گوید؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Q-Learning روی FrozenLake در Colab.</li>
+          <li><span class="exNum">۲</span>تأثیر ε و α و γ را بررسی کنید.</li>
+          <li><span class="exNum">۳</span>Q-Table نهایی را رسم کنید.</li>
+          <li><span class="exNum">۴</span>CartPole با Q-Learning ساده.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد RL در کنترل و رباتیک.</li>
+          <li><span class="exNum">۲</span>مقایسه Value-Based و Policy-Based.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله کنترل مکانیکی پیشنهاد دهید که با RL حل شود.</li>
+          <li><span class="exNum">★</span>چرا RL در رباتیک مهم‌تر از Supervised است؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW13 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های RL</p>
+        <span class="tag">جلسه ۱۳ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد Gymnasium</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی RL</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «Reinforcement Learning control system 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: Q-Learning & DQN</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۴</h3>
+        <p style="margin-top:8px;text-align:right">
+          • Q-Learning عمیق<br>
+          • DQN — Deep Q-Network<br>
+          • Experience Replay<br>
+          • Target Network<br>
+          • CartPole کامل
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

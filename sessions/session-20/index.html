@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۰ — مقدمه Scientific AI | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۲۰ — Scientific AI</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="atom" style="width:14px;height:14px"></i> جلسه ۲۰ • فاز ۶ — Scientific AI</div>
+      <h1>مقدمه Scientific AI</h1>
+      <p class="subtitle-en">Scientific Machine Learning · Physics-Informed AI<br>When Physics Meets Data</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۹</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="search"></i></div><h3>جلسه ۱۹</h3><p>RAG، Vector DB، AI Agent</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="atom"></i></div><h3>جلسه ۲۰ (امروز)</h3><p>Scientific AI، Surrogate، Neural Operators</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ Scientific AI چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ سه رویکرد مدل‌سازی</p></div>
+      <div class="card"><p style="margin:0">✅ Physics-Informed</p></div>
+      <div class="card"><p style="margin:0">✅ Neural Operators</p></div>
+      <div class="card"><p style="margin:0">✅ Surrogate Models</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🔬 چرا Scientific AI؟</h2>
+    <p style="font-size:16px">تا حالا AI را برای تشخیص، پیش‌بینی، و کنترل دیدیم. اما یک سؤال اساسی: <b>آیا AI می‌تواند فیزیک را یاد بگیرد؟</b> یعنی به جای داده زیاد، از معادلات فیزیکی استفاده کند؟</p>
+    <p style="font-size:16px">پاسخ: <b>بله</b>. این همان چیزی است که <b>Scientific AI</b> نامیده می‌شود — ترکیب هوشمندانه‌ی معادلات فیزیکی و شبکه‌های عصبی. و این حوزه، دقیقاً برای مهندسان مکانیک طراحی شده!</p>
+    <img src="images/scientific-ai-hero.png" alt="Scientific AI" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">ترکیب فیزیک و AI</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="atom"></i></div>
+        <h3>Physics</h3>
+        <p>معادلات دقیق، تفسیرپذیر</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="brain"></i>
+        </div>
+        <h3>Data</h3>
+        <p>سریع، انعطاف‌پذیر</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <h3>Scientific AI</h3>
+        <p>ترکیب هر دو</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="wrench"></i>
+        </div>
+        <h3>کاربرد</h3>
+        <p>CFD، ارتعاشات، حرارت</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: THREE PARADIGMS -->
+<div class="slide" data-topic="سه رویکرد">
+  <div class="slideInner">
+    <div class="eyebrow">سه پارادایم</div>
+    <h2>⚖️ سه رویکرد مدل‌سازی</h2>
+    <img src="images/three-paradigms.png" alt="Three paradigms" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">سه رویکرد مدل‌سازی: فیزیک، داده، Scientific AI</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>رویکرد</th><th>مزیت</th><th>عیب</th></tr></thead>
+        <tbody>
+          <tr><td><b>Pure Physics</b></td><td>دقیق، تفسیرپذیر</td><td>کند، نیاز به فرضیات</td></tr>
+          <tr><td><b>Pure Data (ML)</b></td><td>سریع، انعطاف‌پذیر</td><td>جعبه سیاه، نیاز به داده زیاد</td></tr>
+          <tr><td><b>Scientific AI</b></td><td>ترکیب هر دو</td><td>پیچیدگی پیاده‌سازی</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: WHAT IS SCIENTIFIC AI -->
+<div class="slide" data-topic="Scientific AI چیست">
+  <div class="slideInner">
+    <div class="eyebrow">تعریف</div>
+    <h2>🔬 Scientific AI چیست؟</h2>
+    <p><b>Scientific AI</b> (AI علمی) یا <b>Scientific Machine Learning</b> (SciML) حوزه‌ای است که از AI برای حل مسائل علمی و مهندسی استفاده می‌کند — با ترکیب دانش فیزیکی و داده.</p>
+    <img src="images/scientific-ai-spectrum.png" alt="Scientific AI spectrum" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">طیف رویکردها از فیزیک‌محور تا داده‌محور</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🧮 Physics-Informed</h3><p>ترکیب PDE و شبکه عصبی</p></div>
+      <div class="card"><h3>🌊 Neural Operators</h3><p>یادگیری نگاشت بین فضاهای تابعی</p></div>
+      <div class="card"><h3>⚡ Surrogate Models</h3><p>مدل سریع جایگزین شبیه‌ساز</p></div>
+      <div class="card"><h3>🔬 Data-Driven Discovery</h3><p>کشف معادلات از داده</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>⚖️ سه رویکرد — تعاملی</h2>
+    <p>روی هر رویکرد کلیک کنید و مقایسه کنید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="scale"></i> Three Paradigms Comparison</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simBtns" id="sim1_btns">
+        <button class="btnPrimary" data-mode="physics">Physics</button>
+        <button class="btnSecondary" data-mode="data">Data</button>
+        <button class="btnSecondary" data-mode="scientific">Scientific AI</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>رویکرد</small><b id="sim1_mode">Physics</b></div>
+        <div class="simRes"><small>سرعت</small><b id="sim1_speed">—</b></div>
+        <div class="simRes"><small>دقت</small><b id="sim1_acc">—</b></div>
+        <div class="simRes"><small>داده نیاز</small><b id="sim1_data">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: PHYSICS-INFORMED -->
+<div class="slide" data-topic="Physics-Informed">
+  <div class="slideInner">
+    <div class="eyebrow">ایده اصلی</div>
+    <h2>🧮 Physics-Informed — ایده اصلی</h2>
+    <p>به جای آموزش صرف از داده، <b>معادلات فیزیکی (PDE)</b> را در تابع هزینه شبکه عصبی قرار می‌دهیم.</p>
+    <div class="formulaBox" style="font-size:18px">
+      $$L = \underbrace{L_{data}}_{\text{داده}} + \lambda \underbrace{L_{PDE}}_{\text{فیزیک}} + \mu \underbrace{L_{BC}}_{\text{شرایط مرزی}}$$
+      <span class="lbl">تابع هزینه Physics-Informed Neural Network</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="check-circle"></i></div>
+        <h3>$L_{data}$</h3>
+        <p>اختلاف پیش‌بینی با داده واقعی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="atom"></i>
+        </div>
+        <h3>$L_{PDE}$</h3>
+        <p>باقیمانده معادله دیفرانسیل</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="target"></i>
+        </div>
+        <h3>$L_{BC}$</h3>
+        <p>شرایط مرزی و اولیه</p>
+      </div>
+    </div>
+    <p style="margin-top:16px;text-align:center;color:var(--muted)">
+      این ایده در سال ۲۰۱۹ توسط Maziar Raissi و همکاران معرفی شد — و از آن زمان به یکی از داغ‌ترین حوزه‌های مهندسی تبدیل شده.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 8: NEURAL OPERATORS -->
+<div class="slide" data-topic="Neural Operators">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم پیشرفته</div>
+    <h2>🌊 Neural Operators</h2>
+    <p><b>Neural Operator</b> یک شبکه عصبی است که <b>نگاشت بین فضاهای تابعی</b> را یاد می‌گیرد — یعنی یک تابع را به تابع دیگر تبدیل می‌کند.</p>
+    <img src="images/neural-operator.png" alt="Neural operator" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Neural Operator: تابع ورودی → تابع خروجی</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$\mathcal{G}: \mathcal{A} \to \mathcal{U}$$
+      <span class="lbl">$\mathcal{A}$ و $\mathcal{U}$ = فضاهای تابعی</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>FNO</h3><p>Fourier Neural Operator</p></div>
+      <div class="card"><h3>DeepONet</h3><p>Deep Operator Network</p></div>
+      <div class="card"><h3>GANO</h3><p>Geometry-Aware</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🌊 Neural Operator تعاملی</h2>
+    <p>یک تابع را به تابع دیگر تبدیل کنید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Function-to-Function Mapping</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>فرکانس تابع ورودی <span class="sliderVal" id="sim2_freq_val">2</span></label>
+          <input type="range" id="sim2_freq" min="1" max="5" step="0.5" value="2">
+        </div>
+        <div class="sliderGroup">
+          <label>دامنه تابع ورودی <span class="sliderVal" id="sim2_amp_val">1.0</span></label>
+          <input type="range" id="sim2_amp" min="0.5" max="2" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>ورودی</small><b id="sim2_input">sin(2x)</b></div>
+        <div class="simRes"><small>خروجی</small><b id="sim2_output">—</b></div>
+        <div class="simRes"><small>نوع عملگر</small><b>Derivative</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> پارامترها را تغییر دهید و ببینید خروجی چطور عوض می‌شود.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: SURROGATE -->
+<div class="slide" data-topic="Surrogate Models">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردی‌ترین</div>
+    <h2>⚡ Surrogate Models</h2>
+    <p>یک شبیه‌ساز CFD یا FEM ممکن است ساعت‌ها یا روزها طول بکشد. <b>Surrogate Model</b> یک جایگزین سریع است که در چند میلی‌ثانیه همان نتیجه را می‌دهد.</p>
+    <img src="images/surrogate-model.png" alt="Surrogate model" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">شبیه‌ساز کند → Surrogate سریع</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 هدف</h3><p>پیش‌بینی سریع به‌جای حل کامل</p></div>
+      <div class="card"><h3>⚡ سرعت</h3><p>100-1000× سریع‌تر از شبیه‌ساز</p></div>
+      <div class="card"><h3>📚 آموزش</h3><p>از داده‌های شبیه‌ساز</p></div>
+      <div class="card"><h3>🔧 کاربرد</h3><p>بهینه‌سازی، طراحی، کنترل</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>⚡ Surrogate Model — سرعت</h2>
+    <p>مقایسه شبیه‌ساز کامل و Surrogate را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="zap"></i> Simulator vs Surrogate</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim3_run"><i data-lucide="play"></i> اجرا</button>
+        <button class="btnSecondary" id="sim3_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Simulator</small><b id="sim3_sim_time">0.0s</b></div>
+        <div class="simRes"><small>Surrogate</small><b id="sim3_sur_time">0.0s</b></div>
+        <div class="simRes"><small>Speedup</small><b id="sim3_speedup">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> «اجرا» را بزنید تا هر دو مدل شروع کنند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: PIPELINE -->
+<div class="slide" data-topic="خط لوله">
+  <div class="slideInner">
+    <div class="eyebrow">فرآیند</div>
+    <h2>🛤 خط لوله Scientific ML</h2>
+    <img src="images/scientific-ml-pipeline.png" alt="Scientific ML pipeline" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">5 گام اصلی Scientific ML</div>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">گام ۱</div>
+        <h3>Physical Model</h3>
+        <p>معادلات حاکم</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">گام ۲</div>
+        <h3>Data</h3>
+        <p>داده‌های تجربی/شبیه‌سازی</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">گام ۳</div>
+        <h3>Neural Network</h3>
+        <p>آموزش با Loss ترکیبی</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">گام ۴</div>
+        <h3>Predictions</h3>
+        <p>پیش‌بینی سریع</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--pink)">
+        <div style="font-size:12px;color:var(--pink);font-weight:800;margin-bottom:8px">گام ۵</div>
+        <h3>Validation</h3>
+        <p>اعتبارسنجی با فیزیک</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: DATA -->
+<div class="slide" data-topic="داده">
+  <div class="slideInner">
+    <div class="eyebrow">داده در Scientific AI</div>
+    <h2>📊 نقش داده</h2>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 داده تجربی</h3>
+        <p>از سنسورها، آزمایشگاه — کم و گران</p>
+      </div>
+      <div class="card">
+        <h3>🖥 داده شبیه‌سازی</h3>
+        <p>از CFD، FEM — زیاد و ارزان</p>
+      </div>
+      <div class="card">
+        <h3>📐 داده فیزیکی</h3>
+        <p>از معادلات — بی‌نهایت</p>
+      </div>
+      <div class="card">
+        <h3>🔄 داده ترکیبی</h3>
+        <p>بهترین: فیزیک + داده</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:24px">
+      $$\text{SciML Data} = \alpha \cdot \text{Experiment} + \beta \cdot \text{Simulation} + \gamma \cdot \text{Physics}$$
+      <span class="lbl">ترکیب بهینه داده در Scientific AI</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: CHALLENGES -->
+<div class="slide" data-topic="چالش‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">چالش‌ها</div>
+    <h2>⚠️ چالش‌های Scientific AI</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. مقیاس‌پذیری</h3>
+        <p>آموزش PINN در مسائل 3D گران است</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۲. توازن Loss</h3>
+        <p>انتخاب $\lambda, \mu$ بهینه دشوار</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۳. شرایط مرزی پیچیده</h3>
+        <p>هندسه‌های واقعی چالش‌برانگیز</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۴. اعتبارسنجی</h3>
+        <p>چطور بفهمیم مدل درست است؟</p>
+      </div>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">💡 نکته:</b> با این حال، PINN در بسیاری از مسائل 1D و 2D عملکرد عالی دارد — و برای مهندسی مکانیک فوق‌العاده مفید است.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: COMPARISON -->
+<div class="slide" data-topic="مقایسه">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه جامع</div>
+    <h2>📊 مقایسه رویکردها</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>معیار</th><th>Pure Physics</th><th>Pure ML</th><th>Scientific AI</th></tr></thead>
+        <tbody>
+          <tr><td><b>سرعت</b></td><td>کند</td><td>سریع</td><td>سریع</td></tr>
+          <tr><td><b>دقت</b></td><td>بالا</td><td>متوسط</td><td>بالا</td></tr>
+          <tr><td><b>نیاز به داده</b></td><td>کم</td><td>بسیار زیاد</td><td>متوسط</td></tr>
+          <tr><td><b>تفسیرپذیری</b></td><td>بالا</td><td>پایین</td><td>متوسط</td></tr>
+          <tr><td><b>تعمیم‌پذیری</b></td><td>بالا</td><td>پایین</td><td>بالا</td></tr>
+          <tr><td><b>پیاده‌سازی</b></td><td>متوسط</td><td>ساده</td><td>پیچیده</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: APPLICATIONS -->
+<div class="slide" data-topic="کاربردها">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 Scientific AI در مکانیک</h2>
+    <img src="images/scientific-applications.png" alt="Scientific AI applications" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از CFD تا مواد — همه حوزه‌ها</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🌊 CFD</h3><p>شبیه‌سازی جریان سیال</p></div>
+      <div class="card"><h3>🏗 جامدات</h3><p>تحلیل تنش و تغییر شکل</p></div>
+      <div class="card"><h3>🔥 انتقال حرارت</h3><p>معادله گرما</p></div>
+      <div class="card"><h3>⚙️ ارتعاشات</h3><p>سیستم‌های دینامیکی</p></div>
+      <div class="card"><h3>🧪 مواد</h3><p>کشف مواد جدید</p></div>
+      <div class="card"><h3>🌍 اقلیم</h3><p>پیش‌بینی آب‌وهوا</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: TOOLS -->
+<div class="slide" data-topic="ابزارها">
+  <div class="slideInner">
+    <div class="eyebrow">اکوسیستم</div>
+    <h2>🛠 ابزارهای Scientific AI</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ابزار</th><th>کاربرد</th><th>زبان</th></tr></thead>
+        <tbody>
+          <tr><td><b>DeepXDE</b></td><td>PINN و PDE Solver</td><td>Python</td></tr>
+          <tr><td><b>NeuralOperator</b></td><td>FNO، DeepONet</td><td>Python</td></tr>
+          <tr><td><b>Modulus (NVIDIA)</b></td><td>PINN صنعتی</td><td>Python</td></tr>
+          <tr><td><b>PyTorch</b></td><td>پایه پیاده‌سازی</td><td>Python</td></tr>
+          <tr><td><b>JAX</b></td><td>محاسبات سریع PINN</td><td>Python</td></tr>
+          <tr><td><b>MATLAB PDE Toolbox</b></td><td>کلاسیک + ML</td><td>MATLAB</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: CODE SURROGATE -->
+<div class="slide" data-topic="کد Surrogate">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Surrogate Model — Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="surrogate">Surrogate</button>
+      </div>
+      <div class="codePane active" id="code-surrogate">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.neural_network <span class="kw">import</span> MLPRegressor
+<span class="kw">import</span> time
+
+<span class="com"># ۱. تولید داده از شبیه‌ساز (مثلاً معادله گرما)</span>
+<span class="kw">def</span> <span class="fn">simulator</span>(k, L, T):
+    <span class="com"># تابع کند — شبیه‌سازی تحلیلی</span>
+    x = np.linspace(<span class="num">0</span>, L, <span class="num">100</span>)
+    t = np.linspace(<span class="num">0</span>, T, <span class="num">100</span>)
+    T_x = np.exp(-k * np.pi**<span class="num">2</span> * t / L**<span class="num">2</span>)
+    <span class="kw">return</span> np.mean(T_x)
+
+<span class="com"># ۲. تولید ۱۰۰۰ نمونه</span>
+X_train, y_train = [], []
+<span class="kw">for</span> _ <span class="kw">in</span> range(<span class="num">1000</span>):
+    k = np.random.uniform(<span class="num">0.1</span>, <span class="num">10</span>)
+    L = np.random.uniform(<span class="num">0.5</span>, <span class="num">2</span>)
+    T = np.random.uniform(<span class="num">1</span>, <span class="num">5</span>)
+    y = <span class="fn">simulator</span>(k, L, T)
+    X_train.append([k, L, T])
+    y_train.append(y)
+
+X_train = np.array(X_train)
+y_train = np.array(y_train)
+
+<span class="com"># ۳. آموزش Surrogate</span>
+surrogate = <span class="fn">MLPRegressor</span>(hidden_layer_sizes=(<span class="num">64</span>, <span class="num">64</span>),
+                         max_iter=<span class="num">1000</span>)
+surrogate.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="com"># ۴. مقایسه سرعت</span>
+X_test = [[<span class="num">2.0</span>, <span class="num">1.0</span>, <span class="num">3.0</span>]]
+
+t0 = time.<span class="fn">time</span>()
+y_sim = <span class="fn">simulator</span>(*X_test[<span class="num">0</span>])
+sim_time = time.<span class="fn">time</span>() - t0
+
+t0 = time.<span class="fn">time</span>()
+y_pred = surrogate.<span class="fn">predict</span>(X_test)
+sur_time = time.<span class="fn">time</span>() - t0
+
+print(<span class="str">f"Simulator: {sim_time*1000:.2f} ms"</span>)
+print(<span class="str">f"Surrogate: {sur_time*1000:.2f} ms"</span>)
+print(<span class="str">f"Speedup: {sim_time/sur_time:.0f}x"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: CODE PINN -->
+<div class="slide" data-topic="کد PINN">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 PINN مقدماتی — PyTorch</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="pinn">PINN</button>
+      </div>
+      <div class="codePane active" id="code-pinn">
+<pre><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="com"># شبکه عصبی</span>
+<span class="kw">class</span> <span class="fn">PINN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(<span class="num">2</span>, <span class="num">32</span>),
+            nn.Tanh(),
+            nn.Linear(<span class="num">32</span>, <span class="num">32</span>),
+            nn.Tanh(),
+            nn.Linear(<span class="num">32</span>, <span class="num">1</span>)
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x, t):
+        inp = torch.cat([x, t], dim=<span class="num">1</span>)
+        <span class="kw">return</span> self.net(inp)
+
+<span class="com"># معادله گرما: u_t = α u_xx</span>
+<span class="kw">def</span> <span class="fn">pde_loss</span>(model, x, t, alpha=<span class="num">0.01</span>):
+    x.<span class="fn">requires_grad_</span>(<span class="kw">True</span>)
+    t.<span class="fn">requires_grad_</span>(<span class="kw">True</span>)
+
+    u = <span class="fn">model</span>(x, t)
+    u_t = torch.autograd.<span class="fn">grad</span>(u, t, grad_outputs=torch.<span class="fn">ones_like</span>(u),
+                           create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_x = torch.autograd.<span class="fn">grad</span>(u, x, grad_outputs=torch.<span class="fn">ones_like</span>(u),
+                           create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_xx = torch.autograd.<span class="fn">grad</span>(u_x, x, grad_outputs=torch.<span class="fn">ones_like</span>(u_x),
+                            create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+
+    <span class="kw">return</span> torch.<span class="fn">mean</span>((u_t - alpha * u_xx)**<span class="num">2</span>)
+
+<span class="com"># آموزش</span>
+model = <span class="fn">PINN</span>()
+optimizer = torch.optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=<span class="num">1e-3</span>)
+
+<span class="kw">for</span> epoch <span class="kw">in</span> range(<span class="num">5000</span>):
+    x = torch.<span class="fn">rand</span>(<span class="num">1000</span>, <span class="num">1</span>) * <span class="num">2</span> - <span class="num">1</span>
+    t = torch.<span class="fn">rand</span>(<span class="num">1000</span>, <span class="num">1</span>) * <span class="num">1</span>
+
+    loss = <span class="fn">pde_loss</span>(model, x, t)
+
+    optimizer.<span class="fn">zero_grad</span>()
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+
+    <span class="kw">if</span> epoch % <span class="num">500</span> == <span class="num">0</span>:
+        print(<span class="str">f"Epoch {epoch}, Loss: {loss.item():.6f}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۲۰</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$L_{PINN} = L_{data} + \lambda L_{PDE} + \mu L_{BC}$$
+      <span class="lbl">تابع هزینه Physics-Informed</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\mathcal{G}_\theta: \mathcal{A} \to \mathcal{U}$$
+      <span class="lbl">Neural Operator — نگاشت تابع به تابع</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}$$
+      <span class="lbl">معادله گرما — مثال کلاسیک PINN</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 نکته:</b> PINN = فیزیک + داده. Surrogate = داده. Neural Operator = یادگیری نگاشت‌ها.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۲۰</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>تفاوت Pure Physics، Pure ML و Scientific AI چیست؟</li>
+          <li><span class="exNum">۲</span>Physics-Informed یعنی چه؟</li>
+          <li><span class="exNum">۳</span>Neural Operator چه تفاوتی با شبکه عصبی معمولی دارد؟</li>
+          <li><span class="exNum">۴</span>Surrogate Model چه کاربردی دارد؟</li>
+          <li><span class="exNum">۵</span>چالش اصلی PINN چیست؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Surrogate برای یک تابع ساده.</li>
+          <li><span class="exNum">۲</span>PINN برای معادله گرما 1D.</li>
+          <li><span class="exNum">۳</span>مقایسه Surrogate با شبیه‌ساز.</li>
+          <li><span class="exNum">۴</span>DeepXDE برای یک PDE ساده.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره Scientific AI در مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه PINN و FEM — مزایا و معایب.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله مکانیکی برای PINN طراحی کنید.</li>
+          <li><span class="exNum">★</span>چطور می‌توانید از Scientific AI در پایان‌نامه خود استفاده کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW20 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های SciML</p>
+        <span class="tag">جلسه ۲۰ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل مقالات علمی</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی PINN</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «PINN mechanical engineering 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۲۰</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ Scientific AI</h3><p>ترکیب فیزیک و داده</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Physics-Informed</h3><p>PDE در تابع هزینه</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Neural Operators</h3><p>یادگیری نگاشت تابع‌ها</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ Surrogate Models</h3><p>جایگزین سریع شبیه‌ساز</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ کاربردها</h3><p>CFD، جامدات، حرارت، ارتعاشات</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: PINN — Physics-Informed Neural Networks</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۲۱</h3>
+        <p style="margin-top:8px;text-align:right">
+          • PINN — تعریف کامل<br>
+          • معماری PINN<br>
+          • تابع هزینه ترکیبی<br>
+          • حل معادله گرما، موج، لاپلاس<br>
+          • پیاده‌سازی کامل با PyTorch<br>
+          • DeepXDE
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

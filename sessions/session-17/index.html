@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۷ — NLP و Transformer | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۷ — NLP و Transformer</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="message-square" style="width:14px;height:14px"></i> جلسه ۱۷ • فاز ۵ — NLP</div>
+      <h1>NLP و Transformer</h1>
+      <p class="subtitle-en">Natural Language Processing · Attention · Transformers<br>From Words to ChatGPT</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۶</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="bot"></i></div><h3>جلسه ۱۶</h3><p>RL در مکانیک، CartPole، Path Planning</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="message-square"></i></div><h3>جلسه ۱۷ (امروز)</h3><p>NLP، Attention، Transformer، BERT، GPT</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ NLP چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ Tokenization و Embedding</p></div>
+      <div class="card"><p style="margin:0">✅ Attention Mechanism</p></div>
+      <div class="card"><p style="margin:0">✅ Transformer Architecture</p></div>
+      <div class="card"><p style="margin:0">✅ BERT در برابر GPT</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در مهندسی مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>💬 چرا NLP و Transformer؟</h2>
+    <p style="font-size:16px">تا جلسه قبل، با تصویر و کنترل و RL کار کردیم. اما امروز، انقلاب بزرگ AI در حوزه <b>زبان</b> رخ داده — ChatGPT، Gemini، Claude، همه بر پایه معماری‌ای به نام <b>Transformer</b> ساخته شده‌اند که در سال ۲۰۱۷ در مقاله‌ای معروف («Attention is All You Need») معرفی شد.</p>
+    <p style="font-size:16px">Transformer فقط برای زبان نیست — امروز در بینایی (ViT)، صوت (Whisper)، پروتئین (AlphaFold)، و حتی مکانیک (تشخیص عیب از متن) استفاده می‌شود.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="message-square"></i></div>
+        <h3>ChatGPT</h3>
+        <p>بر پایه Transformer</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="zap"></i>
+        </div>
+        <h3>Attention</h3>
+        <p>قلب Transformer</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <h3>Foundation</h3>
+        <p>پایه مدل‌های پایه</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="wrench"></i>
+        </div>
+        <h3>کاربرد مکانیکی</h3>
+        <p>دستیار مهندسی، تحلیل مقالات</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHAT IS NLP -->
+<div class="slide" data-topic="NLP چیست">
+  <div class="slideInner">
+    <div class="eyebrow">مقدمه</div>
+    <h2>📚 NLP چیست؟</h2>
+    <p><b>NLP</b> (Natural Language Processing — پردازش زبان طبیعی) حوزه‌ای از AI است که به تعامل ماشین با زبان انسان می‌پردازد.</p>
+    <img src="images/nlp-hero.png" alt="NLP concept" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از متن خام تا مدل زبانی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>📖 درک</h3><p>تحلیل احساسات، ترجمه، خلاصه‌سازی</p></div>
+      <div class="card"><h3>✍️ تولید</h3><p>ChatGPT، تولید متن، کد</p></div>
+      <div class="card"><h3>🔍 استخراج</h3><p>NER، استخراج اطلاعات</p></div>
+      <div class="card"><h3>💬 گفتگو</h3><p>چت‌بات، دستیار صوتی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: TOKENIZATION -->
+<div class="slide" data-topic="Tokenization">
+  <div class="slideInner">
+    <div class="eyebrow">گام اول</div>
+    <h2>🔤 Tokenization — تبدیل متن به اعداد</h2>
+    <p>کامپیوتر نمی‌تواند متن را مستقیم پردازش کند. اول باید متن را به <b>توکن</b> (کلمه یا زیرکلمه) تقسیم کنیم، سپس هر توکن را به یک عدد تبدیل کنیم.</p>
+    <img src="images/tokenization.png" alt="Tokenization" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">متن → توکن‌ها → اعداد</div>
+    <div class="formulaBox">
+      $$\text{"Hello world"} \rightarrow [\text{"Hello"}, \text{" world"}] \rightarrow [15496, 995]$$
+      <span class="lbl">مثال Tokenization در GPT</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>Word-level</h3><p>یک کلمه = یک توکن (مشکل: واژه‌های جدید)</p></div>
+      <div class="card"><h3>Character-level</h3><p>یک حرف = یک توکن (دنباله طولانی)</p></div>
+      <div class="card"><h3>Subword (BPE)</h3><p>بهترین روش — استفاده در GPT، BERT</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔤 Tokenization تعاملی</h2>
+    <p>یک متن وارد کنید و ببینید چطور به توکن‌ها و سپس به اعداد تبدیل می‌شود.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="type"></i> Tokenizer</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>متن ورودی</label>
+          <input type="text" id="sim1_input" value="Neural networks are powerful" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--line-strong);background:rgba(0,0,0,0.3);color:var(--text);font-family:inherit;font-size:14px">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>تعداد توکن</small><b id="sim1_count">—</b></div>
+        <div class="simRes"><small>طول متن</small><b id="sim1_len">—</b></div>
+        <div class="simRes"><small>نسبت</small><b id="sim1_ratio">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> متن را تغییر دهید تا Tokenization را ببینید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: EMBEDDINGS -->
+<div class="slide" data-topic="Embeddings">
+  <div class="slideInner">
+    <div class="eyebrow">گام دوم</div>
+    <h2>🔢 Word Embeddings — بردار کلمات</h2>
+    <p>هر توکن (عدد) به یک <b>بردار</b> تبدیل می‌شود — بردارهایی که معنی کلمه را در خود دارند. کلمات مشابه، بردارهای نزدیک دارند.</p>
+    <img src="images/word-embeddings.png" alt="Word embeddings" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">کلمات مشابه در فضای برداری نزدیک هستند</div>
+    <div class="formulaBox">
+      $$\text{king} - \text{man} + \text{woman} \approx \text{queen}$$
+      <span class="lbl">عملیات معنایی روی بردارها</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>Word2Vec</h3><p>Google، ۲۰۱۳</p></div>
+      <div class="card"><h3>GloVe</h3><p>Stanford، ۲۰۱۴</p></div>
+      <div class="card"><h3>Contextual</h3><p>BERT، GPT — بردار وابسته به متن</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: ATTENTION -->
+<div class="slide" data-topic="Attention">
+  <div class="slideInner">
+    <div class="eyebrow">قلب Transformer</div>
+    <h2>🎯 Attention — توجه</h2>
+    <p>وقتی جمله «گربه روی حصیر نشست چون خسته بود» را می‌خوانیم، می‌فهمیم «بود» به «گربه» اشاره دارد نه «حصیر». <b>Attention</b> همین کار را در مدل می‌کند — به کلمات مرتبط وزن بیشتر می‌دهد.</p>
+    <img src="images/attention-mechanism.png" alt="Attention" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">کلمه «it» به «cat» توجه می‌کند</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
+      <span class="lbl">Scaled Dot-Product Attention</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>Q — Query</h3><p>چه چیزی می‌خواهم؟</p></div>
+      <div class="card"><h3>K — Key</h3><p>چه چیزی دارم؟</p></div>
+      <div class="card"><h3>V — Value</h3><p>چه اطلاعاتی می‌دهم؟</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🎯 Attention بصری</h2>
+    <p>یک جمله را انتخاب کنید و ببینید Attention چطور بین کلمات ارتباط برقرار می‌کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="eye"></i> Attention Visualization</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns" id="sim2_btns">
+        <button class="btnPrimary" data-sent="0">The cat sat on the mat</button>
+        <button class="btnSecondary" data-sent="1">The animal did not cross because it was tired</button>
+        <button class="btnSecondary" data-sent="2">Ali poured water on the fire that he lit</button>
+      </div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>کلمه تمرکز <span class="sliderVal" id="sim2_focus_val">0</span></label>
+          <input type="range" id="sim2_focus" min="0" max="10" step="1" value="0">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>کلمه</small><b id="sim2_word">—</b></div>
+        <div class="simRes"><small>بیشترین توجه</small><b id="sim2_top">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: SELF ATTENTION -->
+<div class="slide" data-topic="Self-Attention">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم پیشرفته</div>
+    <h2>🔍 Self-Attention و Multi-Head</h2>
+    <img src="images/multi-head-attention.png" alt="Multi-head attention" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چند سر توجه — هر سر جنبه‌ای را می‌بیند</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>Self-Attention</h3>
+        <p>هر کلمه به تمام کلمات جمله توجه می‌کند</p>
+      </div>
+      <div class="card">
+        <h3>Multi-Head</h3>
+        <p>چند Attention موازی — کشف روابط مختلف</p>
+      </div>
+      <div class="card">
+        <h3>Parallel</h3>
+        <p>همه کلمات هم‌زمان پردازش می‌شوند (برخلاف RNN)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: TRANSFORMER ARCHITECTURE -->
+<div class="slide" data-topic="معماری Transformer">
+  <div class="slideInner">
+    <div class="eyebrow">معماری کامل</div>
+    <h2>🏗 Transformer Architecture</h2>
+    <img src="images/transformer-architecture.png" alt="Transformer" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Encoder و Decoder — همراه با Attention و FFN</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>📥 Encoder</h3>
+        <p>متن را می‌فهمد (BERT، T5)</p>
+      </div>
+      <div class="card">
+        <h3>📤 Decoder</h3>
+        <p>متن تولید می‌کند (GPT)</p>
+      </div>
+      <div class="card">
+        <h3>🔗 Encoder-Decoder</h3>
+        <p>ترجمه (T5، BART)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🏗 اجزای Transformer</h2>
+    <p>روی هر جزء کلیک کنید تا توضیح آن را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="layers"></i> Transformer Components</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simResults">
+        <div class="simRes"><small>جزء</small><b id="sim3_comp">—</b></div>
+        <div class="simRes"><small>نقش</small><b id="sim3_role">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> روی هر جزء کلیک کنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: POSITIONAL ENCODING -->
+<div class="slide" data-topic="Positional Encoding">
+  <div class="slideInner">
+    <div class="eyebrow">جزئی کلیدی</div>
+    <h2>📍 Positional Encoding</h2>
+    <p>Transformer برخلاف RNN ترتیب کلمات را نمی‌فهمد. <b>Positional Encoding</b> به هر کلمه یک «مهر موقعیت» اضافه می‌کند.</p>
+    <div class="formulaBox">
+      $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)$$
+      $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)$$
+      <span class="lbl">موقعیت سینوسی — هر موقعیت یک بردار یکتا</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>چرا سینوس؟</h3><p>الگوی تکرارشونده و پیوسته</p></div>
+      <div class="card"><h3>چرا مهم است؟</h3><p>ترتیب کلمات معنی را تغییر می‌دهد</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: BERT VS GPT -->
+<div class="slide" data-topic="BERT vs GPT">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ BERT در برابر GPT</h2>
+    <img src="images/bert-vs-gpt.png" alt="BERT vs GPT" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چپ: BERT دوجهته — راست: GPT یک‌جهته</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>BERT</th><th>GPT</th></tr></thead>
+        <tbody>
+          <tr><td><b>معماری</b></td><td>Encoder-only</td><td>Decoder-only</td></tr>
+          <tr><td><b>جهت</b></td><td>دو جهته</td><td>یک جهته (چپ به راست)</td></tr>
+          <tr><td><b>وظیفه</b></td><td>درک (فهم متن)</td><td>تولید (نوشتن متن)</td></tr>
+          <tr><td><b>کاربرد</b></td><td>طبقه‌بندی، NER، QA</td><td>ChatGPT، تولید کد</td></tr>
+          <tr><td><b>پیش‌آموزش</b></td><td>Masked LM</td><td>Causal LM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: FAMOUS MODELS -->
+<div class="slide" data-topic="مدل‌های مشهور">
+  <div class="slideInner">
+    <div class="eyebrow">مدل‌های معروف</div>
+    <h2>🏛 مدل‌های مشهور Transformer</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>مدل</th><th>شرکت</th><th>سال</th><th>ویژگی</th></tr></thead>
+        <tbody>
+          <tr><td><b>Transformer</b></td><td>Google</td><td>۲۰۱۷</td><td>مقاله اصلی</td></tr>
+          <tr><td><b>BERT</b></td><td>Google</td><td>۲۰۱۸</td><td>درک دو جهته</td></tr>
+          <tr><td><b>GPT-1</b></td><td>OpenAI</td><td>۲۰۱۸</td><td>تولید متن</td></tr>
+          <tr><td><b>GPT-3</b></td><td>OpenAI</td><td>۲۰۲۰</td><td>۱۷۵ میلیارد پارامتر</td></tr>
+          <tr><td><b>ChatGPT</b></td><td>OpenAI</td><td>۲۰۲۲</td><td>RLHF + GPT</td></tr>
+          <tr><td><b>LLaMA</b></td><td>Meta</td><td>۲۰۲۳</td><td>باز و قابل اجرا</td></tr>
+          <tr><td><b>Gemini</b></td><td>Google</td><td>۲۰۲۳</td><td>چندوجهی</td></tr>
+          <tr><td><b>DeepSeek</b></td><td>DeepSeek</td><td>۲۰۲۴</td><td>باز و قوی</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: APPLICATIONS -->
+<div class="slide" data-topic="کاربردها">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 Transformer در مکانیک</h2>
+    <img src="images/transformer-applications.png" alt="Applications" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از متن تا تصویر، از صوت تا پروتئین</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="file-text"></i></div>
+        <h3>تحلیل مقالات</h3>
+        <p>خلاصه‌سازی مقالات علمی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="code"></i></div>
+        <h3>تولید کد</h3>
+        <p>کد MATLAB/Python برای مسائل</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="search"></i>
+        </div>
+        <h3>جست‌وجوی معنایی</h3>
+        <p>پیدا کردن مقالات مرتبط</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="message-circle"></i>
+        </div>
+        <h3>دستیار پژوهشی</h3>
+        <p>ChatGPT، Claude، DeepSeek</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: CODE 1 -->
+<div class="slide" data-topic="کد Tokenization">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Tokenization + Embedding — Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="tok">Tokenization</button>
+      </div>
+      <div class="codePane active" id="code-tok">
+<pre><span class="com"># نصب</span>
+pip install transformers
+
+<span class="kw">from</span> transformers <span class="kw">import</span> AutoTokenizer
+
+<span class="com"># بارگذاری Tokenizer BERT</span>
+tokenizer = AutoTokenizer.from_pretrained(<span class="str">'bert-base-uncased'</span>)
+
+text = <span class="str">"Neural networks are powerful tools"</span>
+
+<span class="com"># Tokenization</span>
+tokens = tokenizer.tokenize(text)
+print(<span class="str">"Tokens:"</span>, tokens)
+
+<span class="com"># تبدیل به ID</span>
+ids = tokenizer.encode(text)
+print(<span class="str">"IDs:"</span>, ids)
+
+<span class="com"># برگشت به متن</span>
+decoded = tokenizer.decode(ids)
+print(<span class="str">"Decoded:"</span>, decoded)
+
+<span class="com"># Tokenize دسته‌ای</span>
+batch = tokenizer([<span class="str">"Hello world"</span>, <span class="str">"AI is great"</span>],
+                 padding=<span class="kw">True</span>, return_tensors=<span class="str">"pt"</span>)
+print(batch)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: CODE 2 -->
+<div class="slide" data-topic="کد Attention">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Attention ساده — PyTorch</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="attn">Attention</button>
+      </div>
+      <div class="codePane active" id="code-attn">
+<pre><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> torch.nn.functional <span class="kw">as</span> F
+
+<span class="kw">def</span> <span class="fn">scaled_dot_product_attention</span>(Q, K, V, mask=<span class="kw">None</span>):
+    <span class="com"># Q, K, V: [batch, seq_len, d_k]</span>
+    d_k = Q.size(-<span class="num">1</span>)
+
+    <span class="com"># محاسبه نمرات توجه</span>
+    scores = torch.matmul(Q, K.transpose(-<span class="num">2</span>, -<span class="num">1</span>)) / torch.sqrt(torch.tensor(d_k, dtype=torch.float32))
+
+    <span class="kw">if</span> mask <span class="kw">is not None</span>:
+        scores = scores.masked_fill(mask == <span class="num">0</span>, -<span class="num">1e9</span>)
+
+    <span class="com"># Softmax</span>
+    attention_weights = F.softmax(scores, dim=-<span class="num">1</span>)
+
+    <span class="com"># خروجی</span>
+    output = torch.matmul(attention_weights, V)
+    <span class="kw">return</span> output, attention_weights
+
+<span class="com"># تست</span>
+seq_len = <span class="num">5</span>
+d_k = <span class="num">64</span>
+Q = torch.randn(<span class="num">1</span>, seq_len, d_k)
+K = torch.randn(<span class="num">1</span>, seq_len, d_k)
+V = torch.randn(<span class="num">1</span>, seq_len, d_k)
+
+output, weights = <span class="fn">scaled_dot_product_attention</span>(Q, K, V)
+print(<span class="str">"Output shape:"</span>, output.shape)
+print(<span class="str">"Attention weights:\n"</span>, weights)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: CODE 3 -->
+<div class="slide" data-topic="کد BERT">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 استفاده از BERT — Hugging Face</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="bert">BERT</button>
+      </div>
+      <div class="codePane active" id="code-bert">
+<pre><span class="kw">from</span> transformers <span class="kw">import</span> pipeline
+
+<span class="com"># ۱. تحلیل احساسات</span>
+sentiment = pipeline(<span class="str">'sentiment-analysis'</span>)
+result = sentiment(<span class="str">"This bearing is faulty and dangerous!"</span>)
+print(result)
+
+<span class="com"># ۲. پاسخ به سوال</span>
+qa = pipeline(<span class="str">'question-answering'</span>)
+result = qa({
+    <span class="str">'question'</span>: <span class="str">'What is the bearing temperature?'</span>,
+    <span class="str">'context'</span>: <span class="str">'The bearing temperature is 85 degrees Celsius.'</span>
+})
+print(result)
+
+<span class="com"># ۳. خلاصه‌سازی</span>
+summarizer = pipeline(<span class="str">'summarization'</span>)
+text = <span class="str">"Long technical paper..."</span>
+result = summarizer(text, max_length=<span class="num">100</span>)
+print(result[<span class="num">0</span>][<span class="str">'summary_text'</span>])
+
+<span class="com"># ۴. ترجمه</span>
+translator = pipeline(<span class="str">'translation_en_to_fa'</span>)
+result = translator(<span class="str">"Machine learning is powerful"</span>)
+print(result)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۱۷</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
+      <span class="lbl">Scaled Dot-Product Attention</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{MultiHead}(Q,K,V) = \text{Concat}(head_1, \dots, head_h) W^O$$
+      <span class="lbl">Multi-Head Attention</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)$$
+      <span class="lbl">Positional Encoding</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+      <span class="lbl">Softmax — تبدیل به توزیع احتمال</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۷</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>تفاوت Tokenization و Embedding چیست؟</li>
+          <li><span class="exNum">۲</span>Attention چطور به درک جمله کمک می‌کند؟</li>
+          <li><span class="exNum">۳</span>تفاوت BERT و GPT در چیست؟</li>
+          <li><span class="exNum">۴</span>چرا Positional Encoding لازم است؟</li>
+          <li><span class="exNum">۵</span>Self-Attention چه تفاوتی با Attention معمولی دارد؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Tokenization یک متن فارسی با BERT.</li>
+          <li><span class="exNum">۲</span>محاسبه دستی Attention برای یک جمله ساده.</li>
+          <li><span class="exNum">۳</span>استفاده از pipeline تحلیل احساسات.</li>
+          <li><span class="exNum">۴</span>خلاصه‌سازی یک مقاله مهندسی.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره Transformer و تأثیرش بر AI.</li>
+          <li><span class="exNum">۲</span>مقایسه RNN و Transformer — مزایا و معایب.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک کاربرد Transformer در مکانیک پیشنهاد دهید.</li>
+          <li><span class="exNum">★</span>چرا Transformer در مکانیک کمتر از تصویر استفاده می‌شود؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW17 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های NLP</p>
+        <span class="tag">جلسه ۱۷ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل متن و Transformer</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>مثال‌های عملی NLP</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «Transformer applications mechanical engineering 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۷</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ Tokenization</h3><p>متن → توکن → اعداد</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Embeddings</h3><p>بردار کلمات — معنی در فضا</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Attention</h3><p>توجه به کلمات مرتبط</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ Transformer</h3><p>Encoder، Decoder، Multi-Head</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ BERT vs GPT</h3><p>درک در برابر تولید</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaliغ">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: LLM & Prompt Engineering</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۸</h3>
+        <p style="margin-top:8px;text-align:right">
+          • LLM — مدل‌های زبانی بزرگ<br>
+          • ChatGPT، Gemini، Claude، DeepSeek<br>
+          • Prompt Engineering<br>
+          • Chain-of-Thought<br>
+          • کاربرد در مهندسی مکانیک
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

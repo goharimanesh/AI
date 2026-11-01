@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۹ — شبکه عصبی و MLP | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۹ — شبکه عصبی و MLP</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="brain" style="width:14px;height:14px"></i> جلسه ۹ • فاز ۳ — DL</div>
+      <h1>شبکه عصبی و MLP</h1>
+      <p class="subtitle-en">Introduction to Neural Networks · Perceptron · MLP · Backpropagation<br>From Biological Neurons to Deep Learning</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۸</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="shield-check"></i></div><h3>جلسه ۸</h3><p>SVM، ارزیابی مدل، ROC</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="brain"></i></div><h3>جلسه ۹ (امروز)</h3><p>شبکه عصبی، Perceptron، MLP، Backpropagation</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ نورون بیولوژیکی → نورون مصنوعی</p></div>
+      <div class="card"><p style="margin:0">✅ Perceptron و MLP</p></div>
+      <div class="card"><p style="margin:0">✅ توابع فعال‌سازی</p></div>
+      <div class="card"><p style="margin:0">✅ Forward Pass و Loss</p></div>
+      <div class="card"><p style="margin:0">✅ Backpropagation</p></div>
+      <div class="card"><p style="margin:0">✅ Overfitting و Regularization</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🧠 چرا شبکه عصبی؟</h2>
+    <p style="font-size:16px">تا جلسه قبل، مدل‌هایی مثل Regression، Random Forest، SVM را دیدیم. این‌ها برای مسائل ساده عالی‌اند اما در مسائل پیچیده مثل تشخیص چهره، ترجمه زبان، رانندگی خودران — که داده‌های حجیم و پیچیده دارند — از یک حد فراتر نمی‌روند.</p>
+    <p style="font-size:16px"><b>شبکه عصبی</b> با الهام از مغز انسان، می‌تواند الگوهای بسیار پیچیده‌ای را یاد بگیرد. این پایه‌ای است که تمام <b>یادگیری عمیق</b> (DL) روی آن ساخته شده — از ChatGPT تا تشخیص تومور مغزی.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="brain"></i></div>
+        <h3>الهام از مغز</h3>
+        <p>نورون‌های بیولوژیکی → نورون‌های مصنوعی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="layers"></i>
+        </div>
+        <h3>لایه‌های متعدد</h3>
+        <p>هر لایه، ویژگی‌های عمیق‌تر را استخراج می‌کند</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="trending-up"></i>
+        </div>
+        <h3>قدرت یادگیری</h3>
+        <p>میلیون‌ها پارامتر قابل تنظیم</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <h3>پایه DL</h3>
+        <p>CNN، RNN، Transformer — همه روی همین</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: NEURON -->
+<div class="slide" data-topic="نورون">
+  <div class="slideInner">
+    <div class="eyebrow">از بیولوژی تا ریاضیات</div>
+    <h2>🧬 نورون بیولوژیکی → نورون مصنوعی</h2>
+    <p>نورون بیولوژیکی از دندریت‌ها سیگنال می‌گیرد، در جسم سلولی تجمیع می‌کند، و اگر از آستانه بگذرد، از آکسون به نورون بعدی می‌فرستد.</p>
+    <img src="images/neuron-biological.png" alt="نورون بیولوژیکی" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">نورون بیولوژیکی: دندریت (ورودی)، جسم سلولی (پردازش)، آکسون (خروجی)</div>
+    <div class="formulaBox">
+      $$y = f\left(\sum_{i=1}^n w_i x_i + b\right)$$
+      <span class="lbl">نورون مصنوعی — تجمیع وزنی + تابع فعال‌سازی</span>
+    </div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>بیولوژیکی</th><th>مصنوعی</th></tr></thead>
+        <tbody>
+          <tr><td><b>دندریت</b></td><td>ورودی $x_i$</td></tr>
+          <tr><td><b>سیناپس</b></td><td>وزن $w_i$</td></tr>
+          <tr><td><b>جسم سلولی</b></td><td>$\sum w_i x_i + b$</td></tr>
+          <tr><td><b>آستانه</b></td><td>تابع فعال‌سازی $f$</td></tr>
+          <tr><td><b>آکسون</b></td><td>خروجی $y$</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: PERCEPTRON -->
+<div class="slide" data-topic="Perceptron">
+  <div class="slideInner">
+    <div class="eyebrow">اولین شبکه عصبی</div>
+    <h2>🎯 Perceptron — نورون تکی</h2>
+    <p>ساده‌ترین شبکه عصبی: یک نورون تنها با تابع فعال‌سازی پله‌ای (Step Function). در سال ۱۹۵۸ توسط فرانک روزنبلات معرفی شد.</p>
+    <img src="images/perceptron.png" alt="Perceptron" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Perceptron: ۳ ورودی، ۳ وزن، ۱ خروجی</div>
+    <div class="formulaBox">
+      $$y = \begin{cases} 1 & \text{if } \sum w_i x_i + b > 0 \\ 0 & \text{otherwise} \end{cases}$$
+      <span class="lbl">Perceptron — تابع پله‌ای</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>✅ قدرت</h3>
+        <p>می‌تواند مسائل خطی (AND, OR, NAND) را حل کند</p>
+      </div>
+      <div class="card">
+        <h3>❌ محدودیت</h3>
+        <p>نمی‌تواند XOR را حل کند (مسئله خطی جدانشدنی)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🎯 Perceptron تعاملی</h2>
+    <p>وزن‌ها و بایاس را تغییر دهید تا Perceptron مسئله AND را حل کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Perceptron — AND Gate</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sliderGroup">
+          <label>وزن w₁ <span class="sliderVal" id="sim1_w1_val">1.0</span></label>
+          <input type="range" id="sim1_w1" min="-3" max="3" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>وزن w₂ <span class="sliderVal" id="sim1_w2_val">1.0</span></label>
+          <input type="range" id="sim1_w2" min="-3" max="3" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>بایاس b <span class="sliderVal" id="sim1_b_val">-1.5</span></label>
+          <input type="range" id="sim1_b" min="-3" max="3" step="0.1" value="-1.5">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>AND درست</small><b id="sim1_correct">—</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim1_status">—</b></div>
+        <div class="simRes"><small>حاشیه</small><b id="sim1_margin">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>هدف:</b> برای AND، باید همه ۴ ترکیب (00, 01, 10, 11) درست طبقه‌بندی شوند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: MLP -->
+<div class="slide" data-topic="MLP">
+  <div class="slideInner">
+    <div class="eyebrow">راه‌حل XOR</div>
+    <h2>🧠 Multi-Layer Perceptron (MLP)</h2>
+    <p>Perceptron تک‌لایه نمی‌تواند XOR را حل کند. اما اگر <b>دو لایه</b> داشته باشیم، XOR حل می‌شود. MLP حداقل یک <b>لایه پنهان</b> بین ورودی و خروجی دارد.</p>
+    <img src="images/mlp-architecture.png" alt="MLP" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">MLP: لایه ورودی (۳)، لایه پنهان (۴)، لایه خروجی (۲)</div>
+    <div class="formulaBox">
+      $$\mathbf{h} = f_1(\mathbf{W}_1 \mathbf{x} + \mathbf{b}_1), \quad \mathbf{y} = f_2(\mathbf{W}_2 \mathbf{h} + \mathbf{b}_2)$$
+      <span class="lbl">MLP: دو مرحله (لایه پنهان + لایه خروجی)</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 Universal Approximation</h3><p>یک MLP با لایه پنهان کافی می‌تواند هر تابع پیوسته را تقریب بزند</p></div>
+      <div class="card"><h3>📊 پیچیدگی</h3><p>افزایش لایه‌ها = افزایش قدرت، اما ریسک Overfitting</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: ACTIVATION -->
+<div class="slide" data-topic="فعال‌سازی">
+  <div class="slideInner">
+    <div class="eyebrow">توابع فعال‌سازی</div>
+    <h2>⚡ Activation Functions</h2>
+    <p>بدون تابع فعال‌سازی، شبکه فقط یک تبدیل خطی است — هرچقدر هم عمیق باشد. تابع فعال‌سازی، <b>غیرخطیت</b> اضافه می‌کند.</p>
+    <img src="images/activation-functions.png" alt="Activation functions" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چهار تابع فعال‌سازی رایج</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>تابع</th><th>فرمول</th><th>کاربرد</th></tr></thead>
+        <tbody>
+          <tr><td><b>ReLU</b></td><td>$\max(0, x)$</td><td>لایه پنهان — پیش‌فرض مدرن</td></tr>
+          <tr><td><b>Sigmoid</b></td><td>$\frac{1}{1+e^{-x}}$</td><td>طبقه‌بندی دودویی (خروجی)</td></tr>
+          <tr><td><b>Tanh</b></td><td>$\frac{e^x - e^{-x}}{e^x + e^{-x}}$</td><td>خروجی بین -۱ و ۱</td></tr>
+          <tr><td><b>Softmax</b></td><td>$\frac{e^{x_i}}{\sum e^{x_j}}$</td><td>طبقه‌بندی چندانتخابی</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>⚡ توابع فعال‌سازی تعاملی</h2>
+    <p>تابع را انتخاب کنید و مقدار x را تغییر دهید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Activation Functions</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns" id="sim2_btns">
+        <button class="btnPrimary" data-fn="relu">ReLU</button>
+        <button class="btnSecondary" data-fn="sigmoid">Sigmoid</button>
+        <button class="btnSecondary" data-fn="tanh">Tanh</button>
+        <button class="btnSecondary" data-fn="leaky">Leaky ReLU</button>
+      </div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>مقدار x <span class="sliderVal" id="sim2_x_val">0.0</span></label>
+          <input type="range" id="sim2_x" min="-5" max="5" step="0.1" value="0">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>تابع</small><b id="sim2_fn">ReLU</b></div>
+        <div class="simRes"><small>f(x)</small><b id="sim2_y">0.0</b></div>
+        <div class="simRes"><small>مشتق f'(x)</small><b id="sim2_dy">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: FORWARD PASS -->
+<div class="slide" data-topic="Forward Pass">
+  <div class="slideInner">
+    <div class="eyebrow">محاسبه خروجی</div>
+    <h2>➡️ Forward Pass — گام به گام</h2>
+    <p>برای پیش‌بینی، داده از ورودی به خروجی جریان می‌یابد:</p>
+    <div class="formulaBox">
+      $$\mathbf{z}^{(1)} = \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)}$$
+      <span class="lbl">گام ۱: ترکیب خطی در لایه اول</span>
+    </div>
+    <div class="formulaBox">
+      $$\mathbf{a}^{(1)} = \text{ReLU}(\mathbf{z}^{(1)})$$
+      <span class="lbl">گام ۲: تابع فعال‌سازی</span>
+    </div>
+    <div class="formulaBox">
+      $$\mathbf{z}^{(2)} = \mathbf{W}^{(2)} \mathbf{a}^{(1)} + \mathbf{b}^{(2)}$$
+      <span class="lbl">گام ۳: لایه خروجی</span>
+    </div>
+    <div class="formulaBox">
+      $$\hat{\mathbf{y}} = \text{Softmax}(\mathbf{z}^{(2)})$$
+      <span class="lbl">گام ۴: خروجی نهایی</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: LOSS -->
+<div class="slide" data-topic="Loss">
+  <div class="slideInner">
+    <div class="eyebrow">تابع خطا</div>
+    <h2>📉 Loss Function</h2>
+    <p>Loss می‌سنجد خروجی مدل چقدر از جواب واقعی فاصله دارد.</p>
+    <div class="formulaBox">
+      $$L_{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2$$
+      <span class="lbl">MSE — برای Regression</span>
+    </div>
+    <div class="formulaBox">
+      $$L_{CE} = -\frac{1}{n}\sum_{i=1}^n y_i \log(\hat{y}_i)$$
+      <span class="lbl">Cross-Entropy — برای Classification</span>
+    </div>
+    <img src="images/loss-convergence.png" alt="Loss convergence" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Loss در طول آموزش (epoch) کاهش می‌یابد</div>
+  </div>
+</div>
+
+<!-- SLIDE 12: BACKPROP -->
+<div class="slide" data-topic="Backpropagation">
+  <div class="slideInner">
+    <div class="eyebrow">قلب یادگیری</div>
+    <h2>⚙️ Backpropagation — یادگیری از خطا</h2>
+    <p>Backpropagation الگوریتمی است که به شبکه می‌گوید هر وزن چقدر در خطا نقش داشته. این کار با <b>قاعده زنجیره‌ای</b> (Chain Rule) از حساب دیفرانسیل انجام می‌شود.</p>
+    <img src="images/backprop-flow.png" alt="Backprop" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Forward (آبی) و Backward (طلایی) — گرادیان به عقب جریان می‌یابد</div>
+    <div class="formulaBox">
+      $$\frac{\partial L}{\partial w_{ij}^{(l)}} = \frac{\partial L}{\partial a_j^{(l)}} \cdot \frac{\partial a_j^{(l)}}{\partial z_j^{(l)}} \cdot \frac{\partial z_j^{(l)}}{\partial w_{ij}^{(l)}}$$
+      <span class="lbl">قاعده زنجیره‌ای — مشتق خطا نسبت به هر وزن</span>
+    </div>
+    <div class="formulaBox">
+      $$w_{ij} \leftarrow w_{ij} - \eta \frac{\partial L}{\partial w_{ij}}$$
+      <span class="lbl">به‌روزرسانی وزن‌ها</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🚀 آموزش شبکه عصبی تعاملی</h2>
+    <p>یک شبکه کوچک را روی داده XOR آموزش دهید و پیشرفت را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="brain"></i> Neural Network Training — XOR</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>نرخ یادگیری <span class="sliderVal" id="sim3_lr_val">0.5</span></label>
+          <input type="range" id="sim3_lr" min="0.01" max="2" step="0.01" value="0.5">
+        </div>
+      </div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim3_train"><i data-lucide="play"></i> شروع آموزش</button>
+        <button class="btnSecondary" id="sim3_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Epoch</small><b id="sim3_epoch">0</b></div>
+        <div class="simRes"><small>Loss</small><b id="sim3_loss">—</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim3_status">آماده</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> «شروع آموزش» را بزنید تا شبکه XOR را یاد بگیرد.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: GRADIENT DESCENT -->
+<div class="slide" data-topic="Gradient Descent">
+  <div class="slideInner">
+    <div class="eyebrow">بهینه‌سازی</div>
+    <h2>⛰️ Gradient Descent و Optimizer</h2>
+    <img src="images/gradient-descent-neural.png" alt="GD neural" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">حرکت به سمت کمینه تابع خطا</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>Optimizer</th><th>ویژگی</th></tr></thead>
+        <tbody>
+          <tr><td><b>SGD</b></td><td>ساده، کند، نویزی</td></tr>
+          <tr><td><b>Momentum</b></td><td>شتاب در جهت گرادیان</td></tr>
+          <tr><td><b>Adam</b></td><td>پیش‌فرض مدرن — نرخ یادگیری تطبیقی</td></tr>
+          <tr><td><b>RMSprop</b></td><td>تطبیقی برای RNN</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: OVERFITTING -->
+<div class="slide" data-topic="Overfitting">
+  <div class="slideInner">
+    <div class="eyebrow">چالش</div>
+    <h2>⚠️ Overfitting در شبکه عصبی</h2>
+    <img src="images/overfitting-neural.png" alt="Overfitting neural" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">سه حالت: Underfit، Good Fit، Overfit</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)"><h3>Underfit</h3><p>شبکه خیلی ساده — خطای آموزش بالا</p></div>
+      <div class="card" style="border-right:4px solid var(--green)"><h3>Good Fit</h3><p>تعادل آموزش و تعمیم</p></div>
+      <div class="card" style="border-right:4px solid var(--red)"><h3>Overfit</h3><p>آموزش عالی، تست ضعیف</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: REGULARIZATION -->
+<div class="slide" data-topic="Regularization">
+  <div class="slideInner">
+    <div class="eyebrow">راه‌حل</div>
+    <h2>🛡 Regularization و Dropout</h2>
+    <div class="cardGrid">
+      <div class="card"><h3>L1 / L2</h3><p>جریمه وزن‌های بزرگ</p></div>
+      <div class="card"><h3>Dropout</h3><p>حذف تصادفی نورون‌ها در آموزش</p></div>
+      <div class="card"><h3>Early Stopping</h3><p>توقف آموزش قبل از Overfit</p></div>
+      <div class="card"><h3>Data Augmentation</h3><p>داده مصنوعی بیشتر</p></div>
+      <div class="card"><h3>Batch Normalization</h3><p>نرمال‌سازی بین لایه‌ها</p></div>
+    </div>
+    <div class="formulaBox" style="margin-top:24px">
+      $$L_{reg} = L + \lambda \sum ||w||^2$$
+      <span class="lbl">L2 Regularization</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: APPLICATIONS -->
+<div class="slide" data-topic="کاربردها">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 شبکه عصبی در مکانیک</h2>
+    <img src="images/neural-applications.png" alt="Applications" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از تصویر تا سیگنال، از متن تا ربات</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="activity"></i></div>
+        <h3>تشخیص عیب</h3>
+        <p>سیگنال ارتعاش → MLP → سالم/خراب</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="thermometer"></i>
+        </div>
+        <h3>پیش‌بینی دما</h3>
+        <p>ورودی‌های فیزیکی → خروجی دما</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="git-branch"></i>
+        </div>
+        <h3>کنترل</h3>
+        <p>حالت سیستم → MLP → فرمان کنترل</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="settings"></i>
+        </div>
+        <h3>بهینه‌سازی</h3>
+        <p>ورودی‌های طراحی → MLP → خروجی هدف</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: CODE -->
+<div class="slide" data-topic="کد">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 MLP در MATLAB و Python (Keras)</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab">MATLAB</button>
+        <button class="codeTabBtn" data-code="python">Python (Keras)</button>
+      </div>
+      <div class="codePane active" id="code-matlab">
+<pre><span class="com">% XOR با MLP</span>
+X = [<span class="num">0</span> <span class="num">0</span>; <span class="num">0</span> <span class="num">1</span>; <span class="num">1</span> <span class="num">0</span>; <span class="num">1</span> <span class="num">1</span>]';
+Y = [<span class="num">0</span> <span class="num">1</span> <span class="num">1</span> <span class="num">0</span>];
+
+<span class="com">% شبکه با 2 لایه پنهان</span>
+net = <span class="fn">patternnet</span>([<span class="num">4</span>, <span class="num">2</span>]);
+net.<span class="fn">trainFcn</span> = <span class="str">'trainlm'</span>;
+net.<span class="fn">trainParam</span>.epochs = <span class="num">1000</span>;
+
+<span class="com">% آموزش</span>
+net = <span class="fn">train</span>(net, X, Y);
+
+<span class="com">% پیش‌بینی</span>
+y_pred = net(X);
+<span class="fn">disp</span>(<span class="fn">round</span>(y_pred));</pre>
+      </div>
+      <div class="codePane" id="code-python">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow.keras.models <span class="kw">import</span> Sequential
+<span class="kw">from</span> tensorflow.keras.layers <span class="kw">import</span> Dense
+<span class="kw">from</span> tensorflow.keras.optimizers <span class="kw">import</span> Adam
+
+<span class="com"># داده XOR</span>
+X = np.array([[<span class="num">0</span>,<span class="num">0</span>], [<span class="num">0</span>,<span class="num">1</span>], [<span class="num">1</span>,<span class="num">0</span>], [<span class="num">1</span>,<span class="num">1</span>]])
+y = np.array([<span class="num">0</span>, <span class="num">1</span>, <span class="num">1</span>, <span class="num">0</span>])
+
+<span class="com"># شبکه MLP</span>
+model = Sequential([
+    Dense(<span class="num">4</span>, activation=<span class="str">'relu'</span>, input_shape=(<span class="num">2</span>,)),
+    Dense(<span class="num">2</span>, activation=<span class="str">'relu'</span>),
+    Dense(<span class="num">1</span>, activation=<span class="str">'sigmoid'</span>)
+])
+model.<span class="fn">compile</span>(optimizer=Adam(<span class="num">0.01</span>), loss=<span class="str">'binary_crossentropy'</span>, metrics=[<span class="str">'accuracy'</span>])
+
+<span class="com"># آموزش</span>
+model.<span class="fn">fit</span>(X, y, epochs=<span class="num">500</span>, verbose=<span class="num">0</span>)
+
+<span class="com"># پیش‌بینی</span>
+print(model.<span class="fn">predict</span>(X).round())</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۹</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$y = f\left(\sum w_i x_i + b\right)$$
+      <span class="lbl">نورون مصنوعی</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{ReLU}(x) = \max(0, x)$$
+      <span class="lbl">تابع فعال‌سازی ReLU</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\sigma(x) = \frac{1}{1+e^{-x}}$$
+      <span class="lbl">تابع سیگموید</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$w \leftarrow w - \eta \frac{\partial L}{\partial w}$$
+      <span class="lbl">به‌روزرسانی وزن با Gradient Descent</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۹</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>تفاوت نورون بیولوژیکی و مصنوعی چیست؟</li>
+          <li><span class="exNum">۲</span>چرا Perceptron تک‌لایه نمی‌تواند XOR را حل کند؟</li>
+          <li><span class="exNum">۳</span>چرا تابع فعال‌سازی ضروری است؟</li>
+          <li><span class="exNum">۴</span>Backpropagation چه کاری انجام می‌دهد؟</li>
+          <li><span class="exNum">۵</span>تفاوت SGD و Adam چیست؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>MLP برای XOR در Colab با Keras.</li>
+          <li><span class="exNum">۲</span>مقایسه ReLU، Sigmoid، Tanh.</li>
+          <li><span class="exNum">۳</span>تأثیر نرخ یادگیری را بررسی کنید.</li>
+          <li><span class="exNum">۴</span>MLP برای تشخیص عیب بلبرینگ.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد MLP در مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه MLP و SVM — مزایا و معایب.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله مکانیکی طراحی کنید که با MLP حل شود.</li>
+          <li><span class="exNum">★</span>چطور می‌توانید Overfitting را در یک شبکه عصبی تشخیص دهید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW09 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <p>برای جست‌وجوی مقالات و مراجع درباره شبکه عصبی.</p>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی علمی با ذکر منابع</p>
+        <span class="tag">جلسه ۹ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد Keras</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی MLP</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «Neural network fault diagnosis 2024»
+        و ۳ مقاله معتبر پیدا کنید. منابع را در HW09 بنویسید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: CNN & Computer Vision</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۰</h3>
+        <p style="margin-top:8px;text-align:right">
+          • Convolutional Neural Networks<br>
+          • Conv Layers و Pooling<br>
+          • AlexNet، ResNet<br>
+          • Transfer Learning<br>
+          • کاربرد در بینایی ماشین
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۲</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

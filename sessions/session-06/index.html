@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۶ — درخت تصادفی و Ensemble | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۶ — درخت تصادفی</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="شهید احمدی‌روشن">
+  <div class="starTooltip">
+    <img src="images/star-ahmadiroshan.png" alt="شهید احمدی‌روشن" onerror="this.style.display='none'">
+    <b>شهید دکتر مصطفی احمدی‌روشن</b>
+    <small>مهندسی هسته‌ای — دانشگاه صنعتی شریف<br>دانشمند برجسته هسته‌ای<br>۱۳۵۸ — ۱۳۹۰ شمسی</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="trees" style="width:14px;height:14px"></i> جلسه ۶ • فاز ۲ — ML کلاسیک</div>
+      <h1>درخت تصادفی و Ensemble</h1>
+      <p class="subtitle-en">Decision Tree · Random Forest · Gradient Boosting<br>From One Tree to Intelligent Forest</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۵</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="trending-up"></i></div><h3>جلسه ۵</h3><p>رگرسیون، طبقه‌بندی، Gradient Descent</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="trees"></i></div><h3>جلسه ۶ (امروز)</h3><p>Decision Tree، Random Forest، Ensemble</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ ساختار Decision Tree و ۴ مثال عینی</p></div>
+      <div class="card"><p style="margin:0">✅ Gini و Entropy به‌طور عمیق</p></div>
+      <div class="card"><p style="margin:0">✅ Vox Populi و شبیه‌ساز گالتون</p></div>
+      <div class="card"><p style="margin:0">✅ Random Forest و رأی‌گیری</p></div>
+      <div class="card"><p style="margin:0">✅ Bagging vs Boosting</p></div>
+      <div class="card"><p style="margin:0">✅ Gradient Boosting گام‌به‌گام</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🌲 چرا درخت و چرا جنگل؟</h2>
+    <p style="font-size:16px">یک <b>درخت تصمیم</b> مثل یک چک‌لیست پزشکی است: از بالا به پایین، به چند سؤال بله/خیر پاسخ می‌دهد و به تشخیص می‌رسد. ساده، شفاف، قابل توضیح به دیگران. اما وقتی نویز در داده زیاد شود یا حتی یک نمونه غیرعادی (outlier) وجود داشته باشد، درخت به‌راحتی گمراه می‌شود و شاخه‌های اضافه می‌سازد.</p>
+    <p style="font-size:16px"><b>Random Forest</b> این ضعف را حل می‌کند: ده‌ها درخت مستقل روی نمونه‌های تصادفی داده ساخته می‌شود و در پایان، تشخیص نهایی از <b>رأی اکثریت</b> آن‌ها حاصل می‌شود — دقیقاً مثل یک تیم پزشکی که هر پزشک نظر می‌دهد و نظر جمعی، تشخیص نهایی است.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="git-branch"></i></div>
+        <h3>تفسیرپذیری</h3>
+        <p>درخت مثل فلوچارت قابل فهم است — برای مهندسی حیاتی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="shield"></i>
+        </div>
+        <h3>مقاومت به نویز</h3>
+        <p>جنگل تصادفی از overfitting جلوگیری می‌کند</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="award"></i>
+        </div>
+        <h3>قدرت پیش‌بینی</h3>
+        <p>Random Forest پرکاربردترین الگوریتم صنعتی است</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="list"></i>
+        </div>
+        <h3>Feature Importance</h3>
+        <p>می‌گوید کدام ویژگی‌ها مهم‌ترند — کلید تحلیل مهندسی</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: VOX POPULI -->
+<div class="slide" data-topic="Vox Populi">
+  <div class="slideInner">
+    <div class="eyebrow">پیوند تاریخی و قرآنی</div>
+    <h2>🕌 Vox Populi — خرد جمعی</h2>
+
+    <div class="hadith" style="margin-top:20px">
+      <div class="hadithText">
+        «وَأَمْرُهُمْ شُورَىٰ بَيْنَهُمْ»
+      </div>
+      <span class="hadithRef">— سوره شوری، آیه ۳۸ — «و کارشان به شور و مشورت در میان آن‌ها انجام می‌شود»</span>
+    </div>
+
+    <img src="images/quran-shura.png" alt="آیه شوری" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">تصمیم جمعی، ستوده‌شده در قرآن</div>
+
+    <p style="font-size:16px;margin-top:20px">
+      در سال ۱۹۰۷، <b>فرانسیس گالتون</b> — آماردان انگلیسی — در نمایشگاه دام کورن‌وال، آزمایشی ساده اما شگفت‌انگیز انجام داد: از ۷۸۷ نفر عادی خواست وزن یک گاو ذبح‌شده را حدس بزنند. هیچ‌کس متخصص نبود. اما وقتی گالتون <b>میانه</b> حدس‌ها را حساب کرد، نتیجه او را شوکه کرد.
+    </p>
+
+    <img src="images/vox-populi-galtung.png" alt="خرد جمعی گالتون" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">آزمایش گالتون: ۷۸۷ حدس، یک حقیقت</div>
+
+    <div class="cardGrid">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">وزن واقعی گاو</div>
+        <h3 style="font-size:28px;color:var(--cyan)">۱۱۹۸</h3>
+        <p>پوند</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">میانه حدس‌ها</div>
+        <h3 style="font-size:28px;color:var(--gold)">۱۲۰۷</h3>
+        <p>پوند</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">خطا</div>
+        <h3 style="font-size:28px;color:var(--green)">۰.۸٪</h3>
+        <p>تنها</p>
+      </div>
+    </div>
+
+    <img src="images/galton-paradox.png" alt="پارادوکس گالتون" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">پارادوکس: گالتون انتظار شکست داشت، اما خرد جمعی پیروز شد</div>
+
+    <h3 style="margin-top:24px">🎯 چه چیزی اینجا اتفاق افتاد؟</h3>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="scatter-chart"></i></div>
+        <h3>خطاهای فردی</h3>
+        <p>هر نفر خطای تصادفی دارد — بعضی بالا حدس زدند، بعضی پایین</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="x-circle"></i>
+        </div>
+        <h3>خنثی‌سازی</h3>
+        <p>خطاهای تصادفی در تجمیع، یکدیگر را حذف می‌کنند</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="check-circle"></i>
+        </div>
+        <h3>دقت جمعی</h3>
+        <p>میانه، به واقعیت نزدیک‌تر از اکثر حدس‌های فردی است</p>
+      </div>
+    </div>
+
+    <div class="formulaBox" style="margin-top:24px">
+      $$\text{Error}_{aggregate} \approx \frac{\text{Error}_{individual}}{\sqrt{N}}$$
+      <span class="lbl">خطای تجمیع با $\sqrt{N}$ کاهش می‌یابد</span>
+    </div>
+
+    <h3 style="margin-top:24px">🔗 پیوند با Ensemble در AI</h3>
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr><th>مفهوم</th><th>در آمار گالتون</th><th>در Ensemble (AI)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>عامل‌های مستقل</b></td><td>۷۸۷ نفر عادی</td><td>B درخت تصادفی</td></tr>
+          <tr><td><b>تجمیع</b></td><td>میانه حدس‌ها</td><td>رأی اکثریت یا میانگین</td></tr>
+          <tr><td><b>خطای فردی</b></td><td>خطای تصادفی هر شخص</td><td>خطای هر درخت تنها</td></tr>
+          <tr><td><b>نتیجه</b></td><td>دقت ۹۹.۲٪ جمعی</td><td>دقت بالاتر از یک درخت</td></tr>
+          <tr><td><b>اصل مشترک</b></td><td>خنثی‌سازی خطای تصادفی</td><td>Random Error Cancellation</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stepInfo" style="margin-top:20px;background:rgba(77,212,255,.1);border-color:rgba(77,212,255,.4)">
+      <b style="color:var(--cyan)">🔗 پیوند قرآنی:</b> قرآن مشورت را ستوده است. علم مدرن امروز نشان می‌دهد که تصمیم جمعی — در شرایطی که اعضا مستقل و خطاهایشان تصادفی است — دقیق‌تر از تصمیم فردی است. Random Forest همین اصل را در AI پیاده می‌کند.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: SIM — GALTON -->
+<div class="slide" data-topic="شبیه‌ساز گالتون">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز تعاملی ۰ — پارادوکس گالتون</div>
+    <h2>🐄 شبیه‌ساز خرد جمعی گالتون</h2>
+    <p>تعداد حدس‌زنندگان را تغییر دهید و ببینید چطور میانه حدس‌ها به مقدار واقعی نزدیک می‌شود.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="users"></i> Vox Populi Simulator</div>
+      <div class="simCanvasWrapper" style="height:380px"><canvas class="simCanvas" id="simGaltonCanvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>تعداد حدس‌زنندگان <span class="sliderVal" id="simGalton_n_val">50</span></label>
+          <input type="range" id="simGalton_n" min="1" max="1000" step="1" value="50">
+        </div>
+        <div class="sliderGroup">
+          <label>نویز (انحراف معیار) <span class="sliderVal" id="simGalton_noise_val">100</span></label>
+          <input type="range" id="simGalton_noise" min="10" max="300" step="10" value="100">
+        </div>
+      </div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="simGalton_run"><i data-lucide="play"></i> اجرای آزمایش</button>
+        <button class="btnSecondary" id="simGalton_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>مقدار واقعی</small><b id="simGalton_true">1200</b></div>
+        <div class="simRes"><small>میانه حدس‌ها</small><b id="simGalton_median">—</b></div>
+        <div class="simRes"><small>میانگین</small><b id="simGalton_mean">—</b></div>
+        <div class="simRes"><small>خطای میانه</small><b id="simGalton_error">—</b></div>
+      </div>
+      <div class="stepInfo" id="simGalton_info">
+        <b>دستورالعمل:</b> اسلایدر تعداد را تغییر دهید و «اجرای آزمایش» را بزنید تا ببینید چطور با افزایش تعداد حدس‌زنندگان، میانه به مقدار واقعی نزدیک می‌شود.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM — NUMBER AVERAGING -->
+<div class="slide" data-topic="شبیه‌ساز جمع اعداد">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز تعاملی — میانگین‌گیری</div>
+    <h2>🔢 جادوی میانگین — مثال تعاملی</h2>
+    <p>این شبیه‌ساز نشان می‌دهد چطور تجمیع اعداد تصادفی، به مقدار واقعی نزدیک می‌شود. این دقیقاً همان اصل Ensemble است.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="calculator"></i> Averaging Simulator</div>
+      <div class="simCanvasWrapper" style="height:340px"><canvas class="simCanvas" id="simAvgCanvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>مقدار واقعی <span class="sliderVal" id="simAvg_trueVal_val">500</span></label>
+          <input type="range" id="simAvg_trueVal" min="100" max="1000" step="50" value="500">
+        </div>
+        <div class="sliderGroup">
+          <label>تعداد حدس‌ها <span class="sliderVal" id="simAvg_n_val">10</span></label>
+          <input type="range" id="simAvg_n" min="1" max="200" step="1" value="10">
+        </div>
+        <div class="sliderGroup">
+          <label>نویز حدس‌ها <span class="sliderVal" id="simAvg_noise_val">200</span></label>
+          <input type="range" id="simAvg_noise" min="50" max="500" step="50" value="200">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>مقدار واقعی</small><b id="simAvg_true">500</b></div>
+        <div class="simRes"><small>میانگین</small><b id="simAvg_mean">—</b></div>
+        <div class="simRes"><small>میانه</small><b id="simAvg_median">—</b></div>
+        <div class="simRes"><small>خطا</small><b id="simAvg_error">—</b></div>
+      </div>
+      <div class="stepInfo" id="simAvg_info">
+        <b>نکته:</b> هر حدس یک عدد تصادفی حول مقدار واقعی است. با افزایش تعداد حدس‌ها، میانگین به مقدار واقعی نزدیک‌تر می‌شود — این همان «قانون اعداد بزرگ» است.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: DECISION TREE -->
+<div class="slide" data-topic="Decision Tree">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم پایه</div>
+    <h2>🌳 ساختار Decision Tree</h2>
+    <p>درخت تصمیم با پرسیدن یک سری سؤال بله/خیر، داده را به دسته‌های خالص تقسیم می‌کند.</p>
+    <div class="formulaBox">
+      $$f(x) = \text{leaf value determined by path through tree}$$
+      <span class="lbl">هر مسیر از ریشه تا برگ، یک قاعده تصمیم است</span>
+    </div>
+    <img src="images/decision-tree.png" alt="Decision Tree" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">ساختار درخت: گره ریشه، گره‌های داخلی، برگ‌ها</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🔵 گره ریشه</h3><p>اولین ویژگی که بیشترین اطلاعات را جدا می‌کند</p></div>
+      <div class="card"><h3>🔶 گره‌های داخلی</h3><p>ویژگی‌های بعدی برای جداسازی بیشتر</p></div>
+      <div class="card"><h3>🟣 برگ‌ها</h3><p>خروجی نهایی — کلاس یا مقدار پیش‌بینی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: 4 EXAMPLES -->
+<div class="slide" data-topic="۴ مثال عینی">
+  <div class="slideInner">
+    <div class="eyebrow">۴ مثال عینی</div>
+    <h2>🏭 درخت تصمیم در ۴ حوزه مهندسی</h2>
+
+    <div class="exampleCard">
+      <div class="exampleHeader">
+        <div class="exampleIcon"><i data-lucide="circle-dot"></i></div>
+        <div><h4>۱. تشخیص عیب بلبرینگ</h4><div class="exampleSub">Bearing Fault Diagnosis</div></div>
+      </div>
+      <p>سناریو: موتور صنعتی با سنسور ارتعاش و دما. هدف: تشخیص سالم یا معیوب بودن بلبرینگ.</p>
+      <div class="exampleTree">
+        <span class="node">Q1: دامنه ارتعاش &gt; آستانه؟</span><br>
+        ├─ بله → <span class="node">Q2: دمای یاتاقان &gt; ۸۰ درجه؟</span><br>
+        │  ├─ بله → <span class="leaf">🟥 عیب جدی — توقف فوری</span><br>
+        │  └─ خیر → <span class="node">Q3: فرکانس بالا داریم؟</span><br>
+        │     ├─ بله → <span class="leaf">🟧 عیب رینگ خارجی</span><br>
+        │     └─ خیر → <span class="leaf">🟨 عیب رینگ داخلی</span><br>
+        └─ خیر → <span class="leaf">🟩 سالم</span>
+      </div>
+    </div>
+
+    <div class="exampleCard">
+      <div class="exampleHeader">
+        <div class="exampleIcon" style="color:var(--violet);background:rgba(167,139,250,.18)"><i data-lucide="bot"></i></div>
+        <div><h4>۲. ناوبری ربات</h4><div class="exampleSub">Robot Navigation</div></div>
+      </div>
+      <p>ربات متحرک در محیط کارخانه. هدف: تصمیم حرکت بعدی.</p>
+      <div class="exampleTree">
+        <span class="node">Q1: مانع در فاصله &lt; ۲ متر؟</span><br>
+        ├─ بله → <span class="node">Q2: مانع سمت راست؟</span><br>
+        │  ├─ بله → <span class="leaf">⬅️ حرکت به چپ</span><br>
+        │  └─ خیر → <span class="leaf">➡️ حرکت به راست</span><br>
+        └─ خیر → <span class="leaf">⬆️ حرکت مستقیم</span>
+      </div>
+    </div>
+
+    <div class="exampleCard">
+      <div class="exampleHeader">
+        <div class="exampleIcon" style="color:var(--green);background:rgba(94,232,168,.18)"><i data-lucide="car"></i></div>
+        <div><h4>۳. تشخیص عیب خودرو</h4><div class="exampleSub">Automotive Fault Diagnosis</div></div>
+      </div>
+      <p>سیستم عیب‌یابی خودرو با ۳ سنسور.</p>
+      <div class="exampleTree">
+        <span class="node">Q1: دمای موتور &gt; ۱۰۰ درجه؟</span><br>
+        ├─ بله → <span class="node">Q2: مایع خنک‌کننده کم است؟</span><br>
+        │  ├─ بله → <span class="leaf">💧 نشتی سیستم خنک‌کاری</span><br>
+        │  └─ خیر → <span class="leaf">🌡 ترموستات معیوب</span><br>
+        └─ خیر → <span class="node">Q3: لرزش موتور زیاد است؟</span><br>
+           ├─ بله → <span class="leaf">⚙️ مشکل احتراق</span><br>
+           └─ خیر → <span class="leaf">✅ سالم</span>
+      </div>
+    </div>
+
+    <div class="exampleCard">
+      <div class="exampleHeader">
+        <div class="exampleIcon" style="color:var(--gold);background:rgba(245,199,106,.18)"><i data-lucide="drill"></i></div>
+        <div><h4>۴. پیش‌بینی نرخ نفوذ مته در حفاری</h4><div class="exampleSub">Drilling Rate of Penetration</div></div>
+      </div>
+      <p>حفاری چاه نفت. هدف: پیش‌بینی ROP بر اساس داده‌های حفاری.</p>
+      <div class="exampleTree">
+        <span class="node">Q1: WOB &gt; ۲۰ تن؟</span><br>
+        ├─ بله → <span class="node">Q2: سختی سازند زیاد است؟</span><br>
+        │  ├─ بله → <span class="leaf">⚠️ ROP پایین — تنظیم RPM</span><br>
+        │  └─ خیر → <span class="leaf">⚡ ROP بالا</span><br>
+        └─ خیر → <span class="leaf">🐌 ROP پایین — افزایش WOB</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: GINI -->
+<div class="slide" data-topic="Gini">
+  <div class="slideInner">
+    <div class="eyebrow">معیار اول</div>
+    <h2>📊 Gini Impurity — معیار ناخالصی</h2>
+    <p><b>Gini</b> می‌سنجد اگر یک نمونه تصادفی و برچسبش را تصادفی انتخاب کنیم، احتمال اشتباه چقدر است.</p>
+    <div class="formulaBox">
+      $$G = 1 - \sum_{k=1}^K p_k^2$$
+      <span class="lbl">$p_k$ = نسبت نمونه‌های کلاس $k$ در گره</span>
+    </div>
+    <img src="images/gini-explained.png" alt="Gini" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Gini در دو حالت: ناخالصی کم در برابر زیاد</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>محاسبه برای یک گره</h3>
+        <p>۷۰٪ کلاس A، ۳۰٪ کلاس B<br>$G = 1 - (0.7^2 + 0.3^2) = 0.42$</p>
+      </div>
+      <div class="card">
+        <h3>تفسیر</h3>
+        <p>هرچه Gini کوچک‌تر، گره خالص‌تر</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: ENTROPY -->
+<div class="slide" data-topic="Entropy">
+  <div class="slideInner">
+    <div class="eyebrow">معیار دوم</div>
+    <h2>📊 Entropy — بی‌نظمی اطلاعات</h2>
+    <p><b>Entropy</b> از نظریه اطلاعات شانون می‌آید. صفر: کاملاً خالص. یک: حداکثر بی‌نظمی.</p>
+    <div class="formulaBox">
+      $$H = -\sum_{k=1}^K p_k \log_2 p_k$$
+      <span class="lbl">$p_k$ = نسبت کلاس $k$ در گره</span>
+    </div>
+    <img src="images/entropy-explained.png" alt="Entropy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Entropy: خالص در برابر بی‌نظم</div>
+    <div class="cardGrid">
+      <div class="card"><h3>Gini در برابر Entropy</h3><p>Gini سریع‌تر، Entropy معنی‌دارتر</p></div>
+      <div class="card"><h3>sklearn پیش‌فرض</h3><p>از Gini استفاده می‌کند</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: INFORMATION GAIN -->
+<div class="slide" data-topic="Information Gain">
+  <div class="slideInner">
+    <div class="eyebrow">بهترین تقسیم</div>
+    <h2>📈 Information Gain</h2>
+    <p>درخت برای هر ویژگی امتحان می‌کند: چقدر ناخالصی کاهش می‌یابد؟</p>
+    <div class="formulaBox">
+      $$IG = H(\text{parent}) - \sum_{i=1}^{m} \frac{N_i}{N} H(\text{child}_i)$$
+      <span class="lbl">بهره اطلاعاتی</span>
+    </div>
+    <img src="images/tree-splitting.png" alt="Information Gain" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">تقسیم گره: قبل G=0.5، بعد G=0.2</div>
+  </div>
+</div>
+
+<!-- SLIDE 12: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱ — گام‌به‌گام</div>
+    <h2>🌳 ساخت درخت تصمیم — مرحله به مرحله</h2>
+    <p>با دکمه «گام بعدی»، درخت را عمق به عمق بسازید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="git-branch"></i> Decision Tree Building</div>
+      <div class="simCanvasWrapper"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim1_next"><i data-lucide="step-forward"></i> گام بعدی</button>
+        <button class="btnSecondary" id="sim1_reset"><i data-lucide="rotate-ccw"></i> شروع مجدد</button>
+        <button class="btnSecondary" id="sim1_auto"><i data-lucide="play"></i> ساخت خودکار</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>عمق</small><b id="sim1_depth">0</b></div>
+        <div class="simRes"><small>تعداد برگ</small><b id="sim1_leaves">0</b></div>
+        <div class="simRes"><small>دقت</small><b id="sim1_acc">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>گام ۰:</b> هنوز تقسیمی انجام نشده.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: BEARING -->
+<div class="slide" data-topic="مثال بلبرینگ">
+  <div class="slideInner">
+    <div class="eyebrow">مطالعه موردی</div>
+    <h2>🔧 تشخیص عیب بلبرینگ — کامل</h2>
+    <img src="images/bearing-diagnosis-flow.png" alt="خط لوله" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از سنسور تا تشخیص — ۵ مرحله</div>
+    <img src="images/bearing-diagnosis-tree.png" alt="درخت بلبرینگ" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">درخت نهایی: ۳ ویژگی تا ۴ تشخیص</div>
+  </div>
+</div>
+
+<!-- SLIDE 14: OVERFITTING -->
+<div class="slide" data-topic="Overfitting">
+  <div class="slideInner">
+    <div class="eyebrow">چالش</div>
+    <h2>⚠️ Overfitting در درخت</h2>
+    <p>درخت بدون محدودیت، هر نمونه را «حفظ» می‌کند. نتیجه: عالی روی آموزش، فاجعه روی تست.</p>
+    <img src="images/overfitting-tree.png" alt="Overfitting" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">سه درخت: ساده، بهینه، Overfit</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)"><h3 style="color:var(--cyan)">Underfitting</h3><p>عمق ۱-۲</p></div>
+      <div class="card" style="border-right:4px solid var(--green)"><h3 style="color:var(--green)">Good Fit</h3><p>عمق ۳-۵</p></div>
+      <div class="card" style="border-right:4px solid var(--red)"><h3 style="color:var(--red)">Overfitting</h3><p>عمق ۱۰+</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: PRUNING -->
+<div class="slide" data-topic="Pruning">
+  <div class="slideInner">
+    <div class="eyebrow">راه‌حل</div>
+    <h2>✂️ Pruning و محدودیت</h2>
+    <img src="images/pruning-concept.png" alt="Pruning" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">هرس شاخه‌های اضافی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>max_depth</h3><p>حداکثر عمق</p></div>
+      <div class="card"><h3>min_samples_split</h3><p>حداقل نمونه برای تقسیم</p></div>
+      <div class="card"><h3>min_samples_leaf</h3><p>حداقل نمونه در برگ</p></div>
+      <div class="card"><h3>Pruning</h3><p>حذف شاخه‌های بی‌فایده</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: BOOTSTRAP -->
+<div class="slide" data-topic="Bootstrap">
+  <div class="slideInner">
+    <div class="eyebrow">ایده کلیدی</div>
+    <h2>🎲 Bootstrap — نمونه‌برداری با جایگذاری</h2>
+    <p>از داده اصلی، به‌طور تصادفی و <b>با جایگذاری</b>، نمونه‌های جدید بسازیم.</p>
+    <img src="images/bootstrap-explained.png" alt="Bootstrap" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از داده اصلی، ۳ نمونه Bootstrap</div>
+    <img src="images/bootstrap-sample-diagram.png" alt="Bootstrap sample" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">مثال عددی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 چرا؟</h3><p>تنوع می‌سازد</p></div>
+      <div class="card"><h3>📊 ۶۳٪</h3><p>حدود ۶۳٪ داده اصلی در هر نمونه</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: RANDOM FOREST -->
+<div class="slide" data-topic="Random Forest">
+  <div class="slideInner">
+    <div class="eyebrow">Ensemble</div>
+    <h2>🌲🌲🌲 Random Forest</h2>
+    <p>Bootstrap + تصادفی بودن ویژگی‌ها = جنگلی از درختان متنوع.</p>
+    <div class="formulaBox">
+      $$\hat{y} = \text{mode}\{T_1(x), T_2(x), \dots, T_B(x)\}$$
+      <span class="lbl">رأی اکثریت</span>
+    </div>
+    <img src="images/random-forest.png" alt="Random Forest" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">جنگل تصادفی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎲 Bootstrap</h3><p>هر درخت، داده متفاوت</p></div>
+      <div class="card"><h3>🎯 Feature Randomness</h3><p>هر تقسیم، ویژگی متفاوت</p></div>
+      <div class="card"><h3>🗳 رأی‌گیری</h3><p>مقاوم به نویز</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲ — رأی‌گیری</div>
+    <h2>🗳 رأی‌گیری در Random Forest</h2>
+    <p>تعداد درختان را افزایش دهید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trees"></i> Ensemble Voting</div>
+      <div class="simCanvasWrapper"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>تعداد درختان <span class="sliderVal" id="sim2_trees_val">10</span></label>
+          <input type="range" id="sim2_trees" min="1" max="50" step="1" value="10">
+        </div>
+        <div class="sliderGroup">
+          <label>نویز <span class="sliderVal" id="sim2_noise_val">0.30</span></label>
+          <input type="range" id="sim2_noise" min="0" max="0.5" step="0.05" value="0.3">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>دقت تک‌درخت</small><b id="sim2_single">—</b></div>
+        <div class="simRes"><small>دقت جنگل</small><b id="sim2_forest">—</b></div>
+        <div class="simRes"><small>بهبود</small><b id="sim2_improve">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: BAGGING -->
+<div class="slide" data-topic="Bagging">
+  <div class="slideInner">
+    <div class="eyebrow">Ensemble</div>
+    <h2>🎒 Bagging</h2>
+    <p><b>B</b>ootstrap + <b>Agg</b>regat<b>ing</b></p>
+    <img src="images/bagging-diagram.png" alt="Bagging" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">جریان Bagging</div>
+    <img src="images/bagging-nature-analogy.png" alt="Bagging analogy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">تمثیل: پرواز پرندگان</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 هدف</h3><p>کاهش واریانس</p></div>
+      <div class="card"><h3>⚡ آموزش</h3><p>موازی</p></div>
+      <div class="card"><h3>📊 ترکیب</h3><p>رأی/میانگین</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: BOOSTING -->
+<div class="slide" data-topic="Boosting">
+  <div class="slideInner">
+    <div class="eyebrow">Ensemble</div>
+    <h2>🚀 Boosting</h2>
+    <p>درخت‌ها به‌صورت <b>متوالی</b> ساخته می‌شوند — هر درخت خطای قبلی را اصلاح می‌کند.</p>
+    <img src="images/boosting-diagram.png" alt="Boosting" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">جریان Boosting</div>
+    <img src="images/boosting-nature-analogy.png" alt="Boosting analogy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">تمثیل: مسابقه امدادی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 هدف</h3><p>کاهش بایاس</p></div>
+      <div class="card"><h3>⚡ آموزش</h3><p>متوالی</p></div>
+      <div class="card"><h3>📊 ترکیب</h3><p>مجموع وزنی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: BAGGING VS BOOSTING -->
+<div class="slide" data-topic="Bagging vs Boosting">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ Bagging در برابر Boosting</h2>
+    <img src="images/bagging-vs-boosting.png" alt="Bagging vs Boosting" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">موازی در برابر متوالی</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>Bagging (RF)</th><th>Boosting (XGBoost)</th></tr></thead>
+        <tbody>
+          <tr><td><b>آموزش</b></td><td>موازی</td><td>متوالی</td></tr>
+          <tr><td><b>هدف</b></td><td>کاهش واریانس</td><td>کاهش بایاس</td></tr>
+          <tr><td><b>Overfitting</b></td><td>مقاوم</td><td>حساس</td></tr>
+          <tr><td><b>سرعت</b></td><td>سریع</td><td>کندتر</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: GRADIENT BOOSTING -->
+<div class="slide" data-topic="Gradient Boosting">
+  <div class="slideInner">
+    <div class="eyebrow">Gradient Boosting</div>
+    <h2>🚀 Gradient Boosting</h2>
+    <p>هر درخت جدید روی <b>باقیمانده‌ها</b> آموزش می‌بیند.</p>
+    <div class="formulaBox">
+      $$F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x)$$
+      <span class="lbl">مدل جدید = مدل قبلی + درخت اصلاح‌گر</span>
+    </div>
+    <img src="images/gradient-boosting-steps.png" alt="GB steps" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">مراحل Gradient Boosting</div>
+  </div>
+</div>
+
+<!-- SLIDE 23: GB ANALOGY -->
+<div class="slide" data-topic="مثال دانش‌آموز">
+  <div class="slideInner">
+    <div class="eyebrow">تمثیل</div>
+    <h2>🎓 تمثیل دانش‌آموز</h2>
+    <img src="images/gradient-boosting-analogy.png" alt="Analogy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">هر تلاش، خطای قبلی را اصلاح می‌کند</div>
+    <div class="cardGrid">
+      <div class="card"><h3>تلاش ۱</h3><p>۵۰ متر — خطا ۵۰</p></div>
+      <div class="card"><h3>تلاش ۲</h3><p>۷۵ متر — خطا ۲۵</p></div>
+      <div class="card"><h3>تلاش ۳</h3><p>۸۷ متر — خطا ۱۳</p></div>
+      <div class="card"><h3>تلاش n</h3><p>نزدیک ۱۰۰</p></div>
+    </div>
+    <img src="images/gb-residuals.png" alt="Residuals" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">باقیمانده‌ها</div>
+  </div>
+</div>
+
+<!-- SLIDE 24: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳ — Boosting</div>
+    <h2>🚀 Gradient Boosting — مرحله‌ای</h2>
+    <p>تعداد مراحل را تغییر دهید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-down"></i> Boosting Progress</div>
+      <div class="simCanvasWrapper"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>تعداد مراحل <span class="sliderVal" id="sim3_iter_val">0</span></label>
+          <input type="range" id="sim3_iter" min="0" max="20" step="1" value="0">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>MSE</small><b id="sim3_mse">—</b></div>
+        <div class="simRes"><small>مراحل</small><b id="sim3_n">0</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim3_status">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>مرحله ۰:</b> میانگین داده.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 25: FEATURE IMPORTANCE -->
+<div class="slide" data-topic="Feature Importance">
+  <div class="slideInner">
+    <div class="eyebrow">تحلیل</div>
+    <h2>📊 Feature Importance</h2>
+    <p>Random Forest می‌گوید کدام ویژگی‌ها مهم‌ترند.</p>
+    <img src="images/feature-importance.png" alt="Feature Importance" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">نمودار اهمیت ویژگی‌ها</div>
+    <div class="formulaBox">
+      $$\text{Importance}_j = \frac{1}{B}\sum_{b=1}^B \Delta I_j^{(b)}$$
+      <span class="lbl">میانگین کاهش ناخالصی</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 26: TREE VS FOREST -->
+<div class="slide" data-topic="Tree vs Forest">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>📊 Tree vs Forest</h2>
+    <img src="images/tree-vs-forest.png" alt="Tree vs Forest" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">مرز درخت تنها (چپ) در برابر جنگل (راست)</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>معیار</th><th>Decision Tree</th><th>Random Forest</th></tr></thead>
+        <tbody>
+          <tr><td><b>تفسیرپذیری</b></td><td>بالا</td><td>پایین</td></tr>
+          <tr><td><b>دقت</b></td><td>متوسط</td><td>بالا</td></tr>
+          <tr><td><b>Overfitting</b></td><td>حساس</td><td>مقاوم</td></tr>
+          <tr><td><b>سرعت آموزش</b></td><td>بسیار سریع</td><td>کندتر</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 27: CODE -->
+<div class="slide" data-topic="کد">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 MATLAB و Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab">MATLAB</button>
+        <button class="codeTabBtn" data-code="python">Python (Colab)</button>
+      </div>
+      <div class="codePane active" id="code-matlab">
+<pre><span class="com">% تشخیص عیب بلبرینگ</span>
+X = <span class="fn">rand</span>(<span class="num">200</span>, <span class="num">3</span>) * [<span class="num">100</span>; <span class="num">10</span>; <span class="num">5</span>];
+y = ((X(:,<span class="num">1</span>) > <span class="num">50</span>) &amp; (X(:,<span class="num">2</span>) > <span class="num">5</span>));
+
+<span class="com">% Decision Tree</span>
+tree = <span class="fn">fitctree</span>(X, y, <span class="str">'MaxDepth'</span>, <span class="num">3</span>);
+pred_tree = <span class="fn">predict</span>(tree, X);
+
+<span class="com">% Random Forest</span>
+rf = <span class="fn">TreeBagger</span>(<span class="num">50</span>, X, y, <span class="str">'Method'</span>, <span class="str">'classification'</span>);
+pred_rf = <span class="fn">predict</span>(rf, X);
+
+<span class="fn">fprintf</span>(<span class="str">'Tree Acc: %.2f%%\n'</span>, <span class="fn">sum</span>(pred_tree == y)/<span class="fn">numel</span>(y)*<span class="num">100</span>);
+<span class="fn">fprintf</span>(<span class="str">'Forest Acc: %.2f%%\n'</span>, <span class="fn">sum</span>(<span class="fn">str2double</span>(pred_rf) == y)/<span class="fn">numel</span>(y)*<span class="num">100</span>);
+
+<span class="com">% Feature Importance</span>
+imp = <span class="fn">predictorImportance</span>(rf);
+<span class="fn">bar</span>(imp);</pre>
+      </div>
+      <div class="codePane" id="code-python">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.tree <span class="kw">import</span> DecisionTreeClassifier
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> accuracy_score
+
+np.random.seed(<span class="num">42</span>)
+X = np.random.rand(<span class="num">200</span>, <span class="num">3</span>) * [<span class="num">100</span>, <span class="num">10</span>, <span class="num">5</span>]
+y = ((X[:,<span class="num">0</span>] > <span class="num">50</span>) &amp; (X[:,<span class="num">1</span>] > <span class="num">5</span>)).astype(<span class="kw">int</span>)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span class="num">0.3</span>)
+
+tree = DecisionTreeClassifier(max_depth=<span class="num">3</span>)
+tree.fit(X_train, y_train)
+print(<span class="str">f"Tree: {accuracy_score(y_test, tree.predict(X_test)):.2%}"</span>)
+
+rf = RandomForestClassifier(n_estimators=<span class="num">50</span>)
+rf.fit(X_train, y_train)
+print(<span class="str">f"Forest: {accuracy_score(y_test, rf.predict(X_test)):.2%}"</span>)
+print(<span class="str">f"Feature Importance: {rf.feature_importances_}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 28: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۶</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>تفاوت Gini و Entropy چیست؟</li>
+          <li><span class="exNum">۲</span>چرا Random Forest از Overfitting جلوگیری می‌کند؟</li>
+          <li><span class="exNum">۳</span>Bootstrap چیست و چرا ۶۳٪ داده را داریم؟</li>
+          <li><span class="exNum">۴</span>تفاوت Bagging و Boosting را دقیق توضیح دهید.</li>
+          <li><span class="exNum">۵</span>پارادوکس گالتون چه ارتباطی با Ensemble دارد؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Decision Tree روی Iris در Colab.</li>
+          <li><span class="exNum">۲</span>Random Forest با ۱۰، ۵۰ و ۱۰۰ درخت.</li>
+          <li><span class="exNum">۳</span>Feature Importance را رسم کنید.</li>
+          <li><span class="exNum">۴</span>منحنی Overfitting (خطا نسبت به عمق).</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد RF در تشخیص عیب.</li>
+          <li><span class="exNum">۲</span>مقایسه XGBoost و Random Forest.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله مکانیکی که با RF حل شود.</li>
+          <li><span class="exNum">★</span>Feature Importance برای کاهش هزینه سنسورها.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW06 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 29: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>📚 Claude — تحلیل کد</h2>
+    <p>Claude برای تحلیل کدهای طولانی و توضیح تفاوت الگوریتم‌ها.</p>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد، مقایسه الگوریتم‌ها</p>
+        <span class="tag">جلسه ۶ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی و دیباگ</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="code-2"></i></div>
+        <h4>GitHub Copilot</h4>
+        <p>تکمیل خودکار</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Claude:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        کد Random Forest را در Claude آپلود کنید و از آن بخواهید تفاوت DT و RF را استخراج کند.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 30: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۶</h2>
+    <img src="images/ensemble-quran-connection.png" alt="پیوند" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">پل بین حکمت قرآنی و AI مدرن</div>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)"><h3>✅ Vox Populi</h3><p>از گالتون تا Ensemble AI</p></div>
+      <div class="card" style="border-right:4px solid var(--violet)"><h3>✅ Decision Tree</h3><p>Gini و Entropy</p></div>
+      <div class="card" style="border-right:4px solid var(--green)"><h3>✅ Random Forest</h3><p>Bootstrap + رأی‌گیری</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><h3>✅ Bagging vs Boosting</h3><p>موازی در برابر متوالی</p></div>
+      <div class="card" style="border-right:4px solid var(--pink)"><h3>✅ Gradient Boosting</h3><p>باقیمانده‌ها</p></div>
+      <div class="card" style="border-right:4px solid var(--blue)"><h3>✅ پیوند قرآنی</h3><p>«وَأَمْرُهُمْ شُورَىٰ بَيْنَهُمْ»</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 31: NEXT -->
+<div class="slide" data-topic="جلسه بعد">
+  <div class="slideInner">
+    <div class="eyebrow">جلسه ۷</div>
+    <h2>📅 جلسه بعد</h2>
+    <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+      border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin-top:20px">
+      <h3 style="color:var(--violet);margin-bottom:10px">ANOVA و طراحی آزمایش تاگوچی</h3>
+      <p style="margin-top:8px">
+        • تحلیل واریانس (ANOVA)<br>
+        • Design of Experiments<br>
+        • آرایه‌های متعامد تاگوچی<br>
+        • نسبت Signal-to-Noise (S/N)<br>
+        • کاربرد در بهینه‌سازی مکانیکی
+      </p>
+    </div>
+    <div style="margin-top:22px;padding:20px;border-radius:14px;
+      background:rgba(77,212,255,.12);border:1px solid rgba(77,212,255,.5)">
+      <h4 style="color:var(--cyan);margin-bottom:8px;font-size:16px">📁 قبل از جلسه ۷</h4>
+      <p style="margin:0;font-size:14px">
+        ۱. HW06 را در Google Drive آپلود کنید<br>
+        ۲. با Claude درباره «Taguchi Method» بحث کنید<br>
+        ۳. یک مثال ANOVA ساده در Colab اجرا کنید
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 32: END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: ANOVA & Taguchi Method</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۳۲</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

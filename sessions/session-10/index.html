@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۰ — CNN و بینایی ماشین | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۰ — CNN</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="scan-face" style="width:14px;height:14px"></i> جلسه ۱۰ • فاز ۳ — DL</div>
+      <h1>CNN و بینایی ماشین</h1>
+      <p class="subtitle-en">Convolutional Neural Networks · Computer Vision<br>From Pixels to Intelligent Perception</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۹</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="brain"></i></div><h3>جلسه ۹</h3><p>Perceptron، MLP، Backpropagation</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="scan-face"></i></div><h3>جلسه ۱۰ (امروز)</h3><p>CNN، Conv، Pooling، ResNet</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ مشکل MLP با تصاویر</p></div>
+      <div class="card"><p style="margin:0">✅ Convolution — ایده اصلی</p></div>
+      <div class="card"><p style="margin:0">✅ Pooling — کاهش ابعاد</p></div>
+      <div class="card"><p style="margin:0">✅ CNN Architecture</p></div>
+      <div class="card"><p style="margin:0">✅ ResNet و Skip Connections</p></div>
+      <div class="card"><p style="margin:0">✅ Transfer Learning</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🖼 چرا CNN؟</h2>
+    <p style="font-size:16px">در جلسه قبل MLP را دیدیم. اگر بخواهیم یک تصویر ۲۵۶×۲۵۶ را به MLP بدهیم، باید آن را به یک بردار ۶۵۵۳۶ عددی تبدیل کنیم. این یعنی میلیون‌ها پارامتر — عملاً غیرممکن.</p>
+    <p style="font-size:16px"><b>CNN</b> (شبکه عصبی کانولوشنی) با ایده‌ی «فیلتر مشترک» این مشکل را حل می‌کند: یک فیلتر کوچک روی کل تصویر می‌لغزد و ویژگی‌ها را استخراج می‌کند. نتیجه: پارامترهای بسیار کمتر و دقت بسیار بالاتر.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="scan-face"></i></div>
+        <h3>پارامترهای کمتر</h3>
+        <p>فیلتر مشترک — نه وزن جدا برای هر پیکسل</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="move"></i>
+        </div>
+        <h3>Invariance به جابه‌جایی</h3>
+        <p>گربه در هر جای تصویر، گربه است</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="layers"></i>
+        </div>
+        <h3>سلسله‌مراتب</h3>
+        <p>لبه → بافت → شکل → شیء</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="sparkles"></i>
+        </div>
+        <h3>پایه CV مدرن</h3>
+        <p>از AlexNet تا Stable Diffusion</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: MLP PROBLEM -->
+<div class="slide" data-topic="مشکل MLP">
+  <div class="slideInner">
+    <div class="eyebrow">مشکل</div>
+    <h2>⚠️ چرا MLP برای تصویر مناسب نیست؟</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. پارامترهای بسیار زیاد</h3>
+        <p>تصویر ۲۵۶×۲۵۶ با ۳ کانال = ۱۹۶,۶۰۸ ورودی. یک لایه پنهان با ۱۰۰۰ نورون = ۱۹۶ میلیون پارامتر!</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۲. از دست رفتن ساختار فضایی</h3>
+        <p>وقتی تصویر را به بردار تخت تبدیل می‌کنیم، همسایگی پیکسل‌ها از بین می‌رود.</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۳. عدم invariance</h3>
+        <p>اگر گربه ۱۰ پیکسل جابه‌جا شود، MLP فکر می‌کند چیز دیگری است.</p>
+      </div>
+    </div>
+    <img src="images/cnn-hero.png" alt="CNN concept" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">CNN: فیلتر کوچک روی کل تصویر می‌لغزد</div>
+  </div>
+</div>
+
+<!-- SLIDE 5: CONVOLUTION -->
+<div class="slide" data-topic="Convolution">
+  <div class="slideInner">
+    <div class="eyebrow">ایده اصلی</div>
+    <h2>🔍 Convolution — فیلتر لغزان</h2>
+    <p>یک <b>فیلتر</b> کوچک (معمولاً ۳×۳) روی تصویر می‌لغزد و در هر موقعیت، حاصل‌ضرب نقطه‌ای فیلتر با پیکسل‌های زیرین را محاسبه می‌کند. نتیجه: <b>Feature Map</b>.</p>
+    <img src="images/conv-layer.png" alt="Convolution" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">فیلتر ۳×۳ روی تصویر ۵×۵ می‌لغزد — خروجی ۳×۳</div>
+    <div class="formulaBox">
+      $$(I * K)(i,j) = \sum_{m}\sum_{n} I(i+m, j+n) \cdot K(m,n)$$
+      <span class="lbl">عملیات کانولوشن — $I$ تصویر، $K$ فیلتر</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>📏 پارامترها</h3><p>۳×۳ فیلتر = فقط ۹ پارامتر!</p></div>
+      <div class="card"><h3>🎯 ویژگی‌ها</h3><p>هر فیلتر یک الگو (لبه، بافت) را یاد می‌گیرد</p></div>
+      <div class="card"><h3>📍 اشتراک وزن</h3><p>همان فیلتر در همه موقعیت‌ها</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔍 Convolution تعاملی</h2>
+    <p>موقعیت فیلتر را تغییر دهید و خروجی کانولوشن را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Convolution Operation</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>موقعیت افقی (x) <span class="sliderVal" id="sim1_x_val">0</span></label>
+          <input type="range" id="sim1_x" min="0" max="4" step="1" value="0">
+        </div>
+        <div class="sliderGroup">
+          <label>موقعیت عمودی (y) <span class="sliderVal" id="sim1_y_val">0</span></label>
+          <input type="range" id="sim1_y" min="0" max="4" step="1" value="0">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>خروجی</small><b id="sim1_out">—</b></div>
+        <div class="simRes"><small>فیلتر</small><b id="sim1_filter">Edge</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>فیلتر:</b> لبه‌یاب افقی (Sobel). موقعیت را تغییر دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: POOLING -->
+<div class="slide" data-topic="Pooling">
+  <div class="slideInner">
+    <div class="eyebrow">کاهش ابعاد</div>
+    <h2>⬇️ Pooling — کاهش ابعاد</h2>
+    <p>بعد از کانولوشن، Feature Map بزرگ است. Pooling آن را کوچک می‌کند بدون از دست دادن اطلاعات مهم.</p>
+    <img src="images/pooling-layer.png" alt="Pooling" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Max Pooling 2×2: از هر ۴ عدد، بزرگ‌ترین انتخاب می‌شود</div>
+    <div class="cardGrid">
+      <div class="card"><h3>Max Pooling</h3><p>بزرگ‌ترین — حفظ ویژگی‌های قوی</p></div>
+      <div class="card"><h3>Average Pooling</h3><p>میانگین — نرم‌تر</p></div>
+      <div class="card"><h3>مزیت</h3><p>کاهش محاسبات + invariance</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>⬇️ Max Pooling تعاملی</h2>
+    <p>Pooling را ببینید — از هر ۲×۲، بزرگ‌ترین انتخاب می‌شود.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-down"></i> Max Pooling 2×2</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim2_run"><i data-lucide="play"></i> اجرا</button>
+        <button class="btnSecondary" id="sim2_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>ورودی</small><b>4×4</b></div>
+        <div class="simRes"><small>خروجی</small><b>2×2</b></div>
+        <div class="simRes"><small>کاهش</small><b>75%</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> «اجرا» را بزنید تا مراحل انتخاب بزرگ‌ترین در هر پنجره را ببینید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: CNN ARCH -->
+<div class="slide" data-topic="CNN Architecture">
+  <div class="slideInner">
+    <div class="eyebrow">معماری کامل</div>
+    <h2>🏗 CNN Architecture</h2>
+    <img src="images/cnn-architecture.png" alt="CNN architecture" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">خط لوله CNN: تصویر → Conv → Pool → Conv → Pool → Flatten → FC → خروجی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🔍 Conv</h3><p>استخراج ویژگی</p></div>
+      <div class="card"><h3>⬇️ Pool</h3><p>کاهش ابعاد</p></div>
+      <div class="card"><h3>📏 Flatten</h3><p>تبدیل به بردار</p></div>
+      <div class="card"><h3>🧠 FC</h3><p>طبقه‌بندی نهایی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: FEATURE MAPS -->
+<div class="slide" data-topic="Feature Maps">
+  <div class="slideInner">
+    <div class="eyebrow">چه چیزی یاد می‌گیرد؟</div>
+    <h2>🎨 Feature Maps</h2>
+    <p>لایه‌های اولیه، لبه‌ها را یاد می‌گیرند. لایه‌های میانی، بافت‌ها. لایه‌های عمیق، اشیاء کامل.</p>
+    <img src="images/feature-maps.png" alt="Feature maps" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">هر فیلتر یک ویژگی خاص را تشخیص می‌دهد</div>
+    <div class="cardGrid">
+      <div class="card"><h3>لایه ۱</h3><p>لبه‌ها، خطوط</p></div>
+      <div class="card"><h3>لایه ۲-۳</h3><p>بافت، گوشه</p></div>
+      <div class="card"><h3>لایه ۴-۵</h3><p>اشیاء، اجزاء</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: AlexNet VGG ResNet -->
+<div class="slide" data-topic="معماری‌های مشهور">
+  <div class="slideInner">
+    <div class="eyebrow">تاریخچه</div>
+    <h2>🏛 معماری‌های مشهور</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>مدل</th><th>سال</th><th>ویژگی</th></tr></thead>
+        <tbody>
+          <tr><td><b>LeNet-5</b></td><td>۱۹۹۸</td><td>اولین CNN موفق (دست‌نویس)</td></tr>
+          <tr><td><b>AlexNet</b></td><td>۲۰۱۲</td><td>انقلاب ImageNet — GPU</td></tr>
+          <tr><td><b>VGG-16</b></td><td>۲۰۱۴</td><td>فیلترهای ۳×۳، شبکه عمیق</td></tr>
+          <tr><td><b>ResNet</b></td><td>۲۰۱۵</td><td>Skip Connections — ۱۵۲ لایه</td></tr>
+          <tr><td><b>EfficientNet</b></td><td>۲۰۱۹</td><td>معماری جست‌وجو شده</td></tr>
+          <tr><td><b>ViT</b></td><td>۲۰۲۰</td><td>Transformer برای تصویر</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: RESNET -->
+<div class="slide" data-topic="ResNet">
+  <div class="slideInner">
+    <div class="eyebrow">نوآوری</div>
+    <h2>🔗 ResNet — Skip Connections</h2>
+    <p>وقتی شبکه خیلی عمیق می‌شود، گرادیان محو می‌شود. ResNet با <b>اتصال میان‌بر</b> این مشکل را حل کرد.</p>
+    <img src="images/resnet-architecture.png" alt="ResNet" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">اتصال میان‌بر: گرادیان مستقیماً به لایه‌های اولیه می‌رسد</div>
+    <div class="formulaBox">
+      $$\mathbf{y} = F(\mathbf{x}) + \mathbf{x}$$
+      <span class="lbl">Residual Block — خروجی + ورودی</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🎯 CNN برای تشخیص</h2>
+    <p>یک CNN کوچک را روی داده‌های تصویری ساده آموزش دهید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="scan-face"></i> CNN Detection Demo</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim3_run"><i data-lucide="play"></i> اجرای تشخیص</button>
+        <button class="btnSecondary" id="sim3_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>وضعیت</small><b id="sim3_status">آماده</b></div>
+        <div class="simRes"><small>دقت</small><b id="sim3_acc">—</b></div>
+        <div class="simRes"><small>تصاویر</small><b id="sim3_count">0</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> «اجرا» را بزنید تا CNN چند تصویر را پردازش کند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: TRANSFER LEARNING -->
+<div class="slide" data-topic="Transfer Learning">
+  <div class="slideInner">
+    <div class="eyebrow">یادگیری انتقالی</div>
+    <h2>🔄 Transfer Learning</h2>
+    <p>می‌توانید یک شبکه از پیش آموزش‌دیده (مثلاً ResNet روی ImageNet) را بردارید و فقط لایه‌های آخر را برای وظیفه خودتان آموزش دهید.</p>
+    <img src="images/transfer-learning.png" alt="Transfer learning" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">لایه‌های پایه یخ‌زده — فقط آخرین لایه‌ها آموزش می‌بینند</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 مزیت</h3><p>با داده کم، دقت بالا</p></div>
+      <div class="card"><h3>⚡ سرعت</h3><p>آموزش سریع‌تر</p></div>
+      <div class="card"><h3>💰 هزینه</h3><p>GPU کمتر</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: DATA AUGMENTATION -->
+<div class="slide" data-topic="Data Augmentation">
+  <div class="slideInner">
+    <div class="eyebrow">افزایش داده</div>
+    <h2>🔄 Data Augmentation</h2>
+    <p>برای جلوگیری از Overfitting، از هر تصویر چند نسخه تغییر یافته می‌سازیم.</p>
+    <img src="images/image-augmentation.png" alt="Data augmentation" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چرخش، برش، تغییر نور — همه بدون داده جدید</div>
+    <div class="cardGrid">
+      <div class="card"><h3>Rotation</h3><p>چرخش</p></div>
+      <div class="card"><h3>Flip</h3><p>آینه</p></div>
+      <div class="card"><h3>Crop</h3><p>برش</p></div>
+      <div class="card"><h3>Brightness</h3><p>روشنایی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: APPLICATIONS -->
+<div class="slide" data-topic="کاربردها">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 CNN در مکانیک</h2>
+    <img src="images/cnn-applications.png" alt="CNN applications" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از تشخیص عیب تا خودران</div>
+    <div class="cardGrid">
+      <div class="card"><h3>تشخیص عیب بلبرینگ</h3><p>از تصویر سطح</p></div>
+      <div class="card"><h3>تشخیص ترک</h3><p>در قطعات صنعتی</p></div>
+      <div class="card"><h3>کیفیت جوش</h3><p>بازرسی جوش</p></div>
+      <div class="card"><h3>رباتیک</h3><p>تشخیص اشیاء</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: CODE -->
+<div class="slide" data-topic="کد">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 CNN — MATLAB و Python (Keras)</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab">MATLAB</button>
+        <button class="codeTabBtn" data-code="python">Python (Keras)</button>
+      </div>
+      <div class="codePane active" id="code-matlab">
+<pre><span class="com">% CNN ساده برای تشخیص ارقام</span>
+layers = [
+    <span class="fn">imageInputLayer</span>([<span class="num">28</span> <span class="num">28</span> <span class="num">1</span>])
+    <span class="fn">convolution2dLayer</span>(<span class="num">3</span>, <span class="num">8</span>, <span class="str">'Padding'</span>, <span class="str">'same'</span>)
+    <span class="fn">reluLayer</span>()
+    <span class="fn">maxPooling2dLayer</span>(<span class="num">2</span>, <span class="str">'Stride'</span>, <span class="num">2</span>)
+    <span class="fn">convolution2dLayer</span>(<span class="num">3</span>, <span class="num">16</span>, <span class="str">'Padding'</span>, <span class="str">'same'</span>)
+    <span class="fn">reluLayer</span>()
+    <span class="fn">maxPooling2dLayer</span>(<span class="num">2</span>, <span class="str">'Stride'</span>, <span class="num">2</span>)
+    <span class="fn">fullyConnectedLayer</span>(<span class="num">10</span>)
+    <span class="fn">softmaxLayer</span>()
+    <span class="fn">classificationLayer</span>()
+];
+
+options = <span class="fn">trainingOptions</span>(<span class="str">'sgdm'</span>, <span class="str">'MaxEpochs'</span>, <span class="num">10</span>, ...
+    <span class="str">'MiniBatchSize'</span>, <span class="num">128</span>, <span class="str">'Plots'</span>, <span class="str">'training-progress'</span>);
+
+net = <span class="fn">trainNetwork</span>(imdsTrain, layers, options);</pre>
+      </div>
+      <div class="codePane" id="code-python">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+<span class="kw">from</span> tensorflow.keras.datasets <span class="kw">import</span> mnist
+
+<span class="com"># داده</span>
+(X_train, y_train), (X_test, y_test) = mnist.load_data()
+X_train = X_train[..., np.newaxis] / <span class="num">255.0</span>
+X_test = X_test[..., np.newaxis] / <span class="num">255.0</span>
+
+<span class="com"># CNN</span>
+model = models.Sequential([
+    layers.Conv2D(<span class="num">8</span>, (<span class="num">3</span>,<span class="num">3</span>), activation=<span class="str">'relu'</span>, padding=<span class="str">'same'</span>, input_shape=(<span class="num">28</span>,<span class="num">28</span>,<span class="num">1</span>)),
+    layers.MaxPooling2D((<span class="num">2</span>,<span class="num">2</span>)),
+    layers.Conv2D(<span class="num">16</span>, (<span class="num">3</span>,<span class="num">3</span>), activation=<span class="str">'relu'</span>, padding=<span class="str">'same'</span>),
+    layers.MaxPooling2D((<span class="num">2</span>,<span class="num">2</span>)),
+    layers.Flatten(),
+    layers.Dense(<span class="num">10</span>, activation=<span class="str">'softmax'</span>)
+])
+
+model.<span class="fn">compile</span>(optimizer=<span class="str">'adam'</span>, loss=<span class="str">'sparse_categorical_crossentropy'</span>, metrics=[<span class="str">'accuracy'</span>])
+model.<span class="fn">fit</span>(X_train, y_train, epochs=<span class="num">5</span>, validation_split=<span class="num">0.1</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۱۰</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$(I * K)(i,j) = \sum_{m}\sum_{n} I(i+m, j+n) \cdot K(m,n)$$
+      <span class="lbl">عملیات کانولوشن ۲بعدی</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$H_{out} = \left\lfloor \frac{H_{in} - K + 2P}{S} \right\rfloor + 1$$
+      <span class="lbl">ابعاد خروجی Conv — $K$ فیلتر، $P$ padding، $S$ stride</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$y = F(\mathbf{x}) + \mathbf{x}$$
+      <span class="lbl">Residual Block</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۰</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>چرا MLP برای تصاویر مناسب نیست؟ سه دلیل.</li>
+          <li><span class="exNum">۲</span>Convolution چه کاری انجام می‌دهد و چرا پارامتر کمتری دارد؟</li>
+          <li><span class="exNum">۳</span>Pooling چه فایده‌ای دارد؟</li>
+          <li><span class="exNum">۴</span>Skip Connection در ResNet چرا مهم است؟</li>
+          <li><span class="exNum">۵</span>Transfer Learning چیست و چرا مفید است؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>CNN برای MNIST در Colab با Keras.</li>
+          <li><span class="exNum">۲</span>مقایسه CNN با MLP — دقت و سرعت.</li>
+          <li><span class="exNum">۳</span>Transfer Learning با ResNet50 روی داده خودتان.</li>
+          <li><span class="exNum">۴</span>Data Augmentation با Keras.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد CNN در تشخیص عیب مکانیکی.</li>
+          <li><span class="exNum">۲</span>مقایسه AlexNet، VGG، ResNet — چه تفاوتی دارند؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله مکانیکی طراحی کنید که با CNN حل شود.</li>
+          <li><span class="exNum">★</span>چرا ViT (Transformer برای تصویر) جای CNN را در برخی کارها گرفته است؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW10 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <p>برای جست‌وجوی مقالات و مراجع درباره CNN و بینایی ماشین.</p>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی علمی با ذکر منابع</p>
+        <span class="tag">جلسه ۱۰ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد CNN</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی Keras</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «CNN bearing fault diagnosis 2024»
+        و ۳ مقاله معتبر پیدا کنید. منابع را در HW10 بنویسید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۰</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ Convolution</h3><p>فیلتر لغزان — پارامتر کم، دقت بالا</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Pooling</h3><p>کاهش ابعاد + invariance</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ CNN Architecture</h3><p>Conv → Pool → Flatten → FC</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ ResNet</h3><p>Skip Connections برای شبکه‌های عمیق</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ Transfer Learning</h3><p>استفاده از مدل پیش‌آموزش‌دیده</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: MediaPipe & Real-time CV</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۱</h3>
+        <p style="margin-top:8px;text-align:right">
+          • MediaPipe — کتابخانه گوگل<br>
+          • Hand Tracking<br>
+          • Pose Detection<br>
+          • Face Detection<br>
+          • Real-time CV در Python و JavaScript
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۲</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

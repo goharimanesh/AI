@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۳: پروژه پایانی، مقاله IEEE و ارزیابی | هوش مصنوعی</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<style>
+:root{
+  --bg:#050a14; --bg2:#0a1428;
+  --card:rgba(13,25,45,.72); --card2:rgba(18,34,58,.82);
+  --line:rgba(120,160,220,.14); --line-strong:rgba(120,160,220,.28);
+  --text:#eaf2ff; --muted:#8ba1bd; --muted2:#607694;
+  --cyan:#4dd4ff; --violet:#a78bfa; --gold:#f5c76a;
+  --green:#5ee8a8; --red:#ff7e93; --blue:#74a7ff; --pink:#f472b6;
+  --shadow:0 20px 60px rgba(0,0,0,.4);
+  --radius:20px; --radius-sm:12px;
+}
+[data-theme="light"]{
+  --bg:#f4f7fc; --bg2:#e8eef8;
+  --card:rgba(255,255,255,.85); --card2:rgba(248,251,255,.95);
+  --line:rgba(30,60,110,.12); --line-strong:rgba(30,60,110,.25);
+  --text:#0d1e38; --muted:#5a6f8c; --muted2:#8a9bb5;
+  --cyan:#0891b2; --violet:#7c3aed; --gold:#b45309;
+  --green:#059669; --red:#e11d48; --blue:#2563eb; --pink:#db2777;
+  --shadow:0 20px 60px rgba(30,60,110,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Vazirmatn",Tahoma,sans-serif;
+  background:linear-gradient(135deg,var(--bg),var(--bg2) 50%,var(--bg));
+  color:var(--text); line-height:1.85; min-height:100vh;
+  transition:background .5s, color .4s;
+}
+a{color:inherit;text-decoration:none}
+.container{width:min(1200px,94%);margin:auto}
+
+/* Slide System */
+.slide {
+  display: none;
+  min-height: 100vh;
+  padding: 60px 0;
+  animation: fadeIn 0.5s ease-out;
+}
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+
+.slide-header { margin-bottom: 40px; text-align: center; }
+.slide-header .eyebrow { color: var(--cyan); font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+.slide-header h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; margin-top: 10px; background: linear-gradient(135deg, var(--text), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.slide-header p { color: var(--muted); font-size: 16px; max-width: 800px; margin: 10px auto 0; }
+
+/* Cards & Grids */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); backdrop-filter: blur(10px); }
+.card h3 { color: var(--cyan); margin-bottom: 12px; font-size: 18px; }
+.card p { color: var(--muted); font-size: 14px; }
+
+/* Image Placeholder */
+.img-container { width: 100%; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); background: #0d192d; display: flex; align-items: center; justify-content: center; position: relative; }
+.img-container img { max-width: 100%; height: auto; display: block; }
+.img-caption { text-align: center; color: var(--muted); font-size: 13px; margin-top: 12px; }
+
+/* Simulators */
+.simulator { background: var(--card2); border: 1px solid var(--cyan); border-radius: var(--radius); padding: 20px; box-shadow: 0 0 20px rgba(77,212,255,0.1); }
+.simulator h4 { color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+canvas { width: 100%; height: 300px; background: #050a14; border-radius: 12px; border: 1px solid var(--line); display: block; }
+.controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.controls button { padding: 8px 16px; border-radius: 8px; background: var(--cyan); color: #000; border: none; font-family: inherit; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.controls button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(77,212,255,0.4); }
+.controls button.alt { background: var(--gold); }
+.controls button.reset { background: var(--red); color: #fff; }
+
+/* Tabs */
+.tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.tab-btn { background: none; border: none; color: var(--muted); font-family: inherit; font-size: 16px; font-weight: 700; cursor: pointer; padding: 8px 16px; border-radius: 8px; transition: 0.3s; }
+.tab-btn.active { background: rgba(77,212,255,0.1); color: var(--cyan); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Code Blocks */
+pre { background: #050a14; padding: 20px; border-radius: 12px; border: 1px solid var(--line); overflow-x: auto; direction: ltr; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 14px; color: #a7b5c9; }
+.code-header { display: flex; justify-content: space-between; align-items: center; background: #0a1428; padding: 10px 20px; border-radius: 12px 12px 0 0; border: 1px solid var(--line); border-bottom: none; }
+.code-header span { color: var(--gold); font-weight: 700; font-size: 14px; }
+.copy-btn { background: var(--card); border: 1px solid var(--line); color: var(--muted); padding: 4px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.copy-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+
+/* Navigation */
+.nav-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 100; background: rgba(5,10,20,0.8); padding: 10px 20px; border-radius: 999px; backdrop-filter: blur(10px); border: 1px solid var(--line); }
+.nav-btn { background: var(--card); border: 1px solid var(--line); color: var(--text); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; transition: 0.3s; }
+.nav-btn:hover { background: var(--cyan); color: #000; border-color: var(--cyan); }
+.slide-counter { display: flex; align-items: center; font-weight: 700; color: var(--cyan); font-size: 15px; padding: 0 10px; }
+
+@media(max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-controls { width: 90%; justify-content: space-between; }
+}
+</style>
+</head>
+<body>
+
+<!-- Controls -->
+<div class="nav-controls">
+  <button class="nav-btn" onclick="prevSlide()"><i data-lucide="chevron-right"></i></button>
+  <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">16</span></div>
+  <button class="nav-btn" onclick="nextSlide()"><i data-lucide="chevron-left"></i></button>
+</div>
+
+<div class="container">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-header" style="margin-top: 10vh;">
+      <div class="eyebrow">پایان دوره — گام نهایی</div>
+      <h2>جلسه ۲۳: کارگاه پروژه پایانی و مقاله IEEE</h2>
+      <p>از داده تا مدل، از ارزیابی تا انتشار — استانداردهای یک پروژه مهندسی هوشمند</p>
+      <div style="margin-top: 30px; font-size: 20px; color: var(--gold);">
+        «وَأَن لَّيْسَ لِلْإِنسَانِ إِلَّا مَا سَعَىٰ» (سوره نجم)
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Workflow Pipeline -->
+  <div class="slide" id="slide-2">
+    <div class="slide-header">
+      <div class="eyebrow">Project Lifecycle</div>
+      <h2>چرخه عمر پروژه هوش مصنوعی</h2>
+      <p>یک پروژه موفق مهندسی مکانیک فقط کدنویسی نیست؛ یک چرخه ۶ مرحله‌ای است.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3>۱. داده (Data)</h3><p>جمع‌آوری، پاکسازی و پیش‌پردازش داده‌های حسگرها، آزمایشات و شبیه‌سازی‌های FEM.</p></div>
+      <div class="card"><h3>۲. مدل (Model)</h3><p>انتخاب معماری مناسب (MLP، CNN، PINN، یا الگوریتم‌های RL) بر اساس فیزیک مسئله.</p></div>
+      <div class="card"><h3>۳. آموزش (Train)</h3><p>تنظیم هایپرپارامترها، تعریف تابع خطا و استفاده از شتاب‌دهنده‌ها (GPU در Colab).</p></div>
+      <div class="card"><h3>۴. ارزیابی (Evaluate)</h3><p>تست مدل با داده‌های ندیده، بررسی Overfitting و مقایسه با معیارهای فیزیکی.</p></div>
+      <div class="card"><h3>۵. گزارش (Report)</h3><p>مستندسازی کدها، ترسیم نمودارها و نگارش یافته‌ها طبق استانداردهای علمی.</p></div>
+      <div class="card"><h3>۶. ارائه (Present)</h3><p>دفاع از پروژه، توضیح محدودیت‌ها و پیشنهاد کارهای آینده.</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Data Observation -->
+  <div class="slide" id="slide-3">
+    <div class="slide-header">
+      <div class="eyebrow">Data Insights</div>
+      <h2>نگاه موشکافانه به داده‌ها</h2>
+      <p>قبل از هر مدل‌سازی، باید بدانید داده‌ها چه می‌گویند. داده‌های مکانیکی همیشه نویز دارند.</p>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="img-container">
+          <img src="images/data-magnifying.png" alt="Data Magnifying Glass" onerror="this.src='https://placehold.co/600x400/0d192d/4dd4ff?text=Data+Magnifying+Glass'">
+        </div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>چالش‌های داده در مکانیک</h3>
+        <ul style="color: var(--muted); line-height: 2; padding-right: 20px;">
+          <li><b>نویز سنسور:</b> سیگنال‌های ارتعاشی همیشه دارای نویز فرکانس بالا هستند.</li>
+          <li><b>داده‌های پرت (Outliers):</b> خرابی ناگهانی یا خطای اندازه‌گیری.</li>
+          <li><b>عدم تعادل داده (Imbalance):</b> در تشخیص خرابی، داده‌های سالم بسیار بیشتر از داده‌های معیوب هستند.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Simulator 1 - Data Split -->
+  <div class="slide" id="slide-4">
+    <div class="slide-header">
+      <div class="eyebrow">Interactive Simulator 1</div>
+      <h2>شبیه‌ساز تقسیم داده (Train/Test Split)</h2>
+      <p>چرا نباید مدل را روی تمام داده‌ها آموزش داد؟ اسلایدر را حرکت دهید تا اثر تقسیم داده را ببینید.</p>
+    </div>
+    <div class="grid-2">
+      <div class="simulator">
+        <h4><i data-lucide="sliders"></i> تنظیمات تقسیم داده</h4>
+        <div style="margin-bottom: 15px;">
+          <label style="color: var(--muted); font-size: 14px;">درصد داده آموزش (Train): <span id="trainPctLabel" style="color: var(--cyan); font-weight: bold;">80%</span></label>
+          <input type="range" id="trainSlider" min="10" max="90" value="80" style="width: 100%; margin-top: 10px; accent-color: var(--cyan);">
+        </div>
+        <canvas id="splitCanvas"></canvas>
+        <div style="margin-top: 15px; font-size: 13px; color: var(--muted);">
+          <span style="color: var(--green);">● آموزش (Train)</span> — 
+          <span style="color: var(--gold);">● تست (Test)</span> — 
+          <span style="color: var(--red);">● اعتبارسنجی (Val)</span>
+        </div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>قانون طلایی</h3>
+        <p style="margin-bottom: 15px;">اگر داده تست کم باشد، ارزیابی شما غیرقابل اعتماد است. اگر داده آموزش کم باشد، مدل Underfit می‌شود.</p>
+        <p style="color: var(--gold); font-weight: bold;">توصیه Géron (فصل ۲):</p>
+        <p style="color: var(--muted);">همیشه ۲۰٪ داده را برای تست جدا کنید. اگر داده کم است، از Cross-Validation استفاده کنید.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: PINN Workflow -->
+  <div class="slide" id="slide-5">
+    <div class="slide-header">
+      <div class="eyebrow">Scientific ML</div>
+      <h2>جریان کاری شبکه‌های عصبی فیزیک‌محور (PINN)</h2>
+      <p>ترکیب معادلات دیفرانسیل با شبکه‌های عصبی — پیشرفته‌ترین روش برای پروژه‌های مکانیک.</p>
+    </div>
+    <div class="img-container" style="margin-bottom: 20px;">
+      <img src="images/pinn-workflow.png" alt="PINN Workflow" onerror="this.src='https://placehold.co/1000x300/0d192d/4dd4ff?text=PINN+Workflow'">
+    </div>
+    <div class="grid-4">
+      <div class="card"><h3>تعریف PDE</h3><p>معادله حاکم (مثلاً گرما یا الاستیسیته) را به تابع خطای شبکه اضافه می‌کنیم.</p></div>
+      <div class="card"><h3>نقاط هم‌مکانی</h3><p>داده‌های آزمایشگاهی (شرایط مرزی) را با نقاط تصادفی درون دامنه ترکیب می‌کنیم.</p></div>
+      <div class="card"><h3>آموزش</h3><p>شبکه یاد می‌گیرد هم به داده‌ها و هم به فیزیک (PDE) پایبند باشد.</p></div>
+      <div class="card"><h3>مقایسه با FEM</h3><p>خروجی PINN را با حل عددی FEM اعتبارسنجی می‌کنیم.</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Evaluation Target -->
+  <div class="slide" id="slide-6">
+    <div class="slide-header">
+      <div class="eyebrow">Evaluation</div>
+      <h2>ارزیابی: هدف‌گیری دقیق</h2>
+      <p>یک مدل خوب باید از ۴ لایه ارزیابی عبور کند.</p>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="img-container">
+          <img src="images/eval-target.png" alt="Evaluation Target" onerror="this.src='https://placehold.co/600x400/0d192d/4dd4ff?text=Evaluation+Target'">
+        </div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>لایه‌های اعتبارسنجی</h3>
+        <ul style="color: var(--muted); line-height: 2.2; padding-right: 20px;">
+          <li><b style="color: var(--red);">Correctness (درستی):</b> آیا مدل پیش‌بینی صحیح می‌کند؟</li>
+          <li><b style="color: var(--gold);">Performance (کارایی):</b> سرعت اجرا و مصرف حافظه چقدر است؟</li>
+          <li><b style="color: var(--cyan);">Documentation (مستندسازی):</b> آیا کدها و نتایج قابل بازتولید هستند؟</li>
+          <li><b style="color: var(--violet);">Presentation (ارائه):</b> آیا می‌توانید نتایج را به دیگران منتقل کنید؟</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Roadmap -->
+  <div class="slide" id="slide-7">
+    <div class="slide-header">
+      <div class="eyebrow">Roadmap</div>
+      <h2>نقشه راه از شروع تا هدف</h2>
+      <p>پروژه شما یک مسیر خطی نیست؛ یک سفر با ایستگاه‌های متعدد است.</p>
+    </div>
+    <div class="img-container" style="margin-bottom: 30px;">
+      <img src="images/roadmap.png" alt="Roadmap" onerror="this.src='https://placehold.co/1000x300/0d192d/4dd4ff?text=Roadmap'">
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3>ایستگاه ۱: داده</h3><p>جمع‌آوری و تمیزکاری داده‌ها (هفته ۱-۲)</p></div>
+      <div class="card"><h3>ایستگاه ۲: مدل</h3><p>ساخت و آموزش مدل (هفته ۳-۴)</p></div>
+      <div class="card"><h3>ایستگاه ۳: مقاله</h3><p>نگارش مقاله و ارائه (هفته ۵-۶)</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 8: AI Tools -->
+  <div class="slide" id="slide-8">
+    <div class="slide-header">
+      <div class="eyebrow">AI Tools</div>
+      <h2>ابزارهای هوش مصنوعی برای پژوهش</h2>
+      <p>چگونه از مدل‌های زبانی در نگارش و کدنویسی پروژه استفاده کنیم؟</p>
+    </div>
+    <div class="img-container" style="margin-bottom: 30px;">
+      <img src="images/ai-tools.png" alt="AI Tools" onerror="this.src='https://placehold.co/1000x300/0d192d/4dd4ff?text=AI+Tools'">
+    </div>
+    <div class="grid-4">
+      <div class="card"><h3>ChatGPT</h3><p>بهترین برای دیباگ کد، توضیح خطاها و بازنویسی متون علمی.</p></div>
+      <div class="card"><h3>Claude</h3><p>مناسب برای تحلیل داده‌های طولانی و نگارش بخش‌های مقاله (با حفظ لحن علمی).</p></div>
+      <div class="card"><h3>Gemini</h3><p>جستجوی منابع علمی و دسترسی به Google Scholar (نسخه Advanced).</p></div>
+      <div class="card"><h3>DeepSeek</h3><p>مدل قدرتمند برای مسائل ریاضی، استنتاج کد و حل معادلات پیچیده (مانند PINN).</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 9: IEEE Structure -->
+  <div class="slide" id="slide-9">
+    <div class="slide-header">
+      <div class="eyebrow">IEEE Standard</div>
+      <h2>ساختار مقاله IEEE</h2>
+      <p>مقاله شما باید دقیقاً از این ساختار پیروی کند.</p>
+    </div>
+    <div class="img-container" style="margin-bottom: 20px;">
+      <img src="images/ieee-structure.png" alt="IEEE Structure" onerror="this.src='https://placehold.co/800x500/0d192d/4dd4ff?text=IEEE+Structure'">
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3>Title & Abstract</h3><p>عنوان جذاب و خلاصه ۱۵۰-۲۵۰ کلمه‌ای شامل هدف، روش و نتایج.</p></div>
+      <div class="card"><h3>Introduction & Method</h3><p>بیان مسئله، مرور کارهای گذشته و توضیح دقیق معماری مدل.</p></div>
+      <div class="card"><h3>Results & Conclusion</h3><p>ارائه نمودارها، جداول مقایسه و جمع‌بندی دستاوردها.</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Simulator 2 - IEEE Article Builder -->
+  <div class="slide" id="slide-10">
+    <div class="slide-header">
+      <div class="eyebrow">Interactive Simulator 2</div>
+      <h2>شبیه‌ساز چک‌لیست مقاله IEEE</h2>
+      <p>با کلیک روی هر بخش، وضعیت آن را بررسی کنید.</p>
+    </div>
+    <div class="grid-2">
+      <div class="simulator">
+        <h4><i data-lucide="check-square"></i> چک‌لیست مقاله</h4>
+        <div id="ieeeChecklist" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+          <!-- Items added via JS -->
+        </div>
+        <div style="margin-top: 20px; font-weight: bold; color: var(--cyan);" id="ieeeProgress">پیشرفت: 0%</div>
+      </div>
+      <div class="card">
+        <h3>نکات کلیدی نگارش</h3>
+        <p style="margin-bottom: 10px;">🔹 <b>استفاده از فرمول‌نویسی LaTeX:</b> برای نوشتن معادلات در Word یا Overleaf.</p>
+        <p style="margin-bottom: 10px;">🔹 <b>کیفیت تصاویر:</b> نمودارها باید با فرمت وکتور (PDF/SVG) و فونت خوانا باشند.</p>
+        <p style="margin-bottom: 10px;">🔹 <b>ارجاع‌دهی:</b> از نرم‌افزارهای مدیریت منابع مانند Zotero یا Mendeley استفاده کنید.</p>
+        <p>🔹 <b>ساختار پاراگراف‌ها:</b> هر پاراگراف فقط یک ایده اصلی را دنبال کند.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11: RL Workflow -->
+  <div class="slide" id="slide-11">
+    <div class="slide-header">
+      <div class="eyebrow">Reinforcement Learning</div>
+      <h2>پروژه‌های مبتنی بر یادگیری تقویتی (RL)</h2>
+      <p>اگر پروژه شما کنترلی است، این چرخه را به خاطر بسپارید.</p>
+    </div>
+    <div class="img-container" style="margin-bottom: 20px;">
+      <img src="images/rl-workflow.png" alt="RL Workflow" onerror="this.src='https://placehold.co/1000x300/0d192d/4dd4ff?text=RL+Workflow'">
+    </div>
+    <div class="grid-4">
+      <div class="card"><h3>محیط (Environment)</h3><p>شبیه‌ساز فیزیکی (مانند PyBullet یا Gymnasium) که قوانین مکانیک را اجرا می‌کند.</p></div>
+      <div class="card"><h3>عامل (Agent)</h3><p>شبکه عصبی که تصمیم می‌گیرد چه گشتاوری به موتور وارد کند.</p></div>
+      <div class="card"><h3>حلقه آموزش</h3><p>عامل عمل می‌کند، پاداش می‌گیرد و پارامترهایش را به‌روزرسانی می‌کند.</p></div>
+      <div class="card"><h3>ارزیابی و استقرار</h3><p>تست در شرایط واقعی (یا شبیه‌سازی دقیق‌تر) و انتقال به سخت‌افزار.</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 12: Simulator 3 - RL Agent -->
+  <div class="slide" id="slide-12">
+    <div class="slide-header">
+      <div class="eyebrow">Interactive Simulator 3</div>
+      <h2>شبیه‌ساز تعاملی RL (مسئله تعادل میله)</h2>
+      <p>عامل (Agent) در حال یادگیری است تا میله را با اعمال نیرو متعادل نگه دارد.</p>
+    </div>
+    <div class="grid-2">
+      <div class="simulator">
+        <h4><i data-lucide="cpu"></i> محیط Gymnasium (CartPole)</h4>
+        <canvas id="rlCanvas"></canvas>
+        <div class="controls">
+          <button onclick="resetRL()" class="reset">شروع مجدد</button>
+          <button onclick="toggleRL()" id="rlBtn" class="alt">توقف</button>
+        </div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>چگونه RL کار می‌کند؟</h3>
+        <p style="margin-bottom: 15px;">عامل با آزمون و خطا یاد می‌گیرد. اگر میله به سمت راست بیفتد و عامل به راست نیرو بدهد، پاداش می‌گیرد. اگر اشتباه کند، پاداش منفی می‌گیرد.</p>
+        <p style="color: var(--gold); font-weight: bold;">کتاب مرجع:</p>
+        <p style="color: var(--muted);">فصل ۱۸ کتاب Géron (Reinforcement Learning) و فصل ۱۳ کتاب Sutton & Barto.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 13: Code - Python PyTorch -->
+  <div class="slide" id="slide-13">
+    <div class="slide-header">
+      <div class="eyebrow">Python & PyTorch</div>
+      <h2>کد آماده برای Google Colab</h2>
+      <p>یک شبکه عصبی ساده برای پیش‌بینی داده‌های مکانیکی.</p>
+    </div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('py')">Python (PyTorch)</button>
+      <button class="tab-btn" onclick="switchTab('mat')">MATLAB</button>
+    </div>
+    <div id="tab-py" class="tab-content active">
+      <div class="code-header"><span>pytorch_model.py</span><button class="copy-btn" onclick="copyCode('code-py')">کپی</button></div>
+      <pre id="code-py"><code>import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# 1. Define a simple MLP for regression
+class MechNet(nn.Module):
+    def __init__(self):
+        super(MechNet, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Linear(3, 64),  # Input: 3 features (e.g., force, temp, speed)
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.ReLU(),
+            nn.Linear(32, 1)   # Output: 1 target (e.g., displacement)
+        )
+    
+    def forward(self, x):
+        return self.layers(x)
+
+# 2. Setup Data (Dummy data)
+X_train = torch.randn(100, 3)
+y_train = torch.randn(100, 1)
+
+# 3. Initialize Model, Loss, Optimizer
+model = MechNet()
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+# 4. Training Loop
+for epoch in range(100):
+    optimizer.zero_grad()
+    outputs = model(X_train)
+    loss = criterion(outputs, y_train)
+    loss.backward()
+    optimizer.step()
+    
+    if (epoch+1) % 10 == 0:
+        print(f'Epoch [{epoch+1}/100], Loss: {loss.item():.4f}')
+
+print("Training Complete!")</code></pre>
+    </div>
+    <div id="tab-mat" class="tab-content">
+      <div class="code-header"><span>mech_model.m</span><button class="copy-btn" onclick="copyCode('code-mat')">کپی</button></div>
+      <pre id="code-mat"><code>% MATLAB Deep Learning Toolbox
+% 1. Create Data
+X = randn(100, 3);
+Y = randn(100, 1);
+
+% 2. Define Network Architecture
+layers = [
+    featureInputLayer(3)
+    fullyConnectedLayer(64)
+    reluLayer
+    fullyConnectedLayer(32)
+    reluLayer
+    fullyConnectedLayer(1)
+    regressionLayer
+];
+
+% 3. Training Options
+options = trainingOptions('adam', ...
+    'MaxEpochs', 100, ...
+    'InitialLearnRate', 0.01, ...
+    'Verbose', false, ...
+    'Plots', 'training-progress');
+
+% 4. Train Network
+net = trainNetwork(X, Y, layers, options);</code></pre>
+    </div>
+  </div>
+
+  <!-- Slide 14: Homework -->
+  <div class="slide" id="slide-14">
+    <div class="slide-header">
+      <div class="eyebrow">Final Assignment</div>
+      <h2>تمرین نهایی (پروژه پایانی)</h2>
+      <p>این تمرین جایگزین آزمون کتبی پایان‌ترم است.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card" style="border-color: var(--cyan);">
+        <h3>چالش عملی (Practical)</h3>
+        <p style="margin-bottom: 10px;">۱. یک دیتاست واقعی مهندسی مکانیک (مثلاً ارتعاشات بلبرینگ از Kaggle) انتخاب کنید.</p>
+        <p style="margin-bottom: 10px;">۲. یک مدل MLP یا CNN با PyTorch در Colab آموزش دهید.</p>
+        <p style="margin-bottom: 10px;">۳. معیارهای ارزیابی (RMSE, R2) را محاسبه کنید.</p>
+        <p>۴. کدها و نمودارها را در یک گزارش ۴ صفحه‌ای (فرمت IEEE) بنویسید.</p>
+      </div>
+      <div class="card" style="border-color: var(--gold);">
+        <h3>چالش مفهومی (Conceptual)</h3>
+        <p style="margin-bottom: 10px;">با استفاده از کتاب Géron، تفاوت بین Batch Gradient Descent و Stochastic Gradient Descent را در ۱ پاراگراف توضیح دهید.</p>
+        <p>توضیح دهید چرا در پروژه‌های مکانیکی، استفاده از PINN می‌تواند بهتر از یک شبکه عصبی معمولی باشد؟ (حداقل ۳ دلیل فیزیکی و ریاضی).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 15: Research Roadmap -->
+  <div class="slide" id="slide-15">
+    <div class="slide-header">
+      <div class="eyebrow">Next Steps</div>
+      <h2>مسیر پیش رو: از پروژه تا مقاله</h2>
+      <p>شما اکنون ابزارها را دارید. قدم بعدی چیست؟</p>
+    </div>
+    <div class="grid-3">
+      <div class="card"><h3>۱. ارسال پروژه</h3><p>کدها و مقاله را تا پایان هفته آینده به ایمیل استاد ارسال کنید (فرمت مشخص شده).</p></div>
+      <div class="card"><h3>۲. دفاعیه (هفته ۲۴)</h3><p>ارائه ۱۰ دقیقه‌ای از نتایج خود با اسلایدهای آماده‌شده.</p></div>
+      <div class="card"><h3>۳. انتشار</h3><p>پروژه‌های برتر برای ارسال به کنفرانس‌های مهندسی مکانیک (مثل ISME) تشویق می‌شوند.</p></div>
+    </div>
+  </div>
+
+  <!-- Slide 16: End -->
+  <div class="slide" id="slide-16">
+    <div class="slide-header" style="margin-top: 15vh;">
+      <h2>با آرزوی موفقیت 🌟</h2>
+      <p>«هُوَ الْخَلَّاقُ الْعَلِيمُ»</p>
+      <div style="margin-top: 40px; font-size: 24px; color: var(--gold); font-family: 'Cambria Math', serif;">
+        e<sup>iπ</sup> + 1 = 0
+      </div>
+      <div style="margin-top: 20px; color: var(--muted); font-size: 14px;">
+        پایان جلسه ۲۳ — آماده برای ارائه پایانی در جلسه ۲۴
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// --- Slide Navigation ---
+let currentSlide = 1;
+const totalSlides = 16;
+document.getElementById('totalSlides').innerText = totalSlides;
+
+function updateNav() {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.getElementById('slide-' + currentSlide).classList.add('active');
+  document.getElementById('currentSlide').innerText = currentSlide;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateNav(); } }
+function prevSlide() { if (currentSlide > 1) { currentSlide--; updateNav(); } }
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') nextSlide(); // RTL
+  if (e.key === 'ArrowRight') prevSlide();
+});
+
+// --- Simulator 1: Data Split ---
+const splitCanvas = document.getElementById('splitCanvas');
+const ctx1 = splitCanvas.getContext('2d');
+const trainSlider = document.getElementById('trainSlider');
+const trainPctLabel = document.getElementById('trainPctLabel');
+
+function drawDataSplit() {
+  const pct = parseInt(trainSlider.value);
+  trainPctLabel.innerText = pct + '%';
+  
+  // Resize canvas to match display size
+  splitCanvas.width = splitCanvas.offsetWidth;
+  splitCanvas.height = splitCanvas.offsetHeight;
+  
+  const w = splitCanvas.width;
+  const h = splitCanvas.height;
+  ctx1.clearRect(0, 0, w, h);
+  
+  const totalDots = 100;
+  const trainDots = Math.floor(totalDots * (pct / 100));
+  const valDots = Math.floor((totalDots - trainDots) * 0.5);
+  const testDots = totalDots - trainDots - valDots;
+  
+  let index = 0;
+  const cols = 10;
+  const rows = 10;
+  const stepX = w / cols;
+  const stepY = h / rows;
+  
+  for(let r=0; r<rows; r++) {
+    for(let c=0; c<cols; c++) {
+      let color = 'var(--green)';
+      if (index >= trainDots && index < trainDots + valDots) color = 'var(--red)';
+      else if (index >= trainDots + valDots) color = 'var(--gold)';
+      
+      ctx1.beginPath();
+      ctx1.arc(c * stepX + stepX/2, r * stepY + stepY/2, 4, 0, Math.PI*2);
+      ctx1.fillStyle = getComputedStyle(document.body).getPropertyValue(color.trim()).trim() || '#fff';
+      ctx1.fill();
+      index++;
+    }
+  }
+}
+trainSlider.addEventListener('input', drawDataSplit);
+setTimeout(drawDataSplit, 100); // initial draw
+
+// --- Simulator 2: IEEE Checklist ---
+const checklistItems = [
+  "عنوان و چکیده (Title & Abstract)",
+  "مقدمه و بیان مسئله (Introduction)",
+  "مرور ادبیات (Literature Review)",
+  "روش‌شناسی و معماری مدل (Methodology)",
+  "نتایج و بحث (Results & Discussion)",
+  "نتیجه‌گیری و کارهای آینده (Conclusion)",
+  "مراجع (References)"
+];
+const checklistContainer = document.getElementById('ieeeChecklist');
+let checkedCount = 0;
+
+checklistItems.forEach((item, index) => {
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.alignItems = 'center';
+  div.style.gap = '10px';
+  div.style.padding = '8px 12px';
+  div.style.background = 'rgba(255,255,255,0.05)';
+  div.style.borderRadius = '8px';
+  div.style.cursor = 'pointer';
+  div.innerHTML = `<div style="width:20px; height:20px; border:2px solid var(--cyan); border-radius:4px; display:grid; place-items:center;" class="checkbox"></div> <span>${item}</span>`;
+  
+  div.onclick = () => {
+    const box = div.querySelector('.checkbox');
+    if (box.innerHTML === '') {
+      box.innerHTML = '<i data-lucide="check" style="width:14px; height:14px; color:var(--cyan);"></i>';
+      box.style.background = 'rgba(77,212,255,0.2)';
+      checkedCount++;
+    } else {
+      box.innerHTML = '';
+      box.style.background = 'transparent';
+      checkedCount--;
+    }
+    lucide.createIcons();
+    document.getElementById('ieeeProgress').innerText = `پیشرفت: ${Math.round((checkedCount/checklistItems.length)*100)}%`;
+  };
+  checklistContainer.appendChild(div);
+});
+
+// --- Simulator 3: RL CartPole ---
+const rlCanvas = document.getElementById('rlCanvas');
+const ctx3 = rlCanvas.getContext('2d');
+let rlInterval;
+let isRLRunning = true;
+
+let cart = { x: 150, v: 0, theta: 0, omega: 0 };
+const gravity = 0.002;
+const masscart = 1.0;
+const masspole = 0.1;
+const total_mass = masscart + masspole;
+const length = 0.5; // half-pole length
+const polemass_length = masspole * length;
+const force_mag = 0.01;
+const tau = 0.02;
+
+function stepRL(action) {
+  // action: 0 = push left, 1 = push right
+  const force = action === 1 ? force_mag : -force_mag;
+  const costheta = Math.cos(cart.theta);
+  const sintheta = Math.sin(cart.theta);
+  
+  const temp = (force + polemass_length * Math.pow(cart.omega, 2) * sintheta) / total_mass;
+  const thetaacc = (gravity * sintheta - costheta * temp) / (length * (4.0/3.0 - masspole * Math.pow(costheta, 2) / total_mass));
+  const xacc = temp - polemass_length * thetaacc * costheta / total_mass;
+  
+  cart.x += tau * cart.v;
+  cart.v += tau * xacc;
+  cart.theta += tau * cart.omega;
+  cart.omega += tau * thetaacc;
+  
+  // Reset if failed
+  if (cart.x < 0 || cart.x > 300 || Math.abs(cart.theta) > 0.5) {
+    resetRL();
+  }
+}
+
+function drawRL() {
+  rlCanvas.width = rlCanvas.offsetWidth;
+  rlCanvas.height = rlCanvas.offsetHeight;
+  const w = rlCanvas.width;
+  const h = rlCanvas.height;
+  
+  ctx3.clearRect(0, 0, w, h);
+  
+  // Draw track
+  ctx3.beginPath();
+  ctx3.moveTo(0, h - 50);
+  ctx3.lineTo(w, h - 50);
+  ctx3.strokeStyle = '#4dd4ff';
+  ctx3.lineWidth = 2;
+  ctx3.stroke();
+  
+  // Draw cart
+  const scaleX = w / 300;
+  const cx = cart.x * scaleX;
+  const cy = h - 50 - 20;
+  
+  ctx3.fillStyle = '#a78bfa';
+  ctx3.fillRect(cx - 25, cy, 50, 20);
+  
+  // Draw pole
+  const poleLen = 100;
+  const px = cx + poleLen * Math.sin(cart.theta);
+  const py = cy - poleLen * Math.cos(cart.theta);
+  
+  ctx3.beginPath();
+  ctx3.moveTo(cx, cy);
+  ctx3.lineTo(px, py);
+  ctx3.strokeStyle = '#f5c76a';
+  ctx3.lineWidth = 6;
+  ctx3.stroke();
+  
+  // Draw pivot
+  ctx3.beginPath();
+  ctx3.arc(cx, cy, 5, 0, Math.PI*2);
+  ctx3.fillStyle = '#fff';
+  ctx3.fill();
+  
+  // Simple "AI" logic: if falling right, push right (just to keep it visually interesting, not true RL)
+  if (isRLRunning) {
+    let action = 0;
+    if (cart.theta > 0) action = 1; // push right
+    else action = 0; // push left
+    stepRL(action);
+  }
+}
+
+function resetRL() {
+  cart = { x: 150, v: 0, theta: (Math.random() - 0.5) * 0.1, omega: 0 };
+}
+
+function toggleRL() {
+  isRLRunning = !isRLRunning;
+  document.getElementById('rlBtn').innerText = isRLRunning ? 'توقف' : 'شروع';
+}
+
+rlInterval = setInterval(drawRL, 30);
+
+// --- Tab Switching ---
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function copyCode(id) {
+  const code = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = event.target;
+    const originalText = btn.innerText;
+    btn.innerText = 'کپی شد!';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.innerText = originalText; btn.style.color = ''; }, 2000);
+  });
+}
+
+// Initialize Icons
+lucide.createIcons();
+
+</script>
+</body>
+</html>

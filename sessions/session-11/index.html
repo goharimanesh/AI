@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۱ — MediaPipe و CV تعاملی | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۱ — MediaPipe</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="hand" style="width:14px;height:14px"></i> جلسه ۱۱ • فاز ۳ — DL</div>
+      <h1>MediaPipe و بینایی ماشین تعاملی</h1>
+      <p class="subtitle-en">MediaPipe · Real-time Computer Vision<br>From Landmarks to Interactive Applications</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۰</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="scan-face"></i></div><h3>جلسه ۱۰</h3><p>CNN، Conv، Pooling، ResNet</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="hand"></i></div><h3>جلسه ۱۱ (امروز)</h3><p>MediaPipe، Hand Tracking، Pose</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ MediaPipe چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ Hand Tracking (۲۱ نقطه)</p></div>
+      <div class="card"><p style="margin:0">✅ Pose Detection (۳۳ نقطه)</p></div>
+      <div class="card"><p style="margin:0">✅ Face Mesh (۴۶۸ نقطه)</p></div>
+      <div class="card"><p style="margin:0">✅ کد Python و JavaScript</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🖐 چرا MediaPipe؟</h2>
+    <p style="font-size:16px">تا حالا CNN را دیدیم — اما ساختن یک مدل CV از صفر ماه‌ها کار می‌خواهد. <b>MediaPipe</b> کتابخانه‌ای از گوگل است که مدل‌های آماده CV را در اختیار شما می‌گذارد: تشخیص دست، حالت بدن، چهره، اشیاء — همه در چند خط کد.</p>
+    <p style="font-size:16px">MediaPipe در <b>زمان واقعی</b> روی CPU کار می‌کند — بدون GPU. این یعنی می‌توانید روی لپ‌تاپ خودتان، در کلاس، با وب‌کم، تشخیص دست را اجرا کنید.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="zap"></i></div>
+        <h3>زمان واقعی</h3>
+        <p>۳۰+ فریم بر ثانیه روی CPU</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="layers"></i>
+        </div>
+        <h3>مدل‌های آماده</h3>
+        <p>Hand، Pose، Face، Object</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="monitor"></i>
+        </div>
+        <h3>چند پلتفرم</h3>
+        <p>Python، JavaScript، Android، iOS</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="wrench"></i>
+        </div>
+        <h3>کاربرد مکانیکی</h3>
+        <p>کنترل ربات با دست، بازرسی جوش</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHAT IS MEDIAPIPE -->
+<div class="slide" data-topic="MediaPipe چیست">
+  <div class="slideInner">
+    <div class="eyebrow">معرفی</div>
+    <h2>📦 MediaPipe — کتابخانه CV گوگل</h2>
+    <p>MediaPipe یک فریم‌ورک متن‌باز از گوگل است که خط لوله‌های پردازش تصویر را با کارایی بالا اجرا می‌کند. در سال ۲۰۱۹ منتشر شد و امروز در میلیون‌ها اپلیکیشن استفاده می‌شود.</p>
+    <img src="images/mediapipe-pipeline.png" alt="MediaPipe pipeline" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">خط لوله MediaPipe: دوربین → تشخیص → نقاط کلیدی → اپلیکیشن</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 Hand Tracking</h3>
+        <p>۲۱ نقطه کلیدی دست</p>
+      </div>
+      <div class="card">
+        <h3>🧍 Pose Detection</h3>
+        <p>۳۳ نقطه بدن</p>
+      </div>
+      <div class="card">
+        <h3>😊 Face Mesh</h3>
+        <p>۴۶۸ نقطه چهره</p>
+      </div>
+      <div class="card">
+        <h3>🖼 Objectron</h3>
+        <p>۳D Object Detection</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: INSTALLATION -->
+<div class="slide" data-topic="نصب">
+  <div class="slideInner">
+    <div class="eyebrow">شروع</div>
+    <h2>⚙️ نصب و راه‌اندازی</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="install-python">Python</button>
+        <button class="codeTabBtn" data-code="install-js">JavaScript</button>
+      </div>
+      <div class="codePane active" id="code-install-python">
+<pre><span class="com"># نصب با pip</span>
+pip install mediapipe opencv-python
+
+<span class="com"># تست</span>
+python -c <span class="str">"import mediapipe; print(mediapipe.__version__)"</span></pre>
+      </div>
+      <div class="codePane" id="code-install-js">
+<pre><span class="com">// نصب با npm</span>
+npm install @mediapipe/tasks-vision
+
+<span class="com">// یا از CDN در HTML</span>
+&lt;script src=<span class="str">"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision"</span>&gt;&lt;/script&gt;</pre>
+      </div>
+    </div>
+    <div class="formulaBox">
+      <b style="color:var(--gold)">📌 پیش‌نیاز Python:</b> 3.8 یا بالاتر
+      <span class="lbl">OpenCV برای نمایش تصویر</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🖐 Hand Landmarks تعاملی</h2>
+    <p>روی نقاط کلیدی دست کلیک کنید تا شماره و نام آن‌ها را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="hand"></i> 21 Hand Landmarks</div>
+      <div class="simCanvasWrapper" style="height:450px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simResults">
+        <div class="simRes"><small>نقطه</small><b id="sim1_point">—</b></div>
+        <div class="simRes"><small>نام</small><b id="sim1_name">—</b></div>
+        <div class="simRes"><small>انگشت</small><b id="sim1_finger">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> روی هر نقطه کلیک کنید تا اطلاعاتش را ببینید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: HAND TRACKING -->
+<div class="slide" data-topic="Hand Tracking">
+  <div class="slideInner">
+    <div class="eyebrow">تشخیص دست</div>
+    <h2>🖐 Hand Tracking — ۲۱ نقطه</h2>
+    <p>MediaPipe دست را با ۲۱ نقطه کلیدی مدل می‌کند — از مچ (0) تا نوک انگشتان (4، 8، 12، 16، 20).</p>
+    <img src="images/hand-landmarks.png" alt="Hand landmarks" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">۲۱ نقطه کلیدی: ۵ انگشت × ۴ نقطه + مچ</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>انگشت</th><th>نقاط</th><th>نام</th></tr></thead>
+        <tbody>
+          <tr><td><b>شست</b></td><td>1، 2، 3، 4</td><td>Thumb</td></tr>
+          <tr><td><b>اشاره</b></td><td>5، 6، 7، 8</td><td>Index</td></tr>
+          <tr><td><b>میانی</b></td><td>9، 10، 11، 12</td><td>Middle</td></tr>
+          <tr><td><b>حلقه</b></td><td>13، 14، 15، 16</td><td>Ring</td></tr>
+          <tr><td><b>کوچک</b></td><td>17، 18، 19، 20</td><td>Pinky</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>✋ Hand Gesture Recognition</h2>
+    <p>یک ژست انتخاب کنید و ببینید MediaPipe چطور آن را تشخیص می‌دهد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="hand"></i> Gesture Recognition</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns" id="sim2_btns">
+        <button class="btnPrimary" data-gesture="fist">✊ مشت</button>
+        <button class="btnSecondary" data-gesture="open">🖐 باز</button>
+        <button class="btnSecondary" data-gesture="peace">✌️ صلح</button>
+        <button class="btnSecondary" data-gesture="thumbsup">👍 پسند</button>
+        <button class="btnSecondary" data-gesture="point">👆 اشاره</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>ژست</small><b id="sim2_gesture">مشت</b></div>
+        <div class="simRes"><small>اطمینان</small><b id="sim2_conf">—</b></div>
+        <div class="simRes"><small>انگشتان باز</small><b id="sim2_count">0</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> یک ژست انتخاب کنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: POSE -->
+<div class="slide" data-topic="Pose Detection">
+  <div class="slideInner">
+    <div class="eyebrow">تشخیص حالت بدن</div>
+    <h2>🧍 Pose Detection — ۳۳ نقطه</h2>
+    <p>MediaPipe Pose بدن انسان را با ۳۳ نقطه کلیدی مدل می‌کند — از سر تا پا. برای تحلیل حرکت، ورزش، و کنترل ربات مفید است.</p>
+    <img src="images/pose-detection.png" alt="Pose detection" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">۳۳ نقطه کلیدی بدن</div>
+    <div class="cardGrid">
+      <div class="card"><h3>ورزش</h3><p>تحلیل حرکت ورزشکاران</p></div>
+      <div class="card"><h3>ایمنی کار</h3><p>تشخیص حالت خطرناک کارگر</p></div>
+      <div class="card"><h3>رباتیک</h3><p>کنترل ربات با حرکت بدن</p></div>
+      <div class="card"><h3>توانبخشی</h3><p>پیگیری تمرینات فیزیوتراپی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: FACE MESH -->
+<div class="slide" data-topic="Face Mesh">
+  <div class="slideInner">
+    <div class="eyebrow">مش چهره</div>
+    <h2>😊 Face Mesh — ۴۶۸ نقطه</h2>
+    <p>MediaPipe Face Mesh چهره را با ۴۶۸ نقطه سه‌بعدی مدل می‌کند — دقیقاً مثل یک ماسک سه‌بعدی روی صورت.</p>
+    <img src="images/face-mesh.png" alt="Face mesh" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">۴۶۸ نقطه — دقیق‌ترین مدل چهره</div>
+    <div class="cardGrid">
+      <div class="card"><h3>تشخیص حالت</h3><p>خوشحال، غمگین، عصبانی</p></div>
+      <div class="card"><h3>AR</h3><p>فیلترهای اینستاگرام</p></div>
+      <div class="card"><h3>پزشکی</h3><p>تشخیص اختلالات چهره</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>😊 Face Landmarks — تعاملی</h2>
+    <p>روی نواحی چهره کلیک کنید تا نقاط کلیدی را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="smile"></i> Face Mesh Landmarks</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns" id="sim3_btns">
+        <button class="btnPrimary" data-region="full">همه</button>
+        <button class="btnSecondary" data-region="eyes">چشم‌ها</button>
+        <button class="btnSecondary" data-region="nose">بینی</button>
+        <button class="btnSecondary" data-region="mouth">دهان</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>ناحیه</small><b id="sim3_region">همه</b></div>
+        <div class="simRes"><small>نقاط نمایش</small><b id="sim3_count">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: OBJECT DETECTION -->
+<div class="slide" data-topic="Object Detection">
+  <div class="slideInner">
+    <div class="eyebrow">تشخیص شیء</div>
+    <h2>📦 Object Detection</h2>
+    <p>MediaPipe Object Detector می‌تواند اشیاء را در تصویر تشخیص دهد و مکانشان را با مستطیل (Bounding Box) مشخص کند.</p>
+    <div class="cardGrid">
+      <div class="card"><h3>EfficientDet</h3><p>سبک و سریع — برای موبایل</p></div>
+      <div class="card"><h3>Bounding Box</h3><p>مستطیل دور شیء</p></div>
+      <div class="card"><h3>Confidence Score</h3><p>اطمینان پیش‌بینی</p></div>
+      <div class="card"><h3>Class Label</h3><p>نام شیء</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: MECHANICS -->
+<div class="slide" data-topic="کاربرد مکانیکی">
+  <div class="slideInner">
+    <div class="eyebrow">کاربرد در مکانیک</div>
+    <h2>🔧 MediaPipe در مکانیک</h2>
+    <img src="images/mediapipe-mechanics.png" alt="MediaPipe mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از کنترل ربات تا بازرسی جوش</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="bot"></i></div>
+        <h3>کنترل ربات با دست</h3>
+        <p>دست شما → ربات</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="eye"></i>
+        </div>
+        <h3>بازرسی جوش</h3>
+        <p>تشخیص عیب در زمان واقعی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="person-standing"></i>
+        </div>
+        <h3>ایمنی کارگاه</h3>
+        <p>تشخیص حالت خطرناک کارگر</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="box"></i>
+        </div>
+        <h3>بسته‌بندی هوشمند</h3>
+        <p>تشخیص اشیاء روی نوار نقاله</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: PYTHON CODE -->
+<div class="slide" data-topic="کد Python">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>🐍 Python — Hand Tracking کامل</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="python-hand">Hand Tracking</button>
+        <button class="codeTabBtn" data-code="python-pose">Pose Detection</button>
+      </div>
+      <div class="codePane active" id="code-python-hand">
+<pre><span class="kw">import</span> cv2
+<span class="kw">import</span> mediapipe <span class="kw">as</span> mp
+
+mp_hands = mp.solutions.hands
+mp_draw = mp.solutions.drawing_utils
+
+cap = cv2.VideoCapture(<span class="num">0</span>)
+
+<span class="kw">with</span> mp_hands.Hands(
+    static_image_mode=<span class="kw">False</span>,
+    max_num_hands=<span class="num">2</span>,
+    min_detection_confidence=<span class="num">0.5</span>
+) <span class="kw">as</span> hands:
+
+    <span class="kw">while</span> cap.isOpened():
+        success, frame = cap.read()
+        <span class="kw">if not</span> success: <span class="kw">break</span>
+
+        <span class="com"># تبدیل BGR به RGB</span>
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = hands.process(rgb)
+
+        <span class="kw">if</span> results.multi_hand_landmarks:
+            <span class="kw">for</span> hand <span class="kw">in</span> results.multi_hand_landmarks:
+                mp_draw.draw_landmarks(
+                    frame, hand, mp_hands.HAND_CONNECTIONS)
+                <span class="com"># چاپ مچ دست</span>
+                print(hand.landmark[<span class="num">0</span>])
+
+        cv2.imshow(<span class="str">"Hand Tracking"</span>, frame)
+        <span class="kw">if</span> cv2.waitKey(<span class="num">1</span>) &amp; <span class="num">0xFF</span> == <span class="num">27</span>:
+            <span class="kw">break</span>
+
+cap.release()
+cv2.destroyAllWindows()</pre>
+      </div>
+      <div class="codePane" id="code-python-pose">
+<pre><span class="kw">import</span> cv2
+<span class="kw">import</span> mediapipe <span class="kw">as</span> mp
+
+mp_pose = mp.solutions.pose
+mp_draw = mp.solutions.drawing_utils
+
+cap = cv2.VideoCapture(<span class="num">0</span>)
+
+<span class="kw">with</span> mp_pose.Pose(
+    min_detection_confidence=<span class="num">0.5</span>,
+    min_tracking_confidence=<span class="num">0.5</span>
+) <span class="kw">as</span> pose:
+
+    <span class="kw">while</span> cap.isOpened():
+        success, frame = cap.read()
+        <span class="kw">if not</span> success: <span class="kw">break</span>
+
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = pose.process(rgb)
+
+        <span class="kw">if</span> results.pose_landmarks:
+            mp_draw.draw_landmarks(
+                frame, results.pose_landmarks,
+                mp_pose.POSE_CONNECTIONS)
+
+        cv2.imshow(<span class="str">"Pose Detection"</span>, frame)
+        <span class="kw">if</span> cv2.waitKey(<span class="num">1</span>) &amp; <span class="num">0xFF</span> == <span class="num">27</span>:
+            <span class="kw">break</span>
+
+cap.release()
+cv2.destroyAllWindows()</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: JAVASCRIPT CODE -->
+<div class="slide" data-topic="کد JavaScript">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی وب</div>
+    <h2>🌐 JavaScript — MediaPipe در مرورگر</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="js-html">HTML</button>
+        <button class="codeTabBtn" data-code="js-code">JavaScript</button>
+      </div>
+      <div class="codePane active" id="code-js-html">
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;script src=<span class="str">"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision"</span>&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;video id=<span class="str">"webcam"</span> autoplay&gt;&lt;/video&gt;
+  &lt;canvas id=<span class="str">"overlay"</span>&gt;&lt;/canvas&gt;
+  &lt;script src=<span class="str">"script.js"</span>&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+      </div>
+      <div class="codePane" id="code-js-code">
+<pre><span class="kw">import</span> { HandLandmarker, FilesetResolver } <span class="kw">from</span> <span class="str">"@mediapipe/tasks-vision"</span>;
+
+<span class="kw">const</span> vision = <span class="kw">await</span> FilesetResolver.forVisionTasks(
+  <span class="str">"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"</span>
+);
+
+<span class="kw">const</span> handLandmarker = <span class="kw">await</span> HandLandmarker.createFromOptions(
+  vision, {
+    baseOptions: {
+      modelAssetPath: <span class="str">"hand_landmarker.task"</span>
+    },
+    numHands: <span class="num">2</span>,
+    runningMode: <span class="str">"VIDEO"</span>
+  });
+
+<span class="kw">const</span> video = document.getElementById(<span class="str">"webcam"</span>);
+<span class="kw">const</span> stream = <span class="kw">await</span> navigator.mediaDevices.getUserMedia({ video: <span class="kw">true</span> });
+video.srcObject = stream;
+
+<span class="kw">function</span> <span class="fn">detect</span>() {
+  <span class="kw">const</span> results = handLandmarker.detectForVideo(
+    video, performance.now());
+  <span class="kw">if</span> (results.landmarks) {
+    <span class="kw">for</span> (<span class="kw">const</span> hand <span class="kw">of</span> results.landmarks) {
+      console.log(hand[<span class="num">8</span>]); <span class="com">// نوک انگشت اشاره</span>
+    }
+  }
+  requestAnimationFrame(detect);
+}
+<span class="fn">detect</span>();</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: CONCEPTS -->
+<div class="slide" data-topic="مفاهیم">
+  <div class="slideInner">
+    <div class="eyebrow">مفاهیم کلیدی</div>
+    <h2>📐 مفاهیم MediaPipe</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{Landmark} = (x, y, z) \in [0, 1]^3$$
+      <span class="lbl">نقاط کلیدی — مختصات نرمال‌شده</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{Confidence} \in [0, 1]$$
+      <span class="lbl">اطمینان مدل به تشخیص</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 Landmarks</h3><p>مختصات نرمال‌شده (0 تا 1)</p></div>
+      <div class="card"><h3>📊 Connections</h3><p>خطوط بین نقاط</p></div>
+      <div class="card"><h3>⚡ FPS</h3><p>فریم بر ثانیه — 30+</p></div>
+      <div class="card"><h3>🎚 Confidence</h3><p>آستانه اطمینان</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۱</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالی مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>MediaPipe چه تفاوتی با آموزش CNN از صفر دارد؟</li>
+          <li><span class="exNum">۲</span>۲۱ نقطه کلیدی دست چه نام دارند؟</li>
+          <li><span class="exNum">۳</span>۳۳ نقطه Pose Detection کدامند؟</li>
+          <li><span class="exNum">۴</span>Face Mesh با ۴۶۸ نقطه چه کاربردی دارد؟</li>
+          <li><span class="exNum">۵</span>چطور می‌توانید یک ژست جدید (مثلاً علامت V) را تشخیص دهید؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Hand Tracking با وب‌کم در Colab یا محیط محلی.</li>
+          <li><span class="exNum">۲</span>تشخیص ژست «صلح» با شمارش انگشتان باز.</li>
+          <li><span class="exNum">۳</span>Pose Detection برای تحلیل حرکت ورزشکار.</li>
+          <li><span class="exNum">۴</span>کنترل یک شکل ساده با دست (مانند بازی).</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد MediaPipe در مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه Hand Tracking و Pose Detection — کاربردها.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک ایده کاربردی مکانیکی با MediaPipe طراحی کنید.</li>
+          <li><span class="exNum">★</span>چطور می‌توانید MediaPipe را با یک ربات واقعی ادغام کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW11 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <p>برای جست‌وجوی پروژه‌های MediaPipe و کدهای آماده.</p>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های MediaPipe</p>
+        <span class="tag">جلسه ۱۱ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد MediaPipe</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>تولید کدهای سفارشی</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «MediaPipe hand tracking projects 2024»
+        و ۳ پروژه جالب پیدا کنید. منابع را در HW11 بنویسید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۱</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ MediaPipe</h3><p>کتابخانه CV آماده گوگل — زمان واقعی روی CPU</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Hand Tracking</h3><p>۲۱ نقطه کلیدی دست — ژست‌شناسی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Pose Detection</h3><p>۳۳ نقطه بدن — تحلیل حرکت</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ Face Mesh</h3><p>۴۶۸ نقطه چهره — AR و پزشکی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ کاربرد مکانیکی</h3><p>کنترل ربات، ایمنی، بازرسی</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: NEXT -->
+<div class="slide" data-topic="جلسه بعد">
+  <div class="slideInner">
+    <div class="eyebrow">جلسه ۱۲</div>
+    <h2>📅 جلسه بعد</h2>
+    <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+      border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin-top:20px">
+      <h3 style="color:var(--violet);margin-bottom:10px">Transfer Learning عملی</h3>
+      <p style="margin-top:8px">
+        • Pre-trained Models<br>
+        • Fine-Tuning در Keras<br>
+        • Feature Extraction<br>
+        • کاربرد در تشخیص عیب مکانیکی
+      </p>
+    </div>
+    <div style="margin-top:22px;padding:20px;border-radius:14px;
+      background:rgba(77,212,255,.12);border:1px solid rgba(77,212,255,.5)">
+      <h4 style="color:var(--cyan);margin-bottom:8px;font-size:16px">📁 قبل از جلسه ۱۲</h4>
+      <p style="margin:0;font-size:14px">
+        ۱. HW11 را در Google Drive آپلود کنید<br>
+        ۲. کتاب Géron فصل ۱۱ را مرور کنید<br>
+        ۳. یک مدل ResNet50 را در Colab لود کنید
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: Transfer Learning</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۱</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

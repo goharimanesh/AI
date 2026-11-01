@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۱ — PINN: شبکه‌های عصبی فیزیک‌محور | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۲۱ — PINN</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="atom" style="width:14px;height:14px"></i> جلسه ۲۱ • فاز ۶ — Scientific AI</div>
+      <h1>PINN — شبکه‌های عصبی فیزیک‌محور</h1>
+      <p class="subtitle-en">Physics-Informed Neural Networks<br>When PDEs Meet Deep Learning</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربیت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۲۰</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="atom"></i></div><h3>جلسه ۲۰</h3><p>Scientific AI، Surrogate، Neural Operator</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="brain"></i></div><h3>جلسه ۲۱ (امروز)</h3><p>PINN — پیاده‌سازی کامل</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ PINN چیست و چطور کار می‌کند؟</p></div>
+      <div class="card"><p style="margin:0">✅ تابع هزینه ترکیبی (Data + PDE + BC)</p></div>
+      <div class="card"><p style="margin:0">✅ Autograd — قلب PINN</p></div>
+      <div class="card"><p style="margin:0">✅ Collocation Points</p></div>
+      <div class="card"><p style="margin:0">✅ حل معادله گرما 1D</p></div>
+      <div class="card"><p style="margin:0">✅ پیاده‌سازی با PyTorch و DeepXDE</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: PREDICT-OBSERVE -->
+<div class="slide" data-topic="Predict-Observe">
+  <div class="slideInner">
+    <div class="eyebrow">متد تدریس: Predict-Observe-Explain</div>
+    <h2>🤔 پیش‌بینی کنید!</h2>
+    <p style="font-size:17px">فرض کنید یک شبکه عصبی معمولی را روی داده‌های پراکنده از یک میله فلزی که یک سرش گرم است آموزش می‌دهیم. سپس از آن می‌خواهیم دما را در نقاطی که داده نداریم پیش‌بینی کند.</p>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">پیش‌بینی شما چیست؟</h3>
+        <p>آیا شبکه می‌تواند توزیع دما را درست پیش‌بینی کند؟</p>
+        <p style="margin-top:12px;font-style:italic;color:var(--muted)">(قبل از دیدن اسلاید بعد، ۳۰ ثانیه فکر کنید)</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">مشکل احتمالی</h3>
+        <p>شبکه فقط داده را «حفظ» می‌کند — هیچ ایده‌ای از فیزیک (قانون فوریه) ندارد.</p>
+      </div>
+    </div>
+    <div class="stepInfo" style="margin-top:24px;background:rgba(245,199,106,.12);border-color:rgba(245,199,106,.4)">
+      <b style="color:var(--gold)">💡 PINN اینجا وارد می‌شود:</b> به شبکه یاد می‌دهیم که «قانون فوریه» را رعایت کند — حتی در نقاطی که داده ندارد.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHAT IS PINN -->
+<div class="slide" data-topic="PINN چیست">
+  <div class="slideInner">
+    <div class="eyebrow">تعریف</div>
+    <h2>🧠 PINN چیست؟</h2>
+    <p><b>PINN</b> (Physics-Informed Neural Network) یک شبکه عصبی است که علاوه بر داده، <b>معادلات فیزیکی (PDE)</b> را نیز در تابع هزینه خود جای می‌دهد. این ایده در سال ۲۰۱۹ توسط Maziar Raissi و همکاران معرفی شد.</p>
+    <img src="images/pinn-hero.png" alt="PINN" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">شبکه عصبی + PDE = PINN</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$L_{total} = L_{data} + \lambda L_{PDE} + \mu L_{BC}$$
+      <span class="lbl">تابع هزینه PINN — ترکیب داده، فیزیک، و شرایط مرزی</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 داده کم</h3><p>حتی با چند نقطه، فیزیک کمک می‌کند</p></div>
+      <div class="card"><h3>📐 تفسیرپذیر</h3><p>فیزیک در مدل حضور دارد</p></div>
+      <div class="card"><h3>🔍 Inverse</h3><p>می‌توان پارامترهای مجهول را کشف کرد</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: SIM 1 — LOSS ANATOMY -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>📊 آناتومی Loss در PINN</h2>
+    <p>وزن هر جزء Loss را تغییر دهید و ببینید چطور بر آموزش تأثیر می‌گذارد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="scale"></i> PINN Loss Components</div>
+      <div class="simCanvasWrapper" style="height:380px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sliderGroup">
+          <label>وزن L_data (λ) <span class="sliderVal" id="sim1_ld_val">1.0</span></label>
+          <input type="range" id="sim1_ld" min="0" max="5" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>وزن L_PDE (μ) <span class="sliderVal" id="sim1_lp_val">1.0</span></label>
+          <input type="range" id="sim1_lp" min="0" max="5" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>وزن L_BC (ν) <span class="sliderVal" id="sim1_lb_val">1.0</span></label>
+          <input type="range" id="sim1_lb" min="0" max="5" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Loss کل</small><b id="sim1_total">—</b></div>
+        <div class="simRes"><small>تعادل</small><b id="sim1_balance">—</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim1_status">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> وزن‌ها را تغییر دهید. اگر یک وزن خیلی بزرگ باشد، آموزش ناپایدار می‌شود.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: LOSS FUNCTION -->
+<div class="slide" data-topic="تابع هزینه">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌بندی</div>
+    <h2>📐 تابع هزینه ترکیبی</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$L_{data} = \frac{1}{N_d}\sum_{i=1}^{N_d} |u_\theta(x_i, t_i) - u_i^{obs}|^2$$
+      <span class="lbl">اختلاف پیش‌بینی با داده مشاهده‌شده</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$L_{PDE} = \frac{1}{N_f}\sum_{j=1}^{N_f} \left| \frac{\partial u_\theta}{\partial t} - \alpha \frac{\partial^2 u_\theta}{\partial x^2} \right|^2$$
+      <span class="lbl">باقیمانده معادله گرما — در Collocation Points</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$L_{BC} = \frac{1}{N_b}\sum_{k=1}^{N_b} |u_\theta(x_k, t_k) - u^{BC}|^2$$
+      <span class="lbl">خطای شرایط مرزی و اولیه</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 نکته:</b> انتخاب $\lambda$ و $\mu$ بهینه، یکی از بزرگ‌ترین چالش‌های PINN است .
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: LIVE CODING LOSS -->
+<div class="slide" data-topic="Live Coding Loss">
+  <div class="slideInner">
+    <div class="eyebrow">Live Coding — کدنویسی زنده</div>
+    <h2>💻 پیاده‌سازی Loss در PyTorch</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="loss-code">Loss</button>
+      </div>
+      <div class="codePane active" id="code-loss-code">
+<pre><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="kw">class</span> <span class="fn">PINN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(<span class="num">2</span>, <span class="num">32</span>), nn.Tanh(),
+            nn.Linear(<span class="num">32</span>, <span class="num">32</span>), nn.Tanh(),
+            nn.Linear(<span class="num">32</span>, <span class="num">1</span>)
+        )
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x, t):
+        <span class="kw">return</span> self.net(torch.cat([x, t], dim=<span class="num">1</span>))
+
+<span class="kw">def</span> <span class="fn">pde_residual</span>(model, x, t, alpha=<span class="num">0.01</span>):
+    x.<span class="fn">requires_grad_</span>(<span class="kw">True</span>)
+    t.<span class="fn">requires_grad_</span>(<span class="kw">True</span>)
+
+    u = <span class="fn">model</span>(x, t)
+
+    <span class="com"># مشتق اول نسبت به t</span>
+    u_t = torch.autograd.<span class="fn">grad</span>(u, t, grad_outputs=torch.<span class="fn">ones_like</span>(u),
+                           create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+
+    <span class="com"># مشتق اول و دوم نسبت به x</span>
+    u_x = torch.autograd.<span class="fn">grad</span>(u, x, grad_outputs=torch.<span class="fn">ones_like</span>(u),
+                           create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_xx = torch.autograd.<span class="fn">grad</span>(u_x, x, grad_outputs=torch.<span class="fn">ones_like</span>(u_x),
+                            create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+
+    <span class="kw">return</span> u_t - alpha * u_xx
+
+<span class="com"># محاسبه Loss</span>
+<span class="kw">def</span> <span class="fn">total_loss</span>(model, x_data, t_data, u_data,
+               x_pde, t_pde, x_bc, t_bc, u_bc,
+               lambda_pde=<span class="num">1.0</span>, mu_bc=<span class="num">1.0</span>):
+    <span class="com"># Data loss</span>
+    u_pred = <span class="fn">model</span>(x_data, t_data)
+    L_data = torch.<span class="fn">mean</span>((u_pred - u_data)**<span class="num">2</span>)
+
+    <span class="com"># PDE loss</span>
+    residual = <span class="fn">pde_residual</span>(model, x_pde, t_pde)
+    L_pde = torch.<span class="fn">mean</span>(residual**<span class="num">2</span>)
+
+    <span class="com"># BC loss</span>
+    u_bc_pred = <span class="fn">model</span>(x_bc, t_bc)
+    L_bc = torch.<span class="fn">mean</span>((u_bc_pred - u_bc)**<span class="num">2</span>)
+
+    <span class="kw">return</span> L_data + lambda_pde * L_pde + mu_bc * L_bc</pre>
+      </div>
+    </div>
+    <div class="stepInfo" style="margin-top:16px">
+      <b style="color:var(--gold)">🎯 چالش کلاسی:</b> چرا `create_graph=True` در `autograd.grad` لازم است؟
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: COLLOCATION POINTS -->
+<div class="slide" data-topic="Collocation Points">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم کلیدی</div>
+    <h2>📍 Collocation Points</h2>
+    <p>نقاطی که در دامنه (نه روی مرز) انتخاب می‌شوند و PDE در آن‌ها ارزیابی می‌شود. این نقاط «برچسب» ندارند — فقط فیزیک را اعمال می‌کنند.</p>
+    <img src="images/collocation-points.png" alt="Collocation points" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">نقاط آبی: Collocation — نقاط طلایی: مرز — نقاط بنفش: اولیه</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎲 نمونه‌گیری</h3><p>تصادفی، Latin Hypercube، Adaptive</p></div>
+      <div class="card"><h3>📊 تعداد</h3><p>معمولاً ۱۰۰۰ تا ۱۰۰۰۰</p></div>
+      <div class="card"><h3>🔄 Adaptive</h3><p>RAR: تمرکز روی نقاط با residual بالا [citation:11]</p></div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$\text{Collocation} \subset \Omega \quad \text{with no labels}$$
+      <span class="lbl">نقاط بدون برچسب — فقط PDE</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 — COLLOCATION -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>📍 Collocation Points — تعاملی</h2>
+    <p>تعداد نقاط را تغییر دهید و ببینید پوشش دامنه چطور تغییر می‌کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="map-pin"></i> Collocation Sampling</div>
+      <div class="simCanvasWrapper" style="height:380px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>تعداد نقاط <span class="sliderVal" id="sim2_n_val">50</span></label>
+          <input type="range" id="sim2_n" min="10" max="500" step="10" value="50">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>تعداد</small><b id="sim2_count">50</b></div>
+        <div class="simRes"><small>پوشش</small><b id="sim2_cover">—</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim2_status">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> اسلایدر را حرکت دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: AUTOGRAD -->
+<div class="slide" data-topic="Autograd">
+  <div class="slideInner">
+    <div class="eyebrow">قلب PINN</div>
+    <h2>⚙️ Autograd — قلب PINN</h2>
+    <p>PINN بدون <b>Autograd</b> (محاسبه خودکار مشتقات) غیرممکن است. PyTorch و JAX این کار را با «گراف محاسباتی» انجام می‌دهند.</p>
+    <img src="images/autograd-flow.png" alt="Autograd" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Forward (آبی) و Backward (طلایی) — گرادیان به عقب جریان می‌یابد</div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\frac{\partial u}{\partial x}, \frac{\partial u}{\partial t}, \frac{\partial^2 u}{\partial x^2}$$
+      <span class="lbl">مشتقات موردنیاز PINN — همه با Autograd</span>
+    </div>
+    <div class="stepInfo" style="margin-top:16px">
+      <b style="color:var(--gold)">📌 نکته:</b> در `torch.autograd.grad`، پارامتر `create_graph=True` باعث می‌شود مشتق دوم هم قابل محاسبه باشد.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: LIVE CODING AUTOGRAD -->
+<div class="slide" data-topic="Live Coding Autograd">
+  <div class="slideInner">
+    <div class="eyebrow">Live Coding</div>
+    <h2>💻 Autograd در PyTorch — گام‌به‌گام</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="auto-code">Autograd</button>
+      </div>
+      <div class="codePane active" id="code-auto-code">
+<pre><span class="kw">import</span> torch
+
+<span class="com"># ۱. یک تابع ساده: u = x^2 + t^2</span>
+x = torch.<span class="fn">tensor</span>([<span class="num">2.0</span>], requires_grad=<span class="kw">True</span>)
+t = torch.<span class="fn">tensor</span>([<span class="num">3.0</span>], requires_grad=<span class="kw">True</span>)
+u = x**<span class="num">2</span> + t**<span class="num">2</span>
+
+<span class="com"># ۲. مشتق اول</span>
+du_dx = torch.autograd.<span class="fn">grad</span>(u, x, create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+du_dt = torch.autograd.<span class="fn">grad</span>(u, t, create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+print(<span class="str">f"du/dx = {du_dx.item()}"</span>)  <span class="com"># 2x = 4</span>
+print(<span class="str">f"du/dt = {du_dt.item()}"</span>)  <span class="com"># 2t = 6</span>
+
+<span class="com"># ۳. مشتق دوم (نیاز به create_graph=True)</span>
+d2u_dx2 = torch.autograd.<span class="fn">grad</span>(du_dx, x)[<span class="num">0</span>]
+print(<span class="str">f"d²u/dx² = {d2u_dx2.item()}"</span>)  <span class="com"># 2</span>
+
+<span class="com"># ۴. مثال PINN: مشتق شبکه عصبی</span>
+<span class="kw">def</span> <span class="fn">u</span>(x, t):
+    <span class="kw">return</span> torch.<span class="fn">sin</span>(x) * torch.<span class="fn">exp</span>(-t)
+
+x = torch.<span class="fn">tensor</span>([<span class="num">0.5</span>], requires_grad=<span class="kw">True</span>)
+t = torch.<span class="fn">tensor</span>([<span class="num">1.0</span>], requires_grad=<span class="kw">True</span>)
+u_val = <span class="fn">u</span>(x, t)
+
+u_t = torch.autograd.<span class="fn">grad</span>(u_val, t, create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+u_x = torch.autograd.<span class="fn">grad</span>(u_val, x, create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+u_xx = torch.autograd.<span class="fn">grad</span>(u_x, x)[<span class="num">0</span>]
+
+<span class="com"># بررسی معادله گرما: u_t = u_xx</span>
+residual = u_t - u_xx
+print(<span class="str">f"PDE residual: {residual.item():.6f}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: HEAT EQUATION -->
+<div class="slide" data-topic="حل معادله گرما">
+  <div class="slideInner">
+    <div class="eyebrow">مثال کامل</div>
+    <h2>🔥 حل معادله گرما 1D</h2>
+    <img src="images/heat-equation-solution.png" alt="Heat equation" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">توزیع دما u(x,t) — از گرم (طلایی) به سرد (فیروزه‌ای)</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}, \quad x \in [0, 1], t \in [0, 1]$$
+      <span class="lbl">معادله گرما 1D</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>شرط اولیه</h3><p>$u(x, 0) = \sin(\pi x)$</p></div>
+      <div class="card"><h3>شرایط مرزی</h3><p>$u(0, t) = u(1, t) = 0$</p></div>
+      <div class="card"><h3>حل تحلیلی</h3><p>$u(x, t) = e^{-\alpha \pi^2 t} \sin(\pi x)$</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 — HEAT EQUATION -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🔥 معادله گرما — تعاملی</h2>
+    <p>پارامترها را تغییر دهید و ببینید توزیع دما چطور تغییر می‌کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Heat Equation Solution</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>ضریب نفوذ حرارتی (α) <span class="sliderVal" id="sim3_alpha_val">0.01</span></label>
+          <input type="range" id="sim3_alpha" min="0.001" max="0.1" step="0.001" value="0.01">
+        </div>
+        <div class="sliderGroup">
+          <label>زمان (t) <span class="sliderVal" id="sim3_t_val">0.5</span></label>
+          <input type="range" id="sim3_t" min="0" max="1" step="0.01" value="0.5">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>α</small><b id="sim3_alpha_disp">0.01</b></div>
+        <div class="simRes"><small>زمان</small><b id="sim3_t_disp">0.5</b></div>
+        <div class="simRes"><small>حداکثر دما</small><b id="sim3_max">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> α و t را تغییر دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: PINN VS FEM -->
+<div class="slide" data-topic="PINN vs FEM">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ PINN در برابر FEM</h2>
+    <img src="images/pinn-vs-fem.png" alt="PINN vs FEM" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">دو رویکرد متفاوت به حل PDE</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>FEM</th><th>PINN</th></tr></thead>
+        <tbody>
+          <tr><td><b>مش</b></td><td>نیاز دارد</td><td>ندارد (Mesh-free)</td></tr>
+          <tr><td><b>ابعاد بالا</b></td><td>مشکل</td><td>بهتر</td></tr>
+          <tr><td><b>Inverse</b></td><td>سخت</td><td>طبیعی</td></tr>
+          <tr><td><b>دقت</b></td><td>بالا</td><td>متوسط (در مسائل سخت ضعیف‌تر) [citation:8]</td></tr>
+          <tr><td><b>سرعت آموزش</b></td><td>—</td><td>کند</td></tr>
+          <tr><td><b>سرعت استنتاج</b></td><td>—</td><td>سریع</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: CHALLENGES -->
+<div class="slide" data-topic="چالش‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">چالش‌ها</div>
+    <h2>⚠️ چالش‌های PINN</h2>
+    <img src="images/pinn-challenges.png" alt="PINN challenges" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چهار چالش اصلی PINN</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">Spectral Bias</h3>
+        <p>شبکه‌های عصبی تمایل به یادگیری فرکانس‌های پایین دارند [citation:8]</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">Loss Imbalance</h3>
+        <p>توازن بین $L_{data}$ و $L_{PDE}$ دشوار است </p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">BC Enforcement</h3>
+        <p>اعمال دقیق شرایط مرزی پیچیده </p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">Cost</h3>
+        <p>آموزش در مسائل 3D گران است</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: PREDICT-OBSERVE CHALLENGES -->
+<div class="slide" data-topic="Predict-Observe چالش">
+  <div class="slideInner">
+    <div class="eyebrow">متد تدریس: Predict-Observe-Explain</div>
+    <h2>🤔 پیش‌بینی کنید — بخش ۲</h2>
+    <p style="font-size:17px">اگر یک PINN را روی معادله گرما با فرکانس بالا آموزش دهیم (مثلاً $\sin(10\pi x)$ به جای $\sin(\pi x)$)، چه اتفاقی می‌افتد؟</p>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">پیش‌بینی شما چیست؟</h3>
+        <p>آیا PINN می‌تواند فرکانس بالا را یاد بگیرد؟</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">پاسخ</h3>
+        <p>PINN در فرکانس‌های بالا ضعیف است — این همان <b>Spectral Bias</b> است [citation:8]. راه‌حل: Fourier Features.</p>
+      </div>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 درس:</b> PINN یک ابزار است، نه جادو. باید بدانید کجا کار می‌کند و کجا نه [citation:8].
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: MECHANICS -->
+<div class="slide" data-topic="کاربرد مکانیک">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 PINN در مکانیک</h2>
+    <img src="images/pinn-mechanics.png" alt="PINN in mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از تیر تا سیال — همه با PINN</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🔥 انتقال حرارت</h3><p>معادله گرما، هدایت، جابجایی</p></div>
+      <div class="card"><h3>🏗 جامدات</h3><p>تیر، صفحه، الاستیسیته</p></div>
+      <div class="card"><h3>⚙️ ارتعاشات</h3><p>تیر یکسرگیردار، صفحه</p></div>
+      <div class="card"><h3>🌊 سیالات</h3><p>Navier-Stokes، جریان در کانال</p></div>
+      <div class="card"><h3>🔍 Inverse</h3><p>کشف پارامترهای مجهول</p></div>
+      <div class="card"><h3>📊 Surrogate</h3><p>جایگزین سریع شبیه‌ساز</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: LIVE CODING DEEPXDE -->
+<div class="slide" data-topic="Live Coding DeepXDE">
+  <div class="slideInner">
+    <div class="eyebrow">Live Coding</div>
+    <h2>💻 DeepXDE — ساده‌ترین راه</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="deepxde">DeepXDE</button>
+      </div>
+      <div class="codePane active" id="code-deepxde">
+<pre><span class="kw">import</span> deepxde <span class="kw">as</span> dde
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="com"># ۱. تعریف PDE</span>
+<span class="kw">def</span> <span class="fn">pde</span>(x, u):
+    du_t = dde.grad.<span class="fn">jacobian</span>(u, x, i=<span class="num">0</span>, j=<span class="num">1</span>)
+    du_xx = dde.grad.<span class="fn">hessian</span>(u, x, i=<span class="num">0</span>, j=<span class="num">0</span>)
+    <span class="kw">return</span> du_t - <span class="num">0.01</span> * du_xx
+
+<span class="com"># ۲. دامنه</span>
+geom = dde.geometry.<span class="fn">Interval</span>(<span class="num">0</span>, <span class="num">1</span>)
+timedomain = dde.geometry.<span class="fn">TimeDomain</span>(<span class="num">0</span>, <span class="num">1</span>)
+geomtime = dde.geometry.<span class="fn">GeometryXTime</span>(geom, timedomain)
+
+<span class="com"># ۳. شرایط مرزی و اولیه</span>
+bc = dde.icbc.<span class="fn">DirichletBC</span>(geomtime, <span class="kw">lambda</span> x: <span class="num">0</span>,
+                           <span class="kw">lambda</span> x, on_boundary: on_boundary)
+ic = dde.icbc.<span class="fn">IC</span>(geomtime, <span class="kw">lambda</span> x: np.<span class="fn">sin</span>(np.pi * x[:, <span class="num">0</span>:<span class="num">1</span>]),
+                  <span class="kw">lambda</span> x, on_initial: on_initial)
+
+<span class="com"># ۴. داده</span>
+data = dde.data.<span class="fn">TimePDE</span>(geomtime, pde, [bc, ic],
+                        num_domain=<span class="num">2000</span>, num_boundary=<span class="num">100</span>,
+                        num_initial=<span class="num">100</span>)
+
+<span class="com"># ۵. شبکه عصبی</span>
+net = dde.nn.<span class="fn">FNN</span>([<span class="num">2</span>] + [<span class="num">64</span>]*<span class="num">3</span> + [<span class="num">1</span>], <span class="str">"tanh"</span>, <span class="str">"Glorot uniform"</span>)
+
+<span class="com"># ۶. مدل و آموزش</span>
+model = dde.<span class="fn">Model</span>(data, net)
+model.<span class="fn">compile</span>(<span class="str">"adam"</span>, lr=<span class="num">1e-3</span>)
+model.<span class="fn">train</span>(epochs=<span class="num">10000</span>)</pre>
+      </div>
+    </div>
+    <div class="stepInfo" style="margin-top:16px">
+      <b style="color:var(--gold)">📌 مزیت DeepXDE:</b> تعریف PDE به‌صورت نمادین — بدون نیاز به پیاده‌سازی دستی مشتقات [citation:2][citation:11].
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: FULL PYTORCH -->
+<div class="slide" data-topic="کد PyTorch">
+  <div class="slideInner">
+    <div class="eyebrow">مرجع</div>
+    <h2>💻 کد کامل PyTorch</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="full-pytorch">PyTorch</button>
+      </div>
+      <div class="codePane active" id="code-full-pytorch">
+<pre><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="com"># شبکه</span>
+<span class="kw">class</span> <span class="fn">PINN</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(<span class="num">2</span>, <span class="num">64</span>), nn.Tanh(),
+            nn.Linear(<span class="num">64</span>, <span class="num">64</span>), nn.Tanh(),
+            nn.Linear(<span class="num">64</span>, <span class="num">64</span>), nn.Tanh(),
+            nn.Linear(<span class="num">64</span>, <span class="num">1</span>)
+        )
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x, t):
+        <span class="kw">return</span> self.net(torch.cat([x, t], dim=<span class="num">1</span>))
+
+<span class="kw">def</span> <span class="fn">pde_residual</span>(model, x, t, alpha=<span class="num">0.01</span>):
+    x.<span class="fn">requires_grad_</span>(<span class="kw">True</span>); t.<span class="fn">requires_grad_</span>(<span class="kw">True</span>)
+    u = <span class="fn">model</span>(x, t)
+    u_t = torch.autograd.<span class="fn">grad</span>(u, t, torch.<span class="fn">ones_like</span>(u), create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_x = torch.autograd.<span class="fn">grad</span>(u, x, torch.<span class="fn">ones_like</span>(u), create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    u_xx = torch.autograd.<span class="fn">grad</span>(u_x, x, torch.<span class="fn">ones_like</span>(u_x), create_graph=<span class="kw">True</span>)[<span class="num">0</span>]
+    <span class="kw">return</span> u_t - alpha * u_xx
+
+<span class="com"># داده</span>
+model = <span class="fn">PINN</span>()
+optimizer = torch.optim.<span class="fn">Adam</span>(model.<span class="fn">parameters</span>(), lr=<span class="num">1e-3</span>)
+
+<span class="com"># آموزش</span>
+<span class="kw">for</span> epoch <span class="kw">in</span> range(<span class="num">5000</span>):
+    <span class="com"># Collocation</span>
+    x_pde = torch.<span class="fn">rand</span>(<span class="num">1000</span>, <span class="num">1</span>) * <span class="num">2</span> - <span class="num">1</span>
+    t_pde = torch.<span class="fn">rand</span>(<span class="num">1000</span>, <span class="num">1</span>)
+    residual = <span class="fn">pde_residual</span>(model, x_pde, t_pde)
+    L_pde = torch.<span class="fn">mean</span>(residual**<span class="num">2</span>)
+
+    <span class="com"># BC (ساده‌شده)</span>
+    x_bc = torch.<span class="fn">tensor</span>([[<span class="num">0.0</span>], [<span class="num">1.0</span>]])
+    t_bc = torch.<span class="fn">rand</span>(<span class="num">2</span>, <span class="num">1</span>)
+    u_bc = <span class="fn">model</span>(x_bc, t_bc)
+    L_bc = torch.<span class="fn">mean</span>(u_bc**<span class="num">2</span>)
+
+    <span class="com"># IC</span>
+    x_ic = torch.<span class="fn">rand</span>(<span class="num">100</span>, <span class="num">1</span>) * <span class="num">2</span> - <span class="num">1</span>
+    t_ic = torch.<span class="fn">zeros</span>(<span class="num">100</span>, <span class="num">1</span>)
+    u_ic_pred = <span class="fn">model</span>(x_ic, t_ic)
+    u_ic_true = torch.<span class="fn">sin</span>(np.pi * x_ic)
+    L_ic = torch.<span class="fn">mean</span>((u_ic_pred - u_ic_true)**<span class="num">2</span>)
+
+    loss = L_pde + L_bc + L_ic
+    optimizer.<span class="fn">zero_grad</span>()
+    loss.<span class="fn">backward</span>()
+    optimizer.<span class="fn">step</span>()
+
+    <span class="kw">if</span> epoch % <span class="num">500</span> == <span class="num">0</span>:
+        print(<span class="str">f"Epoch {epoch}: Loss = {loss.item():.6f}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: FULL DEEPXDE -->
+<div class="slide" data-topic="کد DeepXDE">
+  <div class="slideInner">
+    <div class="eyebrow">مرجع</div>
+    <h2>💻 کد کامل DeepXDE</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="full-deepxde">DeepXDE</button>
+      </div>
+      <div class="codePane active" id="code-full-deepxde">
+<pre><span class="kw">import</span> deepxde <span class="kw">as</span> dde
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="com"># PDE: u_t = 0.01 * u_xx</span>
+<span class="kw">def</span> <span class="fn">pde</span>(x, u):
+    du_t = dde.grad.<span class="fn">jacobian</span>(u, x, i=<span class="num">0</span>, j=<span class="num">1</span>)
+    du_xx = dde.grad.<span class="fn">hessian</span>(u, x, i=<span class="num">0</span>, j=<span class="num">0</span>)
+    <span class="kw">return</span> du_t - <span class="num">0.01</span> * du_xx
+
+geom = dde.geometry.<span class="fn">Interval</span>(<span class="num">0</span>, <span class="num">1</span>)
+timedomain = dde.geometry.<span class="fn">TimeDomain</span>(<span class="num">0</span>, <span class="num">1</span>)
+geomtime = dde.geometry.<span class="fn">GeometryXTime</span>(geom, timedomain)
+
+bc = dde.icbc.<span class="fn">DirichletBC</span>(geomtime, <span class="kw">lambda</span> x: <span class="num">0</span>,
+                           <span class="kw">lambda</span> x, on_boundary: on_boundary)
+ic = dde.icbc.<span class="fn">IC</span>(geomtime, <span class="kw">lambda</span> x: np.<span class="fn">sin</span>(np.pi * x[:, <span class="num">0</span>:<span class="num">1</span>]),
+                  <span class="kw">lambda</span> x, on_initial: on_initial)
+
+data = dde.data.<span class="fn">TimePDE</span>(geomtime, pde, [bc, ic],
+                        num_domain=<span class="num">2000</span>, num_boundary=<span class="num">100</span>,
+                        num_initial=<span class="num">100</span>, num_test=<span class="num">500</span>)
+
+net = dde.nn.<span class="fn">FNN</span>([<span class="num">2</span>] + [<span class="num">64</span>]*<span class="num">3</span> + [<span class="num">1</span>], <span class="str">"tanh"</span>, <span class="str">"Glorot uniform"</span>)
+
+model = dde.<span class="fn">Model</span>(data, net)
+model.<span class="fn">compile</span>(<span class="str">"adam"</span>, lr=<span class="num">1e-3</span>)
+losshistory, train_state = model.<span class="fn">train</span>(epochs=<span class="num">10000</span>)
+
+<span class="com"># ارزیابی</span>
+dde.<span class="fn">saveplot</span>(<span class="str">"heat_solution"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۲۱</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$L = L_{data} + \lambda L_{PDE} + \mu L_{BC}$$
+      <span class="lbl">تابع هزینه PINN</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$L_{PDE} = \frac{1}{N_f}\sum_{j=1}^{N_f} \left| \mathcal{N}[u_\theta](x_j, t_j) \right|^2$$
+      <span class="lbl">باقیمانده PDE در Collocation Points</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\frac{\partial u}{\partial t} = \alpha \frac{\partial^2 u}{\partial x^2}$$
+      <span class="lbl">معادله گرما</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 نکته:</b> PINN در مسائل smooth و well-posed دقت زیر ۱٪ دارد، اما در مسائل inverse و فرکانس بالا ضعیف‌تر است [citation:8].
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۲۱</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>PINN چیست و چه تفاوتی با شبکه عصبی معمولی دارد؟</li>
+          <li><span class="exNum">۲</span>چرا Autograd برای PINN ضروری است؟</li>
+          <li><span class="exNum">۳</span>Collocation Points چه نقشی دارند؟</li>
+          <li><span class="exNum">۴</span>Spectral Bias چیست و چه راه‌حلی دارد؟</li>
+          <li><span class="exNum">۵</span>در چه مسائلی PINN بهتر از FEM عمل می‌کند؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>PINN برای معادله گرما 1D با PyTorch.</li>
+          <li><span class="exNum">۲</span>همان مسئله با DeepXDE.</li>
+          <li><span class="exNum">۳</span>تأثیر تعداد Collocation Points را بررسی کنید.</li>
+          <li><span class="exNum">۴</span>تأثیر وزن‌های Loss را مقایسه کنید.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره PINN و کاربردش در مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه PINN و FEM — مزایا و معایب.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله مکانیکی برای PINN طراحی کنید.</li>
+          <li><span class="exNum">★</span>چطور می‌توانید از PINN در پایان‌نامه خود استفاده کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW21 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۲۱</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ PINN</h3><p>ترکیب PDE و شبکه عصبی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Loss ترکیبی</h3><p>Data + PDE + BC</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Autograd</h3><p>محاسبه خودکار مشتقات</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ Collocation Points</h3><p>نقاط بدون برچسب برای PDE</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ چالش‌ها</h3><p>Spectral Bias، Loss Imbalance، Cost</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: Digital Twin & Sensor Fusion</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۲۲</h3>
+        <p style="margin-top:8px;text-align:right">
+          • Digital Twin — دوقلوی دیجیتال<br>
+          • Sensor Fusion<br>
+          • Kalman Filter + ML<br>
+          • کاربرد در مکانیک<br>
+          • پیاده‌سازی
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

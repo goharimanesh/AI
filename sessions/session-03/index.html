@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۳ — تخمین و شناسایی پارامترها | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<style>
+:root{
+  --bg:#030610; --bg2:#070d1c;
+  --card:rgba(13,25,45,.78); --card2:rgba(18,34,58,.9);
+  --line:rgba(120,160,220,.15); --line-strong:rgba(120,160,220,.35);
+  --text:#eaf2ff; --muted:#a8bcd4; --muted2:#7a8fa8;
+  --cyan:#4dd4ff; --violet:#a78bfa; --gold:#f5c76a;
+  --green:#5ee8a8; --red:#ff7e93; --blue:#74a7ff; --pink:#f472b6;
+  --header-h: 64px;
+  --nav-h: 48px;
+  --total-top: 112px;
+  --nav-bottom-h: 76px;
+}
+[data-theme="light"]{
+  --bg:#eef3fa; --bg2:#dde7f5;
+  --card:rgba(255,255,255,.92); --card2:rgba(248,251,255,.98);
+  --line:rgba(30,60,110,.15); --line-strong:rgba(30,60,110,.3);
+  --text:#0d1e38; --muted:#4a5f7c; --muted2:#6a7f9c;
+  --cyan:#0891b2; --violet:#7c3aed; --gold:#b45309;
+  --green:#059669; --red:#e11d48; --blue:#2563eb; --pink:#db2777;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:"Vazirmatn",Tahoma,sans-serif;
+  background:linear-gradient(135deg,var(--bg),var(--bg2) 50%,var(--bg));
+  color:var(--text); line-height:1.85; overflow:hidden;
+  font-size:16px;
+}
+#galaxyCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.85}
+
+.appBar{position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;flex-direction:column;
+  background:rgba(3,6,16,.96);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line-strong);
+  box-shadow:0 4px 20px rgba(0,0,0,.3)}
+[data-theme="light"] .appBar{background:rgba(238,243,250,.98)}
+.appBarRow{display:flex;align-items:center;
+  height:var(--header-h);padding:0 24px;gap:14px}
+.appBarSignature{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.appBarSignature img{height:36px;width:auto;filter:drop-shadow(0 2px 8px rgba(245,199,106,.4))}
+.appBarSignature .lessonName{color:var(--gold);font-size:15px;font-weight:800;white-space:nowrap}
+.appBarSpacer{flex:1}
+.appBarControls{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.ctrlBtn{width:38px;height:38px;border:1px solid var(--line-strong);border-radius:11px;
+  background:var(--card2);color:var(--text);display:grid;place-items:center;
+  cursor:pointer;transition:.2s}
+.ctrlBtn:hover{border-color:var(--cyan);background:rgba(77,212,255,.15);transform:translateY(-1px)}
+.ctrlBtn svg{width:18px;height:18px}
+
+.topicBar{height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 24px;gap:8px;overflow-x:auto;
+  scrollbar-width:none;border-top:1px solid var(--line);
+  background:rgba(0,0,0,.15)}
+[data-theme="light"] .topicBar{background:rgba(255,255,255,.4)}
+.topicBar::-webkit-scrollbar{display:none}
+.topicPill{white-space:nowrap;padding:6px 14px;border-radius:999px;
+  font-size:12.5px;font-weight:700;color:var(--muted);
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line-strong);cursor:pointer;transition:.2s;
+  font-family:inherit;flex-shrink:0}
+.topicPill:hover{color:var(--text);border-color:var(--cyan);background:rgba(77,212,255,.1)}
+.topicPill.active{background:linear-gradient(135deg,var(--cyan),var(--violet));
+  color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px rgba(77,212,255,.45)}
+.topicPill.done{border-color:var(--green);color:var(--green)}
+
+.progressBar{position:fixed;top:0;left:0;right:0;height:3px;z-index:55;
+  background:transparent;pointer-events:none}
+.progressFill{height:100%;background:linear-gradient(90deg,var(--cyan),var(--violet));
+  transition:width .4s ease;box-shadow:0 0 12px var(--cyan)}
+
+.slideContainer{position:fixed;
+  top:var(--total-top);
+  bottom:var(--nav-bottom-h);
+  left:0;right:0;z-index:1;
+  overflow:hidden}
+.slide{position:absolute;inset:0;display:none;
+  padding:24px 48px 24px;
+  overflow-y:auto;overflow-x:hidden;
+  animation:slideIn .4s ease}
+.slide.active{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+.slide::-webkit-scrollbar{width:10px}
+.slide::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}
+.slide::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:5px}
+.slideInner{max-width:1200px;margin:0 auto}
+
+.navBottom{position:fixed;bottom:0;left:0;right:0;z-index:40;
+  height:var(--nav-bottom-h);
+  background:rgba(3,6,16,.96);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line-strong);
+  padding:0 24px;display:flex;justify-content:space-between;align-items:center;
+  gap:16px}
+[data-theme="light"] .navBottom{background:rgba(238,243,250,.98)}
+.navBtn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;
+  border-radius:11px;font-family:inherit;font-weight:700;font-size:14px;
+  border:1px solid var(--line-strong);background:var(--card2);color:var(--text);
+  cursor:pointer;transition:.2s}
+.navBtn:hover:not(:disabled){border-color:var(--cyan);transform:translateY(-1px);
+  box-shadow:0 6px 20px rgba(77,212,255,.25)}
+.navBtn:disabled{opacity:.3;cursor:not-allowed}
+.navBtn.primary{background:linear-gradient(135deg,var(--cyan),var(--violet));
+  border-color:transparent;color:#fff}
+.navBtn svg{width:16px;height:16px}
+.slideCounter{color:var(--gold);font-weight:800;font-size:14px;
+  display:flex;align-items:center;gap:8px;white-space:nowrap}
+.slideCounter small{color:var(--muted);font-weight:500;font-size:12px}
+.slideCounter b{font-size:15px}
+.dots{display:flex;gap:5px;flex-wrap:nowrap;justify-content:center;
+  overflow-x:auto;scrollbar-width:none;max-width:45%}
+.dots::-webkit-scrollbar{display:none}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted2);
+  cursor:pointer;transition:.2s;border:0;padding:0;flex-shrink:0}
+.dot.active{background:var(--cyan);transform:scale(1.5);
+  box-shadow:0 0 10px var(--cyan)}
+.dot.done{background:var(--green)}
+
+h1{font-size:clamp(28px,4.5vw,48px);font-weight:900;line-height:1.2;margin-bottom:16px;
+  background:linear-gradient(135deg,var(--text),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+h2{font-size:clamp(22px,3vw,32px);font-weight:800;margin-bottom:16px;line-height:1.3}
+h3{font-size:clamp(17px,2.2vw,21px);font-weight:700;margin-bottom:10px}
+h4{font-size:16px;font-weight:700;margin-bottom:8px}
+p{color:var(--muted);font-size:15.5px;line-height:1.9;margin-bottom:12px}
+b{color:var(--text);font-weight:700}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+
+.titleSlide{display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;min-height:calc(100% - 20px);
+  padding:20px}
+.bismillah{font-family:serif;font-size:22px;opacity:.95;margin-bottom:6px}
+.khaligh{font-size:20px;font-weight:800;color:var(--gold);margin-bottom:20px}
+.titleBadge{display:inline-flex;gap:8px;align-items:center;padding:8px 18px;
+  border:1px solid rgba(77,212,255,.6);
+  border-radius:999px;background:var(--card2);backdrop-filter:blur(12px);
+  color:var(--cyan);font-size:13.5px;font-weight:700;margin-bottom:20px}
+.titleSlide h1{margin:0 0 16px}
+.titleSlide .subtitle{max-width:760px;margin:0 auto 20px;
+  color:var(--muted);font-size:16px;line-height:1.8}
+.hadith{margin:20px auto 0;max-width:820px;padding:18px 28px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(245,199,106,.15),rgba(167,139,250,.12));
+  border:1px solid rgba(245,199,106,.6);
+  position:relative;box-shadow:0 0 40px rgba(245,199,106,.2)}
+.hadith::before{content:"";position:absolute;right:-4px;top:16px;bottom:16px;width:4px;
+  background:linear-gradient(180deg,var(--gold),var(--violet));border-radius:2px}
+.hadithText{font-family:serif;font-size:clamp(15px,2vw,19px);color:var(--gold);font-weight:700;
+  line-height:2;text-align:center;direction:rtl}
+.hadithRef{display:block;font-size:12px;color:var(--muted);margin-top:10px;
+  font-family:"Vazirmatn",sans-serif;font-weight:500;text-align:center}
+.titleTeacher{margin-top:22px;display:inline-flex;align-items:center;gap:10px;
+  color:var(--text);font-weight:700;font-size:15px;padding:10px 22px;
+  border-radius:999px;background:var(--card2);border:1px solid var(--line-strong)}
+.titleTeacher span{color:var(--gold)}
+
+.star{position:fixed;top:calc(var(--total-top) + 16px);right:24px;
+  z-index:45;width:52px;height:52px;cursor:pointer;
+  opacity:0;pointer-events:none;transition:opacity .3s;transform:scale(.8)}
+.star.visible{opacity:1;pointer-events:auto;transform:scale(1)}
+.star::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle,var(--gold) 0%,transparent 70%);
+  animation:starPulse 2.4s ease-in-out infinite;
+  box-shadow:0 0 30px var(--gold),0 0 60px rgba(245,199,106,.5)}
+.star::after{content:"✦";position:absolute;inset:0;display:grid;place-items:center;
+  font-size:32px;color:#fff;text-shadow:0 0 20px var(--gold);
+  animation:starTwinkle 1.8s ease-in-out infinite}
+@keyframes starPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.2);opacity:1}}
+@keyframes starTwinkle{0%,100%{transform:rotate(0deg)}50%{transform:rotate(180deg)}}
+.starTooltip{position:absolute;top:64px;right:0;transform:translateY(-10px);
+  width:290px;background:var(--card2);border:1px solid var(--gold);
+  border-radius:16px;padding:14px;backdrop-filter:blur(16px);
+  box-shadow:0 20px 60px rgba(245,199,106,.5);
+  opacity:0;pointer-events:none;transition:.35s;text-align:center;z-index:100}
+.star:hover .starTooltip,.starTooltip:hover{opacity:1;
+  transform:translateY(0);pointer-events:auto}
+.starTooltip img{width:100px;height:100px;border-radius:50%;
+  margin:0 auto 10px;object-fit:cover;border:3px solid var(--gold);
+  display:block;box-shadow:0 0 30px rgba(245,199,106,.5)}
+.starTooltip b{display:block;color:var(--gold);font-size:15px;margin-bottom:4px}
+.starTooltip small{display:block;color:var(--muted);font-size:12px;line-height:1.7}
+
+.cardGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;margin-top:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;
+  padding:20px;transition:.3s;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-3px);border-color:var(--line-strong);
+  box-shadow:0 16px 40px rgba(0,0,0,.3)}
+.cardIcon{width:48px;height:48px;display:grid;place-items:center;
+  border-radius:12px;background:rgba(77,212,255,.15);
+  color:var(--cyan);margin-bottom:12px;
+  border:1px solid rgba(77,212,255,.4)}
+.cardIcon svg{width:24px;height:24px}
+.card h3{font-size:17px;margin:0 0 8px}
+.card p{font-size:14px;margin:0;line-height:1.8}
+
+.tableWrap{overflow-x:auto;border-radius:14px;border:1px solid var(--line-strong);margin-top:18px}
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--card)}
+thead{background:rgba(77,212,255,.12)}
+th,td{padding:13px 16px;text-align:right;border-bottom:1px solid var(--line)}
+th{font-weight:800;color:var(--cyan);font-size:14px}
+td{font-size:14.5px;color:var(--muted)}
+td b{color:var(--text);font-weight:700}
+tbody tr:hover{background:rgba(77,212,255,.08)}
+
+.formulaBox{padding:18px 24px;border-radius:14px;margin:18px 0;
+  background:rgba(0,0,0,.35);
+  border-right:4px solid var(--gold);
+  color:var(--text);direction:ltr;text-align:center;
+  font-size:16px;line-height:1.9}
+[data-theme="light"] .formulaBox{background:rgba(255,255,255,.7)}
+.formulaBox .lbl{display:block;color:var(--gold);font-size:13.5px;
+  font-family:"Vazirmatn",sans-serif;direction:rtl;margin-top:10px;font-weight:700}
+mjx-container{font-size:1.15em !important}
+.formulaBox mjx-container{font-size:1.35em !important}
+
+.sim{background:var(--card);border:1px solid var(--line-strong);border-radius:16px;
+  padding:20px;margin:22px 0}
+.simTitle{display:flex;align-items:center;gap:10px;color:var(--cyan);
+  font-weight:800;font-size:16px;margin-bottom:16px}
+.simTitle svg{width:18px;height:18px}
+.simCanvasWrapper{position:relative;width:100%;height:320px;
+  border-radius:12px;overflow:hidden;
+  background:rgba(0,0,0,.45);
+  border:1px solid var(--line-strong)}
+[data-theme="light"] .simCanvasWrapper{background:rgba(240,245,250,.9)}
+.simCanvas{display:block;width:100%;height:100%}
+.simControls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;margin-top:16px}
+.sliderGroup label{display:block;font-size:13.5px;color:var(--text);
+  margin-bottom:8px;font-weight:700}
+.sliderGroup input[type=range]{width:100%;-webkit-appearance:none;
+  height:8px;border-radius:4px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));outline:none;
+  cursor:pointer}
+.sliderGroup input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;
+  width:22px;height:22px;border-radius:50%;background:#fff;
+  border:4px solid var(--cyan);cursor:pointer;
+  box-shadow:0 0 14px var(--cyan)}
+.sliderVal{color:var(--gold);font-weight:800;font-size:15px;direction:ltr;
+  display:inline-block;margin-right:6px}
+.simResults{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;margin-top:16px}
+.simRes{background:rgba(0,0,0,.3);
+  border:1px solid var(--line-strong);border-radius:10px;padding:12px;text-align:center}
+[data-theme="light"] .simRes{background:rgba(255,255,255,.6)}
+.simRes small{display:block;color:var(--muted);font-size:12px;margin-bottom:4px;font-weight:600}
+.simRes b{color:var(--cyan);font-size:17px;direction:ltr;font-weight:800}
+
+.modal{position:fixed;inset:0;z-index:200;display:none;place-items:center;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(10px);padding:20px}
+.modal.open{display:grid}
+.modalBox{width:min(720px,100%);max-height:85vh;overflow-y:auto;
+  background:linear-gradient(150deg,var(--card2),var(--bg));
+  border:1px solid var(--cyan);border-radius:20px;padding:28px;
+  position:relative;animation:modalIn .3s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modalBox::-webkit-scrollbar{width:8px}
+.modalBox::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:4px}
+.modalClose{position:absolute;top:16px;left:16px;width:36px;height:36px;
+  border:1px solid var(--line-strong);background:var(--card);color:var(--text);
+  border-radius:9px;cursor:pointer;display:grid;place-items:center;
+  transition:.2s}
+.modalClose:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.modalClose svg{width:18px;height:18px}
+.modalBox h3{color:var(--gold);margin-bottom:14px;font-size:22px}
+.modalBox .modalSection{margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--line)}
+.modalBox .modalSection:last-child{border-bottom:0}
+.modalBox .modalSection h4{color:var(--cyan);font-size:15px;
+  margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.modalBox .modalSection p{font-size:14.5px;margin:0;line-height:1.85}
+
+.codeTabs{background:var(--card);border:1px solid var(--line-strong);border-radius:16px;
+  overflow:hidden;margin:20px 0}
+.codeTabsNav{display:flex;border-bottom:1px solid var(--line-strong);
+  background:rgba(0,0,0,.3)}
+.codeTabBtn{flex:1;padding:13px 18px;background:transparent;border:0;
+  color:var(--muted);font-family:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;transition:.2s;border-bottom:3px solid transparent}
+.codeTabBtn.active{color:var(--cyan);border-bottom-color:var(--cyan);
+  background:rgba(77,212,255,.1)}
+.codeTabBtn:hover{color:var(--text)}
+.codePane{display:none;padding:18px;overflow-x:auto}
+.codePane.active{display:block}
+.codePane pre{font-family:"Courier New",monospace;font-size:13.5px;
+  line-height:1.8;color:#e8f0f8;direction:ltr;text-align:left;
+  background:rgba(0,0,0,.5);
+  padding:18px;border-radius:10px;overflow-x:auto}
+.codePane .kw{color:#ff79c6}
+.codePane .str{color:#f1fa8c}
+.codePane .com{color:#8aa0c8;font-style:italic}
+.codePane .num{color:#bd93f9}
+.codePane .fn{color:#8be9fd}
+
+.exercises{display:flex;flex-direction:column;gap:16px;margin-top:20px}
+.exSection{border-radius:14px;padding:20px;border:1px solid;position:relative;
+  overflow:hidden}
+.ex-yellow{background:rgba(255,204,51,.12);border-color:rgba(255,204,51,.5)}
+.ex-green{background:rgba(94,232,168,.12);border-color:rgba(94,232,168,.5)}
+.ex-purple{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.5)}
+.ex-red{background:rgba(255,126,147,.12);border-color:rgba(255,126,147,.5)}
+.exHeader{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.exHeader h4{margin:0;font-size:16px;color:var(--text)}
+.exHeader .exIcon{width:36px;height:36px;display:grid;place-items:center;
+  border-radius:10px;background:rgba(255,255,255,.1)}
+.exHeader .exIcon svg{width:18px;height:18px}
+.exList{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+.exList li{display:flex;gap:12px;font-size:14.5px;color:var(--text);line-height:1.8}
+.exNum{flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;font-size:13px;font-weight:800;
+  background:rgba(255,255,255,.15);color:var(--text)}
+.emailBanner{margin-top:20px;padding:16px 20px;border-radius:12px;
+  background:rgba(245,199,106,.15);
+  border:1px solid rgba(245,199,106,.6);
+  font-size:14px;color:var(--text);text-align:center;line-height:1.8}
+.emailBanner code{font-family:"Courier New",monospace;
+  background:rgba(0,0,0,.4);
+  padding:2px 8px;border-radius:5px;color:var(--cyan);direction:ltr;
+  display:inline-block;margin:2px 0;font-size:13px}
+
+.aiTools{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:14px;margin-top:20px}
+.aiTool{background:var(--card);border:1px solid var(--line-strong);border-radius:14px;
+  padding:18px;transition:.3s;display:flex;flex-direction:column;
+  gap:8px;position:relative;overflow:hidden}
+.aiTool:hover{transform:translateY(-3px);border-color:var(--gold)}
+.aiTool::before{content:"";position:absolute;top:0;right:0;width:4px;height:100%;
+  background:linear-gradient(180deg,var(--gold),var(--violet))}
+.aiToolIcon{width:40px;height:40px;display:grid;place-items:center;
+  border-radius:11px;background:rgba(245,199,106,.2);
+  color:var(--gold);border:1px solid rgba(245,199,106,.5)}
+.aiToolIcon svg{width:20px;height:20px}
+.aiTool h4{margin:0;font-size:16px;font-weight:800;color:var(--text)}
+.aiTool p{font-size:13px;margin:0;color:var(--muted);line-height:1.7;flex:1}
+.aiTool .tag{font-size:11.5px;color:var(--gold);font-weight:700;
+  padding:3px 9px;border-radius:7px;
+  background:rgba(245,199,106,.18);
+  align-self:flex-start}
+
+@media(max-width:900px){
+  :root{--header-h:56px;--nav-h:44px;--total-top:100px;--nav-bottom-h:68px;}
+  .appBarRow{padding:0 14px;gap:8px}
+  .appBarSignature img{height:30px}
+  .appBarSignature .lessonName{font-size:13px}
+  .ctrlBtn{width:34px;height:34px}
+  .ctrlBtn svg{width:16px;height:16px}
+  .topicBar{padding:0 14px;gap:6px}
+  .topicPill{font-size:11px;padding:5px 10px}
+  .slide{padding:18px 20px 20px}
+  .navBottom{padding:0 14px;gap:10px}
+  .navBtn{padding:8px 14px;font-size:13px}
+  .navBtn svg{width:14px;height:14px}
+  .slideCounter{font-size:12px}
+  .slideCounter b{font-size:13px}
+  .dots{max-width:35%}
+  .dot{width:7px;height:7px}
+  .star{width:44px;height:44px;top:calc(var(--total-top) + 12px);right:14px}
+  .star::after{font-size:26px}
+  .starTooltip{width:250px}
+  h1{font-size:26px}
+  h2{font-size:20px}
+  p{font-size:14px}
+  .simCanvasWrapper{height:240px}
+  mjx-container{font-size:1em !important}
+  .formulaBox mjx-container{font-size:1.15em !important}
+}
+@media(max-width:480px){
+  .appBarSignature .lessonName{display:none}
+  .slide{padding:14px 14px 16px}
+  .cardGrid{grid-template-columns:1fr}
+  .navBottom{flex-wrap:wrap;justify-content:center}
+  .dots{display:none}
+  .navBottom{gap:6px}
+  .slideCounter{order:-1;flex-basis:100%;text-align:center;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۳ — تخمین پارامتر</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="شهید علی‌محمدی">
+  <div class="starTooltip">
+    <img src="images/star-alimohammadi.png" alt="شهید علی‌محمدی" onerror="this.style.display='none'">
+    <b>شهید دکتر مسعود علی‌محمدی</b>
+    <small>فیزیک ذرات بنیادی — دانشگاه شریف<br>استاد فیزیک نظری<br>۱۳۳۸ — ۱۳۸۹ شمسی</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- 1. TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="sigma" style="width:14px;height:14px"></i> جلسه ۳ • فاز ۱ — پایه‌های ریاضی</div>
+      <h1>تخمین و شناسایی پارامترها</h1>
+      <p class="subtitle">جبر خطی، احتمال، گرادیان و شناسایی پارامتر سیستم جرم-فنر-دمپر با داده‌های شتاب‌سنج</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۲</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="telescope"></i></div><h3>جلسه ۲</h3><p>آینده‌پژوهی، قانون مور، Gartner، Python</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="sigma"></i></div><h3>جلسه ۳ (امروز)</h3><p>ریاضیات AI، شناسایی پارامتر</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ ریاضیات به‌عنوان زبان مشترک</p></div>
+      <div class="card"><p style="margin:0">✅ جبر خطی و فضای حالت</p></div>
+      <div class="card"><p style="margin:0">✅ مقادیر ویژه و PCA</p></div>
+      <div class="card"><p style="margin:0">✅ گرادیان و Backpropagation</p></div>
+      <div class="card"><p style="margin:0">✅ احتمال و عدم قطعیت</p></div>
+      <div class="card"><p style="margin:0">✅ شناسایی پارامتر جرم-فنر-دمپر</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. MOTIVATION -->
+<div class="slide" data-topic="چرا ریاضیات">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🧮 ریاضیات: زبان مشترک</h2>
+    <p>ریاضیات ابزار جدیدی نیست؛ بلکه لنز جدیدی برای نگاه به همان پدیده‌های فیزیکی آشناست.</p>
+    <div class="cardGrid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card" style="text-align:center">
+        <div class="cardIcon" style="margin:0 auto 10px"><i data-lucide="wrench"></i></div>
+        <h3>سیستم مکانیکی</h3>
+        <p>جرم-فنر-دمپر، تیر، پاندول</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="cardIcon" style="margin:0 auto 10px;color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)"><i data-lucide="sigma"></i></div>
+        <h3>معادلات ریاضی</h3>
+        <p>ODE، PDE، ماتریس، مشتق</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="cardIcon" style="margin:0 auto 10px;color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="brain"></i></div>
+        <h3>مدل‌های هوشمند</h3>
+        <p>شبکه عصبی، رگرسیون، PINN</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      ریاضیات + فیزیک + داده = مدل هوشمند
+      <span class="lbl">ترکیب سه‌گانه Scientific ML</span>
+    </div>
+  </div>
+</div>
+
+<!-- 4. MAPPING -->
+<div class="slide" data-topic="نگاشت ریاضیات به AI">
+  <div class="slideInner">
+    <div class="eyebrow">نگاشت مفاهیم</div>
+    <h2>🔗 شاخه‌های ریاضی و مفاهیم AI</h2>
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr><th>شاخه ریاضیات</th><th>شهود مکانیکی</th><th>مفهوم AI</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>جبر خطی</b></td><td>فضای حالت (State-Space)</td><td>Feature Vectors</td></tr>
+          <tr><td><b>حساب دیفرانسیل</b></td><td>سطوح انرژی (Energy Fields)</td><td>گرادیان (Gradients)</td></tr>
+          <tr><td><b>احتمال و آمار</b></td><td>نویز سنسور (Sensor Noise)</td><td>عدم قطعیت (Uncertainty)</td></tr>
+          <tr><td><b>بهینه‌سازی</b></td><td>حداقل انرژی (Minimum Energy)</td><td>تابع هزینه (Loss Function)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 5. LINEAR ALGEBRA -->
+<div class="slide" data-topic="جبر خطی">
+  <div class="slideInner">
+    <div class="eyebrow">جبر خطی</div>
+    <h2>📐 جبر خطی: زبان توصیف فضا و حالت</h2>
+    <p>معادلات فضای حالت، ستون فقرات مدل‌سازی مدرن سیستم‌های دینامیکی است.</p>
+    <div class="formulaBox">
+      $$\dot{\mathbf{x}} = A\mathbf{x} + B\mathbf{u}, \quad \mathbf{y} = C\mathbf{x} + D\mathbf{u}$$
+      <span class="lbl">معادلات فضای حالت — پایه مدل‌سازی</span>
+    </div>
+    <div class="formulaBox">
+      $$\mathbf{y} = \mathbf{W}\mathbf{x} + \mathbf{b}$$
+      <span class="lbl">نورون مصنوعی — همان ساختار جبری</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 در مکانیک</h3>
+        <p>$\mathbf{x}$ بردار حالت (موقعیت، سرعت)، $A$ ماتریس سیستم</p>
+      </div>
+      <div class="card">
+        <h3>🧠 در AI</h3>
+        <p>$\mathbf{x}$ بردار ویژگی، $\mathbf{W}$ وزن‌های شبکه</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔧 سیستم جرم-فنر-دمپر</h2>
+    <p>پاسخ سیستم را با تغییر جرم، سختی و میرایی ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Mass-Spring-Damper Response</div>
+      <div class="simCanvasWrapper"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sliderGroup">
+          <label>جرم m <span class="sliderVal" id="sim1_m_val">1.0</span></label>
+          <input type="range" id="sim1_m" min="0.5" max="5" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>سختی k <span class="sliderVal" id="sim1_k_val">10</span></label>
+          <input type="range" id="sim1_k" min="1" max="50" step="1" value="10">
+        </div>
+        <div class="sliderGroup">
+          <label>میرایی c <span class="sliderVal" id="sim1_c_val">1.0</span></label>
+          <input type="range" id="sim1_c" min="0" max="10" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>فرکانس طبیعی ωₙ</small><b id="sim1_wn">3.16</b></div>
+        <div class="simRes"><small>نسبت میرایی ζ</small><b id="sim1_zeta">0.16</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim1_status">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. EIGENVALUES -->
+<div class="slide" data-topic="مقادیر ویژه">
+  <div class="slideInner">
+    <div class="eyebrow">جبر خطی پیشرفته</div>
+    <h2>🎯 مقادیر ویژه — مدهای پنهان</h2>
+    <p>مقادیر ویژه جهت‌های طبیعی سیستم را نشان می‌دهند — در مکانیک و AI یکسان است.</p>
+    <div class="formulaBox">
+      $$A\mathbf{v} = \lambda \mathbf{v}$$
+      <span class="lbl">معادله مقدار ویژه — $A$ ماتریس، $\lambda$ مقدار ویژه، $\mathbf{v}$ بردار ویژه</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🔧 در مکانیک</h3>
+        <p>مدهای ارتعاشی اصلی — فرکانس‌های طبیعی سیستم</p>
+      </div>
+      <div class="card">
+        <h3>🧠 در AI (PCA)</h3>
+        <p>جهت بیشترین واریانس داده — کاهش ابعاد</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. GRADIENT -->
+<div class="slide" data-topic="گرادیان">
+  <div class="slideInner">
+    <div class="eyebrow">حساب دیفرانسیل</div>
+    <h2>📉 گرادیان — منطق تغییرات</h2>
+    <p>مفهوم فیزیکی: جهت بیشترین تغییرات در میدان‌های دما یا فشار. در AI: جهت بهینه‌سازی برای کاهش خطا.</p>
+    <div class="formulaBox">
+      $$\nabla f = \left[\frac{\partial f}{\partial x_1}, \dots, \frac{\partial f}{\partial x_n}\right]$$
+      <span class="lbl">گرادیان — بردار مشتقات جزئی</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🌡 در فیزیک</h3>
+        <p>جهت بیشترین تغییرات دما، فشار، پتانسیل</p>
+      </div>
+      <div class="card">
+        <h3>🧠 در AI (Backprop)</h3>
+        <p>جهت به‌روزرسانی وزن‌ها برای کاهش Loss</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>⛰ Gradient Descent در ۳D</h2>
+    <p>نرخ یادگیری را تغییر دهید و مسیر حرکت توپ به سمت کمینه را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-down"></i> Gradient Descent — Loss Surface</div>
+      <div class="simCanvasWrapper"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>نرخ یادگیری (η) <span class="sliderVal" id="sim2_lr_val">0.10</span></label>
+          <input type="range" id="sim2_lr" min="0.01" max="0.5" step="0.01" value="0.1">
+        </div>
+        <div class="sliderGroup">
+          <label>نقطه شروع x₀ <span class="sliderVal" id="sim2_x0_val">3.0</span></label>
+          <input type="range" id="sim2_x0" min="-4" max="4" step="0.5" value="3">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>موقعیت</small><b id="sim2_pos">3.000</b></div>
+        <div class="simRes"><small>هزینه</small><b id="sim2_loss">—</b></div>
+        <div class="simRes"><small>گام‌ها</small><b id="sim2_steps">0</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. PROBABILITY -->
+<div class="slide" data-topic="احتمال">
+  <div class="slideInner">
+    <div class="eyebrow">احتمال و آمار</div>
+    <h2>🎲 احتمال و عدم قطعیت</h2>
+    <p>نویز سنسور، عدم قطعیت مدل، و توزیع پیش‌بینی — همه با احتمال توصیف می‌شوند.</p>
+    <div class="formulaBox">
+      $$p(x) = \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+      <span class="lbl">توزیع گاوسی — پایه مدل‌سازی عدم قطعیت</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🔧 سیستم فیزیکی</h3>
+        <p>نویز سنسورها (شتاب‌سنج، IMU) و خطای اندازه‌گیری</p>
+      </div>
+      <div class="card">
+        <h3>🧠 سیستم AI</h3>
+        <p>توزیع پیش‌بینی و بازه اطمینان</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 11. SYSTEM ID -->
+<div class="slide" data-topic="شناسایی پارامتر">
+  <div class="slideInner">
+    <div class="eyebrow">مطالعه موردی</div>
+    <h2>🔍 شناسایی پارامتر سیستم</h2>
+    <p>چگونه $c$ (میرایی) و $k$ (سختی) یک سیستم ناشناخته را از داده‌های شتاب‌سنج استخراج کنیم؟</p>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">گام ۱</div>
+        <h3>سیستم فیزیکی</h3>
+        <p>فاقد مدل</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">گام ۲</div>
+        <h3>داده‌های ارتعاشی</h3>
+        <p>سنسور</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">گام ۳</div>
+        <h3>مدل هوش مصنوعی</h3>
+        <p>رگرسیون</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">گام ۴</div>
+        <h3>تخمین c و k</h3>
+        <p>پارامترها</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:24px">
+      $$m\ddot{x} + c\dot{x} + kx = F(t)$$
+      <span class="lbl">معادله حاکم — جرم-فنر-دمپر</span>
+    </div>
+  </div>
+</div>
+
+<!-- 12. SIM 3 — PARAMETER ESTIMATION -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🎯 تخمین پارامتر با Gradient Descent</h2>
+    <p>پارامترهای c و k را جابه‌جا کنید تا خطای برازش روی سیگنال واقعی کاهش یابد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Parameter Estimation</div>
+      <div class="simCanvasWrapper"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>میرایی c <span class="sliderVal" id="sim3_c_val">0.5</span></label>
+          <input type="range" id="sim3_c" min="0.1" max="5" step="0.1" value="0.5">
+        </div>
+        <div class="sliderGroup">
+          <label>سختی k <span class="sliderVal" id="sim3_k_val">10</span></label>
+          <input type="range" id="sim3_k" min="1" max="30" step="0.5" value="10">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>MSE</small><b id="sim3_mse">—</b></div>
+        <div class="simRes"><small>خطا</small><b id="sim3_err">—</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim3_status">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 13. CASE STUDY -->
+<div class="slide" data-topic="مطالعه موردی">
+  <div class="slideInner">
+    <div class="eyebrow">تحلیل موردی</div>
+    <h2>📊 تخمین پارامتر با داده واقعی</h2>
+    <p>هدف: کمینه‌کردن مجموع مربعات خطا (MSE) بین پاسخ واقعی و پیش‌بینی.</p>
+    <div class="formulaBox">
+      $$MSE = \frac{1}{n}\sum_{i=1}^n (x_{true,i} - x_{model,i}(c,k))^2$$
+      <span class="lbl">تابع هزینه برای تخمین پارامتر</span>
+    </div>
+    <div class="formulaBox">
+      $$c_{t+1} = c_t - \eta \frac{\partial MSE}{\partial c}, \quad k_{t+1} = k_t - \eta \frac{\partial MSE}{\partial k}$$
+      <span class="lbl">به‌روزرسانی پارامترها با Gradient Descent</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 هدف</h3>
+        <p>یافتن c و k بهینه که مدل را با داده واقعی سازگار کند</p>
+      </div>
+      <div class="card">
+        <h3>🔁 فرایند</h3>
+        <p>تکرار به‌روزرسانی تا رسیدن به کمینه خطا</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 14. CODE -->
+<div class="slide" data-topic="کد">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 تخمین پارامتر — MATLAB و Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab">MATLAB</button>
+        <button class="codeTabBtn" data-code="python">Python (Colab)</button>
+      </div>
+      <div class="codePane active" id="code-matlab">
+<pre><span class="com">% تخمین c و k با fminsearch</span>
+t = <span class="num">0</span>:<span class="num">0.01</span>:<span class="num">10</span>;
+x_true = <span class="num">1</span> .* <span class="fn">exp</span>(-<span class="num">0.5</span>*t) .* <span class="fn">cos</span>(<span class="num">3</span>*t);  <span class="com">% داده واقعی</span>
+
+<span class="com">% تابع هزینه</span>
+cost = @(p) <span class="fn">sum</span>((x_true - <span class="num">1</span>.*<span class="fn">exp</span>(-p(<span class="num">1</span>)*t).*<span class="fn">cos</span>(p(<span class="num">2</span>)*t)).^<span class="num">2</span>);
+
+<span class="com">% بهینه‌سازی</span>
+p0 = [<span class="num">0.1</span>, <span class="num">1</span>];
+p_opt = <span class="fn">fminsearch</span>(cost, p0);
+
+<span class="fn">fprintf</span>(<span class="str">'c = %.3f, k = %.3f\n'</span>, p_opt(<span class="num">1</span>), p_opt(<span class="num">2</span>));</pre>
+      </div>
+      <div class="codePane" id="code-python">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy.optimize <span class="kw">import</span> minimize
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+t = np.linspace(<span class="num">0</span>, <span class="num">10</span>, <span class="num">1000</span>)
+x_true = <span class="num">1</span> * np.exp(-<span class="num">0.5</span>*t) * np.cos(<span class="num">3</span>*t)  <span class="com"># داده</span>
+
+<span class="kw">def</span> <span class="fn">cost</span>(p):
+    c, k = p
+    x_model = <span class="num">1</span> * np.exp(-c*t) * np.cos(k*t)
+    <span class="kw">return</span> np.sum((x_true - x_model)**<span class="num">2</span>)
+
+res = minimize(cost, [<span class="num">0.1</span>, <span class="num">1.0</span>], method=<span class="str">'Nelder-Mead'</span>)
+<span class="fn">print</span>(<span class="str">f"c = {res.x[0]:.3f}, k = {res.x[1]:.3f}"</span>)
+
+plt.plot(t, x_true, <span class="str">'b-'</span>, label=<span class="str">'واقعی'</span>)
+plt.plot(t, <span class="num">1</span>*np.exp(-res.x[<span class="num">0</span>]*t)*np.cos(res.x[<span class="num">1</span>]*t), <span class="str">'r--'</span>, label=<span class="str">'تخمین'</span>)
+plt.legend(); plt.show()</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 15. FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">پایه‌های ریاضی</div>
+    <h2>📐 فرمول‌های کلیدی این جلسه</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$\mathbf{w} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$$
+      <span class="lbl">معادله نرمال — حل دقیق Least Squares</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\theta_{t+1} = \theta_t - \eta \nabla_\theta L(\theta_t)$$
+      <span class="lbl">به‌روزرسانی گرادیان نزولی</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$L(\theta) = \frac{1}{n}\sum_{i=1}^n (y_i - f(x_i; \theta))^2$$
+      <span class="lbl">تابع هزینه MSE — پایه تخمین پارامتر</span>
+    </div>
+  </div>
+</div>
+
+<!-- 16. EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۳</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>چرا معادلات فضای حالت برای AI مهم‌اند؟</li>
+          <li><span class="exNum">۲</span>تفاوت مقادیر ویژه در مکانیک و PCA را توضیح دهید.</li>
+          <li><span class="exNum">۳</span>چرا در تخمین پارامتر به MSE نیاز داریم؟</li>
+          <li><span class="exNum">۴</span>تفاوت Normal Equation و Gradient Descent در تخمین چیست؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>در Colab، تخمین c و k را با scipy.optimize اجرا کنید.</li>
+          <li><span class="exNum">۲</span>MSE را برای مقادیر مختلف c و k رسم کنید (Heatmap).</li>
+          <li><span class="exNum">۳</span>سیستم جرم-فنر-دمپر را با پارامترهای مختلف شبیه‌سازی کنید.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) تمرین نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره ریاضیات مشترک مکانیک و AI بنویسید.</li>
+          <li><span class="exNum">۲</span>مقایسه‌ای بین رویکرد تحلیلی و بهینه‌سازی برای تخمین پارامتر بنویسید.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک سیستم مکانیکی دیگر پیشنهاد دهید که شناسایی پارامتر آن با AI مفید باشد.</li>
+          <li><span class="exNum">★</span>چگونه می‌توانید از داده‌های واقعی یک شتاب‌سنج برای تخمین c و k استفاده کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW03 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- 17. AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>📚 Claude — دستیار تحلیل داده</h2>
+    <p>ابزار مناسب برای تحلیل کد طولانی، توضیح ریاضیات، و کمک به نوشتن گزارش.</p>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کدهای طولانی، توضیح ریاضیات، نوشتن گزارش</p>
+        <span class="tag">جلسه ۳ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی و دیباگ</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="code-2"></i></div>
+        <h4>DeepSeek</h4>
+        <p>استدلال ریاضی و کد</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Claude:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        کد تخمین پارامتر را در Claude آپلود کنید و از آن بخواهید:
+        «این کد را توضیح بده و خطاهای احتمالی را بررسی کن».
+        نتیجه را در HW03 بنویسید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 18. SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۳</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ جبر خطی</h3><p>فضای حالت و Feature Vectors — زبان مشترک مکانیک و AI</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ مقادیر ویژه</h3><p>مدهای ارتعاشی در مکانیک = جهت‌های اصلی در PCA</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ گرادیان</h3><p>جهت کاهش خطا — پایه Backpropagation</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ تخمین پارامتر</h3><p>شناسایی c و k سیستم جرم-فنر-دمپر با بهینه‌سازی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ ابزار</h3><p>Claude — تحلیل کد و ریاضیات</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 19. NEXT -->
+<div class="slide" data-topic="جلسه بعد">
+  <div class="slideInner">
+    <div class="eyebrow">جلسه ۴</div>
+    <h2>📅 جلسه بعد چه داریم؟</h2>
+    <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+      border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin-top:20px">
+      <h3 style="color:var(--violet);margin-bottom:10px">تخمین پارامتر با الگوریتم ژنتیک</h3>
+      <p style="margin-top:8px">
+        • GA — Genetic Algorithm<br>
+        • Fitness Function و انتخاب<br>
+        • Crossover و Mutation<br>
+        • کاربرد در مکانیک: جرم-فنر-دمپر<br>
+        • مقایسه GA با Gradient Descent
+      </p>
+    </div>
+    <div style="margin-top:22px;padding:20px;border-radius:14px;
+      background:rgba(77,212,255,.12);border:1px solid rgba(77,212,255,.5)">
+      <h4 style="color:var(--cyan);margin-bottom:8px;font-size:16px">📁 قبل از جلسه ۴</h4>
+      <p style="margin:0;font-size:14px">
+        ۱. HW03 را در Google Drive آپلود کنید<br>
+        ۲. کتاب Géron فصل ۹ را مرور کنید<br>
+        ۳. با Claude درباره «Genetic Algorithm» بحث کنید
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- 20. END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle">جلسه بعد: تخمین پارامتر با الگوریتم ژنتیک</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۰</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeConcept()"><i data-lucide="x"></i></button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+/* ============ GALAXY ============ */
+const galaxyCanvas = document.getElementById("galaxyCanvas");
+const gctx = galaxyCanvas.getContext("2d");
+let gStars = [];
+
+function initGalaxy(){
+  galaxyCanvas.width = window.innerWidth;
+  galaxyCanvas.height = window.innerHeight;
+  gStars = [];
+  const count = Math.min(200, Math.floor(window.innerWidth * window.innerHeight / 6000));
+  for(let i=0; i<count; i++){
+    gStars.push({
+      x: Math.random() * galaxyCanvas.width,
+      y: Math.random() * galaxyCanvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      vx: (Math.random() - 0.5) * 0.12,
+      vy: (Math.random() - 0.5) * 0.12,
+      alpha: Math.random() * 0.7 + 0.2,
+      color: Math.random() > 0.7 ? "#f5c76a" : (Math.random() > 0.5 ? "#4dd4ff" : "#eaf2ff"),
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+}
+function drawGalaxy(){
+  gctx.clearRect(0, 0, galaxyCanvas.width, galaxyCanvas.height);
+  const g1 = gctx.createRadialGradient(
+    galaxyCanvas.width*0.3, galaxyCanvas.height*0.4, 50,
+    galaxyCanvas.width*0.3, galaxyCanvas.height*0.4, galaxyCanvas.width*0.4
+  );
+  g1.addColorStop(0, "rgba(77,212,255,0.06)");
+  g1.addColorStop(1, "transparent");
+  gctx.fillStyle = g1;
+  gctx.fillRect(0, 0, galaxyCanvas.width, galaxyCanvas.height);
+
+  gStars.forEach(s => {
+    s.x += s.vx; s.y += s.vy; s.pulse += 0.02;
+    if(s.x < 0) s.x = galaxyCanvas.width;
+    if(s.x > galaxyCanvas.width) s.x = 0;
+    if(s.y < 0) s.y = galaxyCanvas.height;
+    if(s.y > galaxyCanvas.height) s.y = 0;
+    gctx.beginPath();
+    gctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    gctx.fillStyle = s.color;
+    gctx.globalAlpha = s.alpha * (0.6 + Math.sin(s.pulse)*0.4);
+    gctx.fill();
+    gctx.globalAlpha = 1;
+  });
+  requestAnimationFrame(drawGalaxy);
+}
+initGalaxy(); drawGalaxy();
+window.addEventListener("resize", initGalaxy);
+
+/* ============ SLIDES ============ */
+const slides = document.querySelectorAll(".slide");
+const totalSlides = slides.length;
+let currentSlide = 0;
+const simsInit = {};
+
+const dotsContainer = document.getElementById("dots");
+const topicBar = document.getElementById("topicBar");
+const progressFill = document.getElementById("progressFill");
+const currentNum = document.getElementById("currentNum");
+const totalNum = document.getElementById("totalNum");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+const star = document.getElementById("star");
+
+function toFa(n){
+  const fa = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  return String(n).replace(/\d/g, d => fa[d]);
+}
+totalNum.textContent = toFa(totalSlides);
+
+slides.forEach((s, i) => {
+  const dot = document.createElement("button");
+  dot.className = "dot" + (i === 0 ? " active" : "");
+  dot.onclick = () => goToSlide(i);
+  dotsContainer.appendChild(dot);
+});
+
+slides.forEach((s, i) => {
+  const topic = s.dataset.topic || `اسلاید ${i+1}`;
+  const pill = document.createElement("button");
+  pill.className = "topicPill" + (i === 0 ? " active" : "");
+  pill.textContent = toFa(i+1) + ". " + topic;
+  pill.onclick = () => goToSlide(i);
+  topicBar.appendChild(pill);
+});
+
+function goToSlide(n){
+  if(n < 0 || n >= totalSlides) return;
+  slides[currentSlide].classList.remove("active");
+  currentSlide = n;
+  slides[currentSlide].classList.add("active");
+  slides[currentSlide].scrollTop = 0;
+  if(currentSlide === 0) star.classList.add("visible");
+  else star.classList.remove("visible");
+  updateUI();
+  playTransition();
+  if(window.MathJax && MathJax.typesetPromise){
+    setTimeout(() => MathJax.typesetPromise().catch(()=>{}), 200);
+  }
+  setTimeout(initVisibleSims, 120);
+}
+
+function updateUI(){
+  currentNum.textContent = toFa(currentSlide + 1);
+  progressFill.style.width = ((currentSlide + 1) / totalSlides * 100) + "%";
+  prevBtn.disabled = currentSlide === 0;
+  nextBtn.disabled = currentSlide === totalSlides - 1;
+  document.querySelectorAll(".dot").forEach((d, i) => {
+    d.classList.remove("active", "done");
+    if(i < currentSlide) d.classList.add("done");
+    if(i === currentSlide) d.classList.add("active");
+  });
+  document.querySelectorAll(".topicPill").forEach((p, i) => {
+    p.classList.remove("active", "done");
+    if(i < currentSlide) p.classList.add("done");
+    if(i === currentSlide){
+      p.classList.add("active");
+      p.scrollIntoView({behavior:"smooth", inline:"center", block:"nearest"});
+    }
+  });
+}
+
+prevBtn.onclick = () => goToSlide(currentSlide - 1);
+nextBtn.onclick = () => goToSlide(currentSlide + 1);
+document.addEventListener("keydown", (e) => {
+  if(e.key === "ArrowLeft") goToSlide(currentSlide + 1);
+  else if(e.key === "ArrowRight") goToSlide(currentSlide - 1);
+  else if(e.key === " ") { e.preventDefault(); goToSlide(currentSlide + 1); }
+  else if(e.key === "Home") goToSlide(0);
+  else if(e.key === "End") goToSlide(totalSlides - 1);
+  else if(e.key === "Escape") closeConcept();
+});
+let touchStartX = 0;
+document.addEventListener("touchstart", (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener("touchend", (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if(Math.abs(dx) > 50){
+    if(dx > 0) goToSlide(currentSlide - 1);
+    else goToSlide(currentSlide + 1);
+  }
+});
+updateUI();
+
+/* ============ THEME ============ */
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = document.getElementById("themeIcon");
+const savedTheme = localStorage.getItem("ai-session-theme") || "dark";
+document.documentElement.setAttribute("data-theme", savedTheme);
+updateThemeIcon(savedTheme);
+themeToggle.onclick = () => {
+  const current = document.documentElement.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  localStorage.setItem("ai-session-theme", next);
+  updateThemeIcon(next);
+  playClick();
+};
+function updateThemeIcon(theme){
+  themeIcon.setAttribute("data-lucide", theme === "dark" ? "sun" : "moon");
+  lucide.createIcons();
+}
+
+/* ============ SOUND ============ */
+let soundEnabled = localStorage.getItem("ai-session-sound") !== "off";
+const soundToggle = document.getElementById("soundToggle");
+const soundIcon = document.getElementById("soundIcon");
+updateSoundIcon();
+soundToggle.onclick = () => {
+  soundEnabled = !soundEnabled;
+  localStorage.setItem("ai-session-sound", soundEnabled ? "on" : "off");
+  updateSoundIcon();
+  if(soundEnabled) playClick();
+};
+function updateSoundIcon(){
+  soundIcon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
+  lucide.createIcons();
+}
+let audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playClick(){
+  if(!soundEnabled) return;
+  try{
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 620;
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.08);
+  } catch(e){}
+}
+function playTransition(){
+  if(!soundEnabled) return;
+  try{
+    const ctx = getAudioCtx();
+    [520, 720].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.frequency.value = freq;
+      osc.type = "sine";
+      gain.gain.setValueAtTime(0.04, ctx.currentTime + i*0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.05 + 0.1);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i*0.05);
+      osc.stop(ctx.currentTime + i*0.05 + 0.1);
+    });
+  } catch(e){}
+}
+
+document.getElementById("fullscreenBtn").onclick = () => {
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+};
+
+/* ============ CODE TABS ============ */
+document.querySelectorAll(".codeTabBtn").forEach(btn => {
+  btn.onclick = () => {
+    const target = btn.dataset.code;
+    document.querySelectorAll(".codeTabBtn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".codePane").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("code-" + target).classList.add("active");
+    playClick();
+  };
+});
+
+/* ============ CANVAS SETUP ============ */
+function setupCanvas(canvas){
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+/* ============ SIM 1 — MASS-SPRING-DAMPER ============ */
+(function(){
+  const canvas = document.getElementById("sim1Canvas");
+  const mSlider = document.getElementById("sim1_m");
+  const kSlider = document.getElementById("sim1_k");
+  const cSlider = document.getElementById("sim1_c");
+
+  function draw(){
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    if(w < 10 || h < 10) return;
+    const ctx = setupCanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    const m = +mSlider.value;
+    const k = +kSlider.value;
+    const c = +cSlider.value;
+
+    const wn = Math.sqrt(k/m);
+    const zeta = c / (2 * Math.sqrt(k*m));
+
+    document.getElementById("sim1_m_val").textContent = m.toFixed(1);
+    document.getElementById("sim1_k_val").textContent = k.toFixed(0);
+    document.getElementById("sim1_c_val").textContent = c.toFixed(1);
+    document.getElementById("sim1_wn").textContent = wn.toFixed(2);
+    document.getElementById("sim1_zeta").textContent = zeta.toFixed(2);
+
+    const status = document.getElementById("sim1_status");
+    if(zeta < 0.99){ status.textContent = "Underdamped"; status.style.color = "#4dd4ff"; }
+    else if(zeta < 1.01){ status.textContent = "Critical"; status.style.color = "#f5c76a"; }
+    else { status.textContent = "Overdamped"; status.style.color = "#5ee8a8"; }
+
+    // Grid
+    ctx.strokeStyle = "rgba(120,160,220,0.1)";
+    ctx.lineWidth = 1;
+    for(let i = 0; i <= 10; i++){
+      ctx.beginPath();
+      ctx.moveTo(w*i/10, 0); ctx.lineTo(w*i/10, h);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, h*i/10); ctx.lineTo(w, h*i/10);
+      ctx.stroke();
+    }
+
+    // Simulate response
+    const tMax = 10;
+    const N = 300;
+    ctx.strokeStyle = "#4dd4ff";
+    ctx.lineWidth = 3;
+    ctx.shadowColor = "#4dd4ff";
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    const y0 = h/2;
+    const amp = (h/2 - 30);
+    for(let i = 0; i <= N; i++){
+      const t = (i / N) * tMax;
+      let x;
+      if(zeta < 1){
+        const wd = wn * Math.sqrt(1 - zeta*zeta);
+        x = Math.exp(-zeta*wn*t) * Math.cos(wd*t);
+      } else if(zeta < 1.01){
+        x = Math.exp(-wn*t) * (1 + wn*t);
+      } else {
+        const r1 = -wn*(zeta - Math.sqrt(zeta*zeta - 1));
+        const r2 = -wn*(zeta + Math.sqrt(zeta*zeta - 1));
+        x = (r2*Math.exp(r1*t) - r1*Math.exp(r2*t)) / (r2 - r1);
+      }
+      const px = (i / N) * w;
+      const py = y0 - x * amp;
+      if(i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Axis
+    ctx.strokeStyle = "rgba(120,160,220,0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y0); ctx.lineTo(w, y0);
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = "#a8bcd4";
+    ctx.font = "bold 12px Vazirmatn";
+    ctx.textAlign = "center";
+    ctx.fillText("زمان t", w/2, h - 10);
+  }
+
+  mSlider.addEventListener("input", draw);
+  kSlider.addEventListener("input", draw);
+  cSlider.addEventListener("input", draw);
+  window.addEventListener("resize", () => { if(canvas.offsetParent !== null) draw(); });
+  simsInit.sim1 = draw;
+})();
+
+/* ============ SIM 2 — GRADIENT DESCENT ============ */
+(function(){
+  const canvas = document.getElementById("sim2Canvas");
+  const lrSlider = document.getElementById("sim2_lr");
+  const x0Slider = document.getElementById("sim2_x0");
+
+  let pos = +x0Slider.value;
+  let steps = 0;
+  let trail = [];
+  let timer = null;
+
+  function loss(x){ return x*x + 2; }
+  function grad(x){ return 2*x; }
+
+  function draw(){
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    if(w < 10 || h < 10) return;
+    const ctx = setupCanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    // Curve
+    ctx.strokeStyle = "rgba(77,212,255,0.9)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    for(let px = 0; px <= w; px++){
+      const x = (px / w) * 8 - 4;
+      const y = loss(x);
+      const py = h - 50 - (y / 20) * (h - 90);
+      if(px === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // Trail
+    trail.forEach((tx, i) => {
+      const px = ((tx + 4) / 8) * w;
+      const py = h - 50 - (loss(tx) / 20) * (h - 90);
+      if(px > 0 && px < w && py > 0 && py < h){
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI*2);
+        const alpha = 0.2 + (i / trail.length) * 0.8;
+        ctx.fillStyle = `rgba(245,199,106,${alpha})`;
+        ctx.fill();
+      }
+    });
+
+    // Current
+    const cx = ((pos + 4) / 8) * w;
+    const cy = h - 50 - (loss(pos) / 20) * (h - 90);
+    if(cx > 0 && cx < w && cy > 0 && cy < h){
+      ctx.beginPath();
+      ctx.arc(cx, cy, 10, 0, Math.PI*2);
+      ctx.fillStyle = "#f5c76a";
+      ctx.shadowColor = "#f5c76a";
+      ctx.shadowBlur = 16;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+    }
+
+    document.getElementById("sim2_lr_val").textContent = (+lrSlider.value).toFixed(2);
+    document.getElementById("sim2_x0_val").textContent = (+x0Slider.value).toFixed(1);
+    document.getElementById("sim2_pos").textContent = pos.toFixed(3);
+    document.getElementById("sim2_loss").textContent = loss(pos).toFixed(3);
+    document.getElementById("sim2_steps").textContent = steps;
+  }
+
+  function step(){
+    const lr = +lrSlider.value;
+    const g = grad(pos);
+    pos = pos - lr * g;
+    steps++;
+    trail.push(pos);
+    if(trail.length > 80) trail.shift();
+    draw();
+    if(Math.abs(g) > 0.02 && steps < 200){
+      timer = setTimeout(step, 80);
+    }
+  }
+
+  function restart(){
+    if(timer) clearTimeout(timer);
+    pos = +x0Slider.value;
+    steps = 0;
+    trail = [];
+    draw();
+    timer = setTimeout(step, 300);
+  }
+
+  lrSlider.addEventListener("input", restart);
+  x0Slider.addEventListener("input", restart);
+  window.addEventListener("resize", () => { if(canvas.offsetParent !== null) draw(); });
+  simsInit.sim2 = () => { draw(); restart(); };
+})();
+
+/* ============ SIM 3 — PARAMETER ESTIMATION ============ */
+(function(){
+  const canvas = document.getElementById("sim3Canvas");
+  const cSlider = document.getElementById("sim3_c");
+  const kSlider = document.getElementById("sim3_k");
+
+  function draw(){
+    const rect = canvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    if(w < 10 || h < 10) return;
+    const ctx = setupCanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+
+    const cEst = +cSlider.value;
+    const kEst = +kSlider.value;
+
+    // Ground truth
+    const cTrue = 0.8;
+    const kTrue = 3.0;
+    const tMax = 8;
+
+    document.getElementById("sim3_c_val").textContent = cEst.toFixed(1);
+    document.getElementById("sim3_k_val").textContent = kEst.toFixed(0);
+
+    // Grid
+    ctx.strokeStyle = "rgba(120,160,220,0.1)";
+    ctx.lineWidth = 1;
+    for(let i = 0; i <= 10; i++){
+      ctx.beginPath();
+      ctx.moveTo(w*i/10, 0); ctx.lineTo(w*i/10, h);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, h*i/10); ctx.lineTo(w, h*i/10);
+      ctx.stroke();
+    }
+
+    const y0 = h/2;
+    const amp = (h/2 - 40);
+
+    // True signal
+    ctx.strokeStyle = "rgba(77,212,255,0.5)";
+    ctx.lineWidth = 3;
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    for(let i = 0; i <= 200; i++){
+      const t = (i / 200) * tMax;
+      const x = Math.exp(-cTrue*t) * Math.cos(kTrue*t);
+      const px = (i / 200) * w;
+      const py = y0 - x * amp;
+      if(i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Estimated signal
+    let mse = 0;
+    ctx.strokeStyle = "#f5c76a";
+    ctx.lineWidth = 3;
+    ctx.shadowColor = "#f5c76a";
+    ctx.shadowBlur = 10;
+    ctx.beginPath();
+    for(let i = 0; i <= 200; i++){
+      const t = (i / 200) * tMax;
+      const xTrue = Math.exp(-cTrue*t) * Math.cos(kTrue*t);
+      const xEst = Math.exp(-cEst*t) * Math.cos(kEst*t);
+      const px = (i / 200) * w;
+      const py = y0 - xEst * amp;
+      if(i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+      mse += Math.pow(xTrue - xEst, 2);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    mse /= 201;
+
+    document.getElementById("sim3_mse").textContent = mse.toFixed(4);
+
+    // Error bar
+    const err = Math.min(1, mse * 2);
+    document.getElementById("sim3_err").textContent = (err * 100).toFixed(1) + "%";
+
+    const status = document.getElementById("sim3_status");
+    if(mse < 0.01){ status.textContent = "عالی"; status.style.color = "#5ee8a8"; }
+    else if(mse < 0.05){ status.textContent = "خوب"; status.style.color = "#f5c76a"; }
+    else { status.textContent = "ضعیف"; status.style.color = "#ff7e93"; }
+
+    // Legend
+    ctx.fillStyle = "#4dd4ff";
+    ctx.font = "bold 12px Vazirmatn";
+    ctx.textAlign = "right";
+    ctx.fillText("— — داده واقعی", w - 20, 30);
+    ctx.fillStyle = "#f5c76a";
+    ctx.fillText("— تخمین", w - 20, 50);
+  }
+
+  cSlider.addEventListener("input", draw);
+  kSlider.addEventListener("input", draw);
+  window.addEventListener("resize", () => { if(canvas.offsetParent !== null) draw(); });
+  simsInit.sim3 = draw;
+})();
+
+/* ============ MODAL ============ */
+function closeConcept(){
+  document.getElementById("modal").classList.remove("open");
+}
+document.getElementById("modal").onclick = (e) => {
+  if(e.target.id === "modal") closeConcept();
+};
+
+/* ============ INIT VISIBLE SIMS ============ */
+function initVisibleSims(){
+  const active = slides[currentSlide];
+  if(!active) return;
+  const topic = active.dataset.topic;
+  if(topic === "شبیه‌ساز ۱" && simsInit.sim1) simsInit.sim1();
+  else if(topic === "شبیه‌ساز ۲" && simsInit.sim2) simsInit.sim2();
+  else if(topic === "شبیه‌ساز ۳" && simsInit.sim3) simsInit.sim3();
+}
+
+lucide.createIcons();
+setTimeout(() => {
+  if(window.MathJax && MathJax.typesetPromise){
+    MathJax.typesetPromise().catch(()=>{});
+  }
+}, 800);
+</script>
+</body>
+</html>

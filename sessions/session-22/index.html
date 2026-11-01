@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۲ — Digital Twin و Sensor Fusion | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۲۲ — Digital Twin</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="copy" style="width:14px;height:14px"></i> جلسه ۲۲ • فاز ۶ — Scientific AI</div>
+      <h1>Digital Twin و Sensor Fusion</h1>
+      <p class="subtitle-en">Digital Twin · Sensor Fusion · Kalman Filter<br>When Physical Meets Digital</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۲۱</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="brain"></i></div><h3>جلسه ۲۱</h3><p>PINN، Autograd، معادله گرما</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="copy"></i></div><h3>جلسه ۲۲ (امروز)</h3><p>Digital Twin، Sensor Fusion، Kalman</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ Digital Twin چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ معماری و همگام‌سازی</p></div>
+      <div class="card"><p style="margin:0">✅ Sensor Fusion</p></div>
+      <div class="card"><p style="margin:0">✅ Kalman Filter</p></div>
+      <div class="card"><p style="margin:0">✅ ML + Kalman</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🔄 چرا Digital Twin؟</h2>
+    <p style="font-size:16px">فرض کنید یک توربین بادی در یک مزرعه دورافتاده دارید. نمی‌توانید هر روز آن را بازرسی کنید. اما اگر یک <b>نسخه دیجیتال زنده</b> از آن داشته باشید که با سنسورها هم‌زمان با واقعیت به‌روز می‌شود، می‌توانید:</p>
+    <div class="cardGrid">
+      <div class="card"><h3>🔮 پیش‌بینی خرابی</h3><p>قبل از خرابی، هشدار بگیرید</p></div>
+      <div class="card"><h3>⚙️ بهینه‌سازی</h3><p>عملکرد را در شبیه‌سازی بهبود دهید</p></div>
+      <div class="card"><h3>🎯 تصمیم‌گیری</h3><p>بدون خطر در واقعیت</p></div>
+      <div class="card"><h3>📚 یادگیری</h3><p>از گذشته بیاموزید</p></div>
+    </div>
+    <img src="images/digital-twin-hero.png" alt="Digital Twin" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">سیستم فیزیکی + مدل مجازی = Digital Twin</div>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHAT IS DT -->
+<div class="slide" data-topic="Digital Twin چیست">
+  <div class="slideInner">
+    <div class="eyebrow">تعریف</div>
+    <h2>📦 Digital Twin چیست؟</h2>
+    <p><b>Digital Twin</b> (دوقلوی دیجیتال) یک نسخه مجازی از یک سیستم فیزیکی است که با آن هم‌زمان و بلادرنگ به‌روز می‌شود.</p>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">۳ جزء اصلی</h3>
+        <p>۱. سیستم فیزیکی</p>
+        <p>۲. مدل مجازی</p>
+        <p>۳. اتصال داده (سنسورها)</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">۲ جهت</h3>
+        <p>• فیزیکی → دیجیتال: داده‌برداری</p>
+        <p>• دیجیتال → فیزیکی: کنترل</p>
+      </div>
+    </div>
+    <img src="images/twin-sync.png" alt="Twin sync" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">همگام‌سازی بلادرنگ بین دو طرف</div>
+  </div>
+</div>
+
+<!-- SLIDE 5: ARCHITECTURE -->
+<div class="slide" data-topic="معماری">
+  <div class="slideInner">
+    <div class="eyebrow">معماری</div>
+    <h2>🏗 معماری Digital Twin</h2>
+    <img src="images/digital-twin-architecture.png" alt="DT architecture" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">۵ لایه Digital Twin</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>لایه</th><th>عملکرد</th></tr></thead>
+        <tbody>
+          <tr><td><b>۱. Physical</b></td><td>سیستم واقعی با سنسورها</td></tr>
+          <tr><td><b>۲. Data</b></td><td>جمع‌آوری و انتقال داده</td></tr>
+          <tr><td><b>۳. Model</b></td><td>مدل ریاضی/فیزیکی/ML</td></tr>
+          <tr><td><b>۴. Simulation</b></td><td>شبیه‌سازی و پیش‌بینی</td></tr>
+          <tr><td><b>۵. Decision</b></td><td>تصمیم‌گیری و کنترل</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔄 Digital Twin — Architecture</h2>
+    <p>روی هر لایه کلیک کنید تا توضیح آن را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="layers"></i> Digital Twin Architecture</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simResults">
+        <div class="simRes"><small>لایه</small><b id="sim1_layer">—</b></div>
+        <div class="simRes"><small>عملکرد</small><b id="sim1_role">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> روی هر لایه کلیک کنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: SYNCHRONIZATION -->
+<div class="slide" data-topic="همگام‌سازی">
+  <div class="slideInner">
+    <div class="eyebrow">همگام‌سازی</div>
+    <h2>🔗 همگام‌سازی بلادرنگ</h2>
+    <p>مهم‌ترین ویژگی Digital Twin: <b>زمان‌بندی</b>. دو حالت اصلی:</p>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">Real-time</h3>
+        <p>هر میلی‌ثانیه — ایده‌آل اما گران</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">Near real-time</h3>
+        <p>هر ثانیه — معمول در صنعت</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">Batch</h3>
+        <p>هر دقیقه/ساعت — برای تحلیل تاریخی</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$\text{Sync Quality} = f(\Delta t, \text{noise}, \text{latency})$$
+      <span class="lbl">کیفیت همگام‌سازی به تأخیر، نویز، و تأخیر شبکه بستگی دارد</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: APPLICATIONS -->
+<div class="slide" data-topic="کاربرد مکانیک">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 Digital Twin در مکانیک</h2>
+    <img src="images/digital-twin-mechanics.png" alt="DT in mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از توربین تا CNC</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🌬 توربین بادی</h3><p>پیش‌بینی خرابی پره</p></div>
+      <div class="card"><h3>🏭 CNC</h3><p>بهینه‌سازی فرآیند تراش</p></div>
+      <div class="card"><h3>🚗 خودرو</h3><p>پیش‌بینی عمر قطعات</p></div>
+      <div class="card"><h3>🏢 ساختمان</h3><p>مدیریت انرژی HVAC</p></div>
+      <div class="card"><h3>🚀 هوافضا</h3><p>پایش موتور جت</p></div>
+      <div class="card"><h3>🏭 کارخانه</h3><p>نگهداری پیش‌بینانه</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SENSOR FUSION -->
+<div class="slide" data-topic="Sensor Fusion">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم کلیدی</div>
+    <h2>📡 Sensor Fusion — همجوشی حسگرها</h2>
+    <p>هر حسگر (دوربین، IMU، GPS، LiDAR) محدودیت خودش را دارد. <b>Sensor Fusion</b> این داده‌ها را ترکیب می‌کند تا تصویر کامل‌تر و دقیق‌تری از وضعیت سیستم بگیریم.</p>
+    <img src="images/sensor-fusion-hero.png" alt="Sensor fusion" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چند حسگر → یک تخمین بهتر</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 دقت</h3><p>ترکیب داده‌ها → دقت بالاتر</p></div>
+      <div class="card"><h3>🛡 مقاومت</h3><p>اگر یک حسگر خراب شود، بقیه کار می‌کنند</p></div>
+      <div class="card"><h3>⏱ سرعت</h3><p>پردازش هم‌زمان</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>📡 Sensor Fusion — تعاملی</h2>
+    <p>سهم هر حسگر را تغییر دهید و ببینید تخمین نهایی چطور تغییر می‌کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Sensor Fusion — Weighted Average</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sliderGroup">
+          <label>وزن IMU <span class="sliderVal" id="sim2_w1_val">1.0</span></label>
+          <input type="range" id="sim2_w1" min="0" max="3" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>وزن GPS <span class="sliderVal" id="sim2_w2_val">1.0</span></label>
+          <input type="range" id="sim2_w2" min="0" max="3" step="0.1" value="1">
+        </div>
+        <div class="sliderGroup">
+          <label>وزن Camera <span class="sliderVal" id="sim2_w3_val">1.0</span></label>
+          <input type="range" id="sim2_w3" min="0" max="3" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>IMU</small><b id="sim2_imu">10.0</b></div>
+        <div class="simRes"><small>GPS</small><b id="sim2_gps">11.5</b></div>
+        <div class="simRes"><small>Camera</small><b id="sim2_cam">9.2</b></div>
+        <div class="simRes"><small>Fused</small><b id="sim2_fused">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> وزن‌ها را تغییر دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: KALMAN -->
+<div class="slide" data-topic="Kalman Filter">
+  <div class="slideInner">
+    <div class="eyebrow">الگوریتم کلاسیک</div>
+    <h2>🎯 Kalman Filter — فیلتر کالمن</h2>
+    <p><b>Kalman Filter</b> بهترین تخمین‌زن خطی برای سیستم‌های نویزی است. از دو مرحله تشکیل شده:</p>
+    <img src="images/kalman-filter.png" alt="Kalman filter" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Predict و Update — حلقه اصلی Kalman</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">Predict</h3>
+        <p>$\hat{x}_k^- = A \hat{x}_{k-1} + Bu$</p>
+        <p style="font-size:11px;margin-top:8px">پیش‌بینی وضعیت بعدی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">Update</h3>
+        <p>$K = P^- H^T (H P^- H^T + R)^{-1}$</p>
+        <p style="font-size:11px;margin-top:8px">تصحیح با اندازه‌گیری</p>
+      </div>
+    </div>
+    <p style="margin-top:16px;text-align:center;color:var(--muted)">فیلتر کالمن در سال ۱۹۶۰ توسط Rudolf Kalman معرفی شد — و امروزه در همه‌جا از GPS تا موشک‌ها استفاده می‌شود.</p>
+  </div>
+</div>
+
+<!-- SLIDE 12: EKF -->
+<div class="slide" data-topic="EKF">
+  <div class="slideInner">
+    <div class="eyebrow">نسخه غیرخطی</div>
+    <h2>📐 Extended Kalman Filter (EKF)</h2>
+    <p>فیلتر کالمن فقط برای سیستم‌های <b>خطی</b> کار می‌کند. برای غیرخطی، از EKF استفاده می‌کنیم که با <b>ژاکوبین</b> خطی‌سازی می‌کند.</p>
+    <div class="formulaBox" style="font-size:17px">
+      $$F_k = \left. \frac{\partial f}{\partial x} \right|_{\hat{x}_{k-1}}$$
+      <span class="lbl">ژاکوبین تابع انتقال — خطی‌سازی محلی</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>✅ مزیت</h3><p>برای سیستم‌های غیرخطی</p></div>
+      <div class="card"><h3>⚠ محدودیت</h3><p>در غیرخطی‌های شدید ضعیف</p></div>
+      <div class="card"><h3>🔄 UKF</h3><p>Unscented — بدون ژاکوبین</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🎯 Kalman Filter — تعاملی</h2>
+    <p>نویز اندازه‌گیری را تغییر دهید و ببینید Kalman چطور تخمین را بهبود می‌دهد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Kalman Filter 1D</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>نویز اندازه‌گیری (R) <span class="sliderVal" id="sim3_R_val">0.5</span></label>
+          <input type="range" id="sim3_R" min="0.1" max="2" step="0.1" value="0.5">
+        </div>
+        <div class="sliderGroup">
+          <label>نویز فرآیند (Q) <span class="sliderVal" id="sim3_Q_val">0.1</span></label>
+          <input type="range" id="sim3_Q" min="0.01" max="0.5" step="0.01" value="0.1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>RMSE Raw</small><b id="sim3_rmse_raw">—</b></div>
+        <div class="simRes"><small>RMSE Kalman</small><b id="sim3_rmse_kf">—</b></div>
+        <div class="simRes"><small>بهبود</small><b id="sim3_improve">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> پارامترها را تغییر دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: ML + KALMAN -->
+<div class="slide" data-topic="ML + Kalman">
+  <div class="slideInner">
+    <div class="eyebrow">ترکیب مدرن</div>
+    <h2>🤖 ML + Kalman</h2>
+    <p>Kalman کلاسیک فرض می‌کند مدل سیستم را می‌دانیم. اما اگر ندانیم؟ از ML برای یادگیری مدل استفاده می‌کنیم.</p>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">Neural Kalman Filter</h3>
+        <p>ML مدل انتقال را یاد بگیرد، Kalman تخمین بزند</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">Deep Sensor Fusion</h3>
+        <p>CNN + Transformer برای ترکیب داده‌های چندحسگری</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">Learning Kalman Gain</h3>
+        <p>K را با شبکه عصبی یاد بگیریم</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: INDUSTRIAL -->
+<div class="slide" data-topic="کاربرد صنعتی">
+  <div class="slideInner">
+    <div class="eyebrow">صنعت</div>
+    <h2>🏭 کاربردهای صنعتی</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>حوزه</th><th>کاربرد Digital Twin</th><th>مزیت</th></tr></thead>
+        <tbody>
+          <tr><td><b>خودرو</b></td><td>پیش‌بینی خرابی موتور</td><td>کاهش توقف</td></tr>
+          <tr><td><b>هوافضا</b></td><td>پایش توربین</td><td>ایمنی</td></tr>
+          <tr><td><b>نیروگاه</b></td><td>بهینه‌سازی توربین</td><td>راندمان</td></tr>
+          <tr><td><b>تولید</b></td><td>خط تولید هوشمند</td><td>کیفیت</td></tr>
+          <tr><td><b>ساختمان</b></td><td>مدیریت HVAC</td><td>مصرف انرژی</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: CHALLENGES -->
+<div class="slide" data-topic="چالش‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">چالش‌ها</div>
+    <h2>⚠️ چالش‌های Digital Twin</h2>
+    <img src="images/digital-twin-challenges.png" alt="Challenges" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چهار چالش اصلی</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">کیفیت داده</h3>
+        <p>داده‌های نویزی یا ناقص</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">تأخیر</h3>
+        <p>Latency در همگام‌سازی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">دقت مدل</h3>
+        <p>مدل ممکن است واقعیت را دقیق نشان ندهد</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">هزینه</h3>
+        <p>پیاده‌سازی گران است</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: CASE STUDY -->
+<div class="slide" data-topic="مطالعه موردی">
+  <div class="slideInner">
+    <div class="eyebrow">مطالعه موردی</div>
+    <h2>🌬 توربین بادی — Digital Twin</h2>
+    <div class="cardGrid">
+      <div class="card"><h3>📊 حسگرها</h3><p>دور، گشتاور، دما، لرزش، سرعت باد</p></div>
+      <div class="card"><h3>🧠 مدل</h3><p>مدل فیزیکی پره + ML</p></div>
+      <div class="card"><h3>🎯 هدف</h3><p>پیش‌بینی خرابی پره</p></div>
+      <div class="card"><h3>⚡ نتیجه</h3><p>کاهش ۳۰٪ توقف غیربرنامه‌ریزی </p></div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$T_{failure} = f(\text{RPM}, \text{Torque}, \text{Vibration}, \text{Temp})$$
+      <span class="lbl">تخمین زمان خرابی با ML روی داده‌های Digital Twin</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: CODE KALMAN -->
+<div class="slide" data-topic="کد Kalman">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Kalman Filter — Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="kalman">Kalman</button>
+      </div>
+      <div class="codePane active" id="code-kalman">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+
+<span class="kw">class</span> <span class="fn">KalmanFilter1D</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, Q=<span class="num">0.01</span>, R=<span class="num">0.1</span>, x0=<span class="num">0</span>, P0=<span class="num">1</span>):
+        self.Q = Q  <span class="com"># process noise</span>
+        self.R = R  <span class="com"># measurement noise</span>
+        self.x = x0  <span class="com"># state estimate</span>
+        self.P = P0  <span class="com"># estimate covariance</span>
+
+    <span class="kw">def</span> <span class="fn">predict</span>(self):
+        <span class="com"># x_k = x_{k-1} (constant model)</span>
+        self.P = self.P + self.Q
+        <span class="kw">return</span> self.x
+
+    <span class="kw">def</span> <span class="fn">update</span>(self, z):
+        <span class="com"># Kalman Gain</span>
+        K = self.P / (self.P + self.R)
+
+        <span class="com"># Update state</span>
+        self.x = self.x + K * (z - self.x)
+
+        <span class="com"># Update covariance</span>
+        self.P = (<span class="num">1</span> - K) * self.P
+
+        <span class="kw">return</span> self.x
+
+<span class="com"># تست: سیگنال واقعی + نویز</span>
+np.random.seed(<span class="num">42</span>)
+N = <span class="num">100</span>
+true_value = <span class="num">10.0</span>
+measurements = true_value + np.random.randn(N) * <span class="num">1.0</span>
+
+<span class="com"># فیلتر کالمن</span>
+kf = <span class="fn">KalmanFilter1D</span>(Q=<span class="num">0.01</span>, R=<span class="num">1.0</span>, x0=<span class="num">0</span>, P0=<span class="num">1</span>)
+estimates = []
+
+<span class="kw">for</span> z <span class="kw">in</span> measurements:
+    kf.<span class="fn">predict</span>()
+    x_est = kf.<span class="fn">update</span>(z)
+    estimates.append(x_est)
+
+<span class="com"># رسم</span>
+plt.<span class="fn">plot</span>(measurements, <span class="str">'r.'</span>, alpha=<span class="num">0.5</span>, label=<span class="str">'Measurements'</span>)
+plt.<span class="fn">plot</span>(estimates, <span class="str">'b-'</span>, linewidth=<span class="num">2</span>, label=<span class="str">'Kalman'</span>)
+plt.<span class="fn">axhline</span>(true_value, color=<span class="str">'g'</span>, linestyle=<span class="str">'--'</span>, label=<span class="str">'True'</span>)
+plt.<span class="fn">legend</span>()
+plt.<span class="fn">show</span>()</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: CODE FUSION -->
+<div class="slide" data-topic="کد Fusion">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Sensor Fusion — Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="fusion">Fusion</button>
+      </div>
+      <div class="codePane active" id="code-fusion">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="com"># داده‌های سه حسگر با نویزهای مختلف</span>
+np.random.seed(<span class="num">42</span>)
+N = <span class="num">100</span>
+true_value = <span class="num">10.0</span>
+
+<span class="com"># هر حسگر با نویز متفاوت</span>
+imu = true_value + np.random.randn(N) * <span class="num">0.5</span>   <span class="com"># نویز کم</span>
+gps = true_value + np.random.randn(N) * <span class="num">1.5</span>   <span class="com"># نویز متوسط</span>
+cam = true_value + np.random.randn(N) * <span class="num">2.0</span>   <span class="com"># نویز زیاد</span>
+
+<span class="com"># ۱. میانگین ساده</span>
+simple_avg = (imu + gps + cam) / <span class="num">3</span>
+
+<span class="com"># ۲. میانگین وزنی بر اساس واریانس</span>
+<span class="com"># وزن هر حسگر = 1 / variance</span>
+w_imu = <span class="num">1</span> / np.<span class="fn">var</span>(imu - true_value)
+w_gps = <span class="num">1</span> / np.<span class="fn">var</span>(gps - true_value)
+w_cam = <span class="num">1</span> / np.<span class="fn">var</span>(cam - true_value)
+
+w_sum = w_imu + w_gps + w_cam
+weighted_avg = (w_imu*imu + w_gps*gps + w_cam*cam) / w_sum
+
+<span class="com"># ۳. مقایسه RMSE</span>
+rmse_imu = np.<span class="fn">sqrt</span>(np.<span class="fn">mean</span>((imu - true_value)**<span class="num">2</span>))
+rmse_gps = np.<span class="fn">sqrt</span>(np.<span class="fn">mean</span>((gps - true_value)**<span class="num">2</span>))
+rmse_cam = np.<span class="fn">sqrt</span>(np.<span class="fn">mean</span>((cam - true_value)**<span class="num">2</span>))
+rmse_simple = np.<span class="fn">sqrt</span>(np.<span class="fn">mean</span>((simple_avg - true_value)**<span class="num">2</span>))
+rmse_weighted = np.<span class="fn">sqrt</span>(np.<span class="fn">mean</span>((weighted_avg - true_value)**<span class="num">2</span>))
+
+print(<span class="str">f"IMU RMSE: {rmse_imu:.3f}"</span>)
+print(<span class="str">f"GPS RMSE: {rmse_gps:.3f}"</span>)
+print(<span class="str">f"Camera RMSE: {rmse_cam:.3f}"</span>)
+print(<span class="str">f"Simple Average RMSE: {rmse_simple:.3f}"</span>)
+print(<span class="str">f"Weighted Average RMSE: {rmse_weighted:.3f}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۲۲</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$\hat{x}_k = \hat{x}_k^- + K_k (z_k - H \hat{x}_k^-)$$
+      <span class="lbl">معادله Update در Kalman</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$K_k = P_k^- H^T (H P_k^- H^T + R)^{-1}$$
+      <span class="lbl">Kalman Gain — وزن بین پیش‌بینی و اندازه‌گیری</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$x_{fused} = \frac{\sum w_i x_i}{\sum w_i}, \quad w_i = \frac{1}{\sigma_i^2}$$
+      <span class="lbl">Weighted Fusion — وزن بر اساس واریانس</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 نکته:</b> Kalman Gain به‌طور خودکار بین «اعتماد به پیش‌بینی» و «اعتماد به اندازه‌گیری» تعادل ایجاد می‌کند.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۲۲</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Digital Twin چیست و چه تفاوتی با شبیه‌سازی معمولی دارد؟</li>
+          <li><span class="exNum">۲</span>۳ جزء اصلی Digital Twin کدامند؟</li>
+          <li><span class="exNum">۳</span>Sensor Fusion چه کمکی می‌کند؟</li>
+          <li><span class="exNum">۴</span>Kalman Filter چطور کار می‌کند؟</li>
+          <li><span class="exNum">۵</span>تفاوت EKF و UKF چیست؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>پیاده‌سازی Kalman Filter 1D در Colab.</li>
+          <li><span class="exNum">۲</span>Sensor Fusion ساده با سه حسگر.</li>
+          <li><span class="exNum">۳</span>مقایسه میانگین ساده و وزنی.</li>
+          <li><span class="exNum">۴</span>شبیه‌سازی Digital Twin یک سیستم جرم-فنر.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره Digital Twin در مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه Kalman با فیلترهای ساده.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک Digital Twin ساده برای یک سیستم مکانیکی طراحی کنید.</li>
+          <li><span class="exNum">★</span>چطور Sensor Fusion را در پروژه خود استفاده می‌کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW22 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های Digital Twin</p>
+        <span class="tag">جلسه ۲۲ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل Kalman Filter</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی Sensor Fusion</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «Digital Twin predictive maintenance 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۲۲</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ Digital Twin</h3><p>سیستم فیزیکی + مدل مجازی + همگام‌سازی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Sensor Fusion</h3><p>ترکیب چند حسگر برای دقت بالاتر</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Kalman Filter</h3><p>تخمین بهینه در سیستم‌های نویزی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ EKF و UKF</h3><p>برای سیستم‌های غیرخطی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ ML + Kalman</h3><p>ترکیب مدرن برای سیستم‌های پیچیده</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: Final Project — Definition & Methodology</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۲۳ — فاز ۷</h3>
+        <p style="margin-top:8px;text-align:right">
+          • انتخاب پروژه از ۱۰ عنوان<br>
+          • نوشتن پروپوزال ۲ صفحه‌ای<br>
+          • مرور پیشینه<br>
+          • روش‌شناسی<br>
+          • جدول زمان‌بندی
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

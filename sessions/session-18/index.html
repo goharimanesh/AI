@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۸ — LLM و Prompt Engineering | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۸ — LLM و Prompt</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="message-circle" style="width:14px;height:14px"></i> جلسه ۱۸ • فاز ۵ — NLP</div>
+      <h1>LLM و Prompt Engineering</h1>
+      <p class="subtitle-en">Large Language Models · Prompt Engineering<br>ChatGPT · Gemini · Claude · DeepSeek</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۷</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="message-square"></i></div><h3>جلسه ۱۷</h3><p>Transformer، Attention، BERT، GPT</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="message-circle"></i></div><h3>جلسه ۱۸ (امروز)</h3><p>LLM، Prompt Engineering</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ LLM چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ مدل‌های پیشرو</p></div>
+      <div class="card"><p style="margin:0">✅ Prompt Engineering</p></div>
+      <div class="card"><p style="margin:0">✅ ۵ تکنیک اصلی Prompt</p></div>
+      <div class="card"><p style="margin:0">✅ RAG</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>💬 چرا LLM؟</h2>
+    <p style="font-size:16px">در جلسه قبل Transformer را دیدیم. حالا می‌خواهیم ببینیم وقتی یک Transformer را روی <b>تریلیون‌ها کلمه</b> آموزش دهیم چه اتفاقی می‌افتد: مدلی که می‌تواند کد بنویسد، مقاله خلاصه کند، ترجمه کند، و حتی استدلال کند.</p>
+    <p style="font-size:16px">این همان <b>LLM</b> (Large Language Model) است — پایه ChatGPT، Gemini، Claude، DeepSeek و... و مهم‌تر: <b>هر مهندسی</b> باید بداند چطور با این ابزارها کار کند.</p>
+    <img src="images/llm-hero.png" alt="LLM concept" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">LLM: مدل‌های عظیم زبانی</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="sparkles"></i></div>
+        <h3>ChatGPT</h3>
+        <p>OpenAI — پیشرو</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="zap"></i>
+        </div>
+        <h3>Gemini</h3>
+        <p>Google — چندوجهی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="book-open"></i>
+        </div>
+        <h3>Claude</h3>
+        <p>Anthropic — متون طولانی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="diamond"></i>
+        </div>
+        <h3>DeepSeek</h3>
+        <p>چین — باز و رایگان</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHAT IS LLM -->
+<div class="slide" data-topic="LLM چیست">
+  <div class="slideInner">
+    <div class="eyebrow">تعریف</div>
+    <h2>📚 LLM چیست؟</h2>
+    <p><b>LLM</b> (Large Language Model — مدل زبانی بزرگ) یک مدل Transformer با میلیاردها پارامتر است که روی حجم عظیمی از متن آموزش دیده.</p>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 کار</h3><p>پیش‌بینی توکن بعدی — همین!</p></div>
+      <div class="card"><h3>📊 پارامتر</h3><p>میلیاردها تا تریلیون‌ها</p></div>
+      <div class="card"><h3>📚 آموزش</h3><p>تریلیون‌ها توکن متن</p></div>
+      <div class="card"><h3>💡 نکته</h3><p>سادگی کار = قدرت شگفت‌انگیز</p></div>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$P(w_{t+1} | w_1, w_2, \dots, w_t)$$
+      <span class="lbl">LLM فقط احتمال توکن بعدی را پیش‌بینی می‌کند — اما در مقیاس عظیم!</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: SCALING -->
+<div class="slide" data-topic="مقیاس‌پذیری">
+  <div class="slideInner">
+    <div class="eyebrow">تکامل</div>
+    <h2>📈 از GPT-1 به GPT-4</h2>
+    <img src="images/llm-scaling.png" alt="LLM scaling" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">رشد نمایی پارامترها</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>مدل</th><th>سال</th><th>پارامتر</th><th>پیشرفت</th></tr></thead>
+        <tbody>
+          <tr><td><b>GPT-1</b></td><td>۲۰۱۸</td><td>۱۱۷ میلیون</td><td>شروع</td></tr>
+          <tr><td><b>GPT-2</b></td><td>۲۰۱۹</td><td>۱.۵ میلیارد</td><td>۱۳×</td></tr>
+          <tr><td><b>GPT-3</b></td><td>۲۰۲۰</td><td>۱۷۵ میلیارد</td><td>۱۱۷×</td></tr>
+          <tr><td><b>GPT-4</b></td><td>۲۰۲۳</td><td>~۱.۷ تریلیون</td><td>~۱۰×</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>📈 LLM Scaling — پیشرفت نمایی</h2>
+    <p>تعداد پارامترها را تغییر دهید و ببینید اندازه مدل چطور رشد می‌کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-up"></i> LLM Size Comparison</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>شاخص مدل <span class="sliderVal" id="sim1_idx_val">0</span></label>
+          <input type="range" id="sim1_idx" min="0" max="3" step="1" value="0">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>مدل</small><b id="sim1_model">GPT-1</b></div>
+        <div class="simRes"><small>پارامتر</small><b id="sim1_params">117M</b></div>
+        <div class="simRes"><small>سال</small><b id="sim1_year">2018</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> اسلایدر را حرکت دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: MODELS -->
+<div class="slide" data-topic="مدل‌های پیشرو">
+  <div class="slideInner">
+    <div class="eyebrow">چشم‌انداز</div>
+    <h2>🏛 مدل‌های پیشرو ۲۰۲۴-۲۰۲۵</h2>
+    <img src="images/llm-models-landscape.png" alt="LLM landscape" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چشم‌انداز LLM در ۲۰۲۵</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>مدل</th><th>شرکت</th><th>ویژگی کلیدی</th></tr></thead>
+        <tbody>
+          <tr><td><b>GPT-4o</b></td><td>OpenAI</td><td>چندوجهی، سریع، بهترین کیفیت</td></tr>
+          <tr><td><b>Claude 3.5</b></td><td>Anthropic</td><td>متون طولانی، امن</td></tr>
+          <tr><td><b>Gemini 1.5</b></td><td>Google</td><td>Context بزرگ، ویدئو</td></tr>
+          <tr><td><b>LLaMA 3</b></td><td>Meta</td><td>باز، قابل اجرا محلی</td></tr>
+          <tr><td><b>DeepSeek-V3</b></td><td>DeepSeek</td><td>باز، رایگان، ریاضی</td></tr>
+          <tr><td><b>Qwen 2.5</b></td><td>Alibaba</td><td>چندزبانه، فارسی</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>⚖️ مقایسه مدل‌های LLM</h2>
+    <p>مدل‌ها را از نظر چند معیار مقایسه کنید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="bar-chart-3"></i> LLM Comparison</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns" id="sim2_btns">
+        <button class="btnPrimary" data-model="gpt">GPT-4o</button>
+        <button class="btnSecondary" data-model="claude">Claude 3.5</button>
+        <button class="btnSecondary" data-model="gemini">Gemini 1.5</button>
+        <button class="btnSecondary" data-model="deepseek">DeepSeek-V3</button>
+        <button class="btnSecondary" data-model="llama">LLaMA 3</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>مدل</small><b id="sim2_model">GPT-4o</b></div>
+        <div class="simRes"><small>کیفیت</small><b id="sim2_quality">—</b></div>
+        <div class="simRes"><small>سرعت</small><b id="sim2_speed">—</b></div>
+        <div class="simRes"><small>هزینه</small><b id="sim2_cost">—</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: PROMPT ENGINEERING -->
+<div class="slide" data-topic="Prompt Engineering">
+  <div class="slideInner">
+    <div class="eyebrow">مهارت اصلی</div>
+    <h2>🎨 Prompt Engineering</h2>
+    <p><b>Prompt Engineering</b> هنر نوشتن ورودی مناسب برای LLM است تا بهترین خروجی را بگیریم. یک Prompt خوب می‌تواند تفاوت بین یک پاسخ بی‌کیفیت و یک پاسخ عالی باشد.</p>
+    <img src="images/prompt-anatomy.png" alt="Prompt anatomy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">ساختار یک Prompt خوب: Role + Task + Context</div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{Prompt} = \text{Role} + \text{Task} + \text{Context} + \text{Format}$$
+      <span class="lbl">چهار جزء یک Prompt حرفه‌ای</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: PROMPT STRUCTURE -->
+<div class="slide" data-topic="ساختار Prompt">
+  <div class="slideInner">
+    <div class="eyebrow">ساختار</div>
+    <h2>📝 ساختار یک Prompt خوب</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">۱. Role</h3>
+        <p>«تو یک مهندس مکانیک ارشد با ۲۰ سال تجربه هستی»</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">۲. Task</h3>
+        <p>«کدی برای شبیه‌سازی سیستم جرم-فنر-دمپر بنویس»</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3 style="color:var(--green)">۳. Context</h3>
+        <p>«پارامترها: m=1kg، k=10N/m، c=0.5Ns/m»</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">۴. Format</h3>
+        <p>«کد Python با Matplotlib، همراه با توضیحات فارسی»</p>
+      </div>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 مثال کامل:</b> «تو یک مهندس مکانیک ارشد هستی. کدی برای شبیه‌سازی سیستم جرم-فنر-دمپر بنویس. پارامترها: m=1kg، k=10N/m، c=0.5Ns/m. کد Python با Matplotlib، همراه با توضیحات فارسی.»
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🔨 Prompt Builder — ساخت Prompt</h2>
+    <p>اجزای Prompt را انتخاب کنید و ببینید چطور Prompt نهایی شکل می‌گیرد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="wrench"></i> Prompt Builder</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns" id="sim3_btns">
+        <button class="btnPrimary" data-part="role">Role</button>
+        <button class="btnSecondary" data-part="task">Task</button>
+        <button class="btnSecondary" data-part="context">Context</button>
+        <button class="btnSecondary" data-part="format">Format</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>تعداد اجزا</small><b id="sim3_count">0 / 4</b></div>
+        <div class="simRes"><small>کیفیت</small><b id="sim3_quality">ضعیف</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> روی هر جزء کلیک کنید تا Prompt غنی‌تر شود.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: 5 TECHNIQUES -->
+<div class="slide" data-topic="تکنیک‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">۵ تکنیک اصلی</div>
+    <h2>🎯 ۵ تکنیک اصلی Prompt</h2>
+    <img src="images/prompt-techniques.png" alt="Prompt techniques" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">پنج تکنیک اصلی Prompt</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>۱. Zero-Shot</h3>
+        <p>هیچ مثالی نمی‌دهیم</p>
+      </div>
+      <div class="card">
+        <h3>۲. Few-Shot</h3>
+        <p>چند مثال می‌دهیم</p>
+      </div>
+      <div class="card">
+        <h3>۳. Chain-of-Thought</h3>
+        <p>«گام به گام فکر کن»</p>
+      </div>
+      <div class="card">
+        <h3>۴. Role-Play</h3>
+        <p>نقش تعریف می‌کنیم</p>
+      </div>
+      <div class="card">
+        <h3>۵. RAG</h3>
+        <p>اطلاعات خارجی می‌دهیم</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: ZERO FEW SHOT -->
+<div class="slide" data-topic="Zero و Few-Shot">
+  <div class="slideInner">
+    <div class="eyebrow">تکنیک‌های پایه</div>
+    <h2>🎯 Zero-Shot و Few-Shot</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">Zero-Shot</h3>
+        <p>بدون هیچ مثالی — مستقیم می‌پرسیم.</p>
+        <div class="stepInfo" style="margin-top:10px;font-size:13px">
+          «تفاوت SVM و Random Forest را توضیح بده.»
+        </div>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">Few-Shot</h3>
+        <p>چند مثال می‌دهیم — مدل الگو را یاد می‌گیرد.</p>
+        <div class="stepInfo" style="margin-top:10px;font-size:13px">
+          «مثال ۱: SVM ← طبقه‌بندی<br>مثال ۲: RF ← طبقه‌بندی<br>سؤال: K-Means ← ؟»
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:20px;text-align:center;color:var(--muted)">
+      Few-Shot برای کارهای تخصصی و الگوهای خاص بهتر است.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 14: COT -->
+<div class="slide" data-topic="Chain-of-Thought">
+  <div class="slideInner">
+    <div class="eyebrow">تکنیک پیشرفته</div>
+    <h2>🧠 Chain-of-Thought</h2>
+    <img src="images/chain-of-thought.png" alt="Chain of thought" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">گام‌به‌گام فکر کردن</div>
+    <p>با اضافه کردن عبارت «گام به گام فکر کن» یا «Let's think step by step»، مدل مجبور می‌شود استدلال خود را نشان دهد — و پاسخ دقیق‌تری می‌دهد.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>❌ بدون CoT</h3>
+        <p>«۴۲» (ممکن است اشتباه باشد)</p>
+      </div>
+      <div class="card">
+        <h3>✅ با CoT</h3>
+        <p>«اول X را حساب می‌کنم... سپس Y... پاسخ: ۴۲»</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: ROLE PLAY -->
+<div class="slide" data-topic="Role-Play">
+  <div class="slideInner">
+    <div class="eyebrow">تکنیک شخصیت</div>
+    <h2>🎭 Role-Play و Persona</h2>
+    <p>وقتی به مدل یک نقش می‌دهیم، پاسخ‌هایش با آن نقش هماهنگ می‌شود.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>👨‍🏫 معلم</h3>
+        <p>«تو یک معلم صبور هستی که مفاهیم را ساده توضیح می‌دهی»</p>
+      </div>
+      <div class="card">
+        <h3>👨‍💻 مهندس ارشد</h3>
+        <p>«تو یک مهندس ارشد با ۲۰ سال تجربه هستی»</p>
+      </div>
+      <div class="card">
+        <h3>👨‍⚕️ پزشک</h3>
+        <p>«تو یک پزشک متخصص هستی که دقیق تشخیص می‌دهی»</p>
+      </div>
+      <div class="card">
+        <h3>🧑‍🔬 محقق</h3>
+        <p>«تو یک محقق دقیق هستی که منابع را ذکر می‌کنی»</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: RAG -->
+<div class="slide" data-topic="RAG">
+  <div class="slideInner">
+    <div class="eyebrow">تکنیک پیشرفته</div>
+    <h2>📚 RAG — تقویت با بازیابی</h2>
+    <p><b>RAG</b> (Retrieval-Augmented Generation) — قبل از پاسخ، اطلاعات مرتبط را از یک منبع (کتاب، مقاله، دیتابیس) بازیابی می‌کنیم و به مدل می‌دهیم.</p>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{Response} = \text{LLM}(\text{Query} + \text{Retrieved Context})$$
+      <span class="lbl">RAG: پاسخ بر اساس اطلاعات بازیابی‌شده</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>۱. Query</h3><p>سؤال کاربر</p></div>
+      <div class="card"><h3>۲. Retrieve</h3><p>جست‌وجو در Vector DB</p></div>
+      <div class="card"><h3>۳. Augment</h3><p>افزودن به Prompt</p></div>
+      <div class="card"><h3>۴. Generate</h3><p>پاسخ با منابع</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: LIMITATIONS -->
+<div class="slide" data-topic="محدودیت‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">هشدارها</div>
+    <h2>⚠️ محدودیت‌های LLM</h2>
+    <img src="images/llm-limitations.png" alt="LLM limitations" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چهار محدودیت اصلی LLM</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. Hallucination</h3>
+        <p>مدل اطلاعات نادرست با اطمینان تولید می‌کند</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">۲. Bias</h3>
+        <p>سوگیری از داده آموزش</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">۳. Context Limit</h3>
+        <p>محدودیت طول متن</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3 style="color:var(--pink)">۴. Privacy</h3>
+        <p>حریم خصوصی داده‌ها</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: MECHANICS USE -->
+<div class="slide" data-topic="کاربرد مکانیک">
+  <div class="slideInner">
+    <div class="eyebrow">کاربرد در مکانیک</div>
+    <h2>🔧 LLM در مهندسی مکانیک</h2>
+    <img src="images/llm-mechanics-use.png" alt="LLM for mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">کاربردهای LLM در مهندسی مکانیک</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="code"></i></div>
+        <h3>تولید کد</h3>
+        <p>MATLAB، Python، Simulink</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="file-text"></i>
+        </div>
+        <h3>خلاصه مقالات</h3>
+        <p>تحلیل سریع مقالات علمی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="search"></i>
+        </div>
+        <h3>مرور پیشینه</h3>
+        <p>جست‌وجوی سریع منابع</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="lightbulb"></i>
+        </div>
+        <h3>ایده طراحی</h3>
+        <p>پیشنهاد راه‌حل‌های خلاقانه</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: CODE API -->
+<div class="slide" data-topic="کد API">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 استفاده از API ChatGPT — Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="api">API</button>
+      </div>
+      <div class="codePane active" id="code-api">
+<pre><span class="com"># نصب</span>
+pip install openai
+
+<span class="kw">import</span> os
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="com"># تنظیم کلید API</span>
+client = <span class="fn">OpenAI</span>(api_key=<span class="str">"sk-..."</span>)
+
+<span class="com"># درخواست ساده</span>
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"تو یک مهندس مکانیک هستی"</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"کد Python برای حل معادله گرما بنویس"</span>}
+    ],
+    temperature=<span class="num">0.7</span>
+)
+
+print(response.choices[<span class="num">0</span>].message.content)
+
+<span class="com"># Chain-of-Thought</span>
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>:
+         <span class="str">"یک تیر فولادی با طول 2 متر و مقطع 10cm² تحت بار 5kN است. "
+         "تغییر طول چقدر است؟ گام به گام فکر کن."</span>}
+    ]
+)
+print(response.choices[<span class="num">0</span>].message.content)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: CODE HUGGINGFACE -->
+<div class="slide" data-topic="کد HF">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 مدل‌های باز — Hugging Face</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="hf">Hugging Face</button>
+      </div>
+      <div class="codePane active" id="code-hf">
+<pre><span class="com"># نصب</span>
+pip install transformers torch
+
+<span class="kw">from</span> transformers <span class="kw">import</span> pipeline
+
+<span class="com"># ۱. متن تولید</span>
+generator = pipeline(<span class="str">'text-generation'</span>, model=<span class="str">'gpt2'</span>)
+result = generator(<span class="str">"The future of mechanical engineering is"</span>,
+                   max_length=<span class="num">50</span>)
+print(result[<span class="num">0</span>][<span class="str">'generated_text'</span>])
+
+<span class="com"># ۲. خلاصه‌سازی</span>
+summarizer = pipeline(<span class="str">'summarization'</span>,
+                     model=<span class="str">'facebook/bart-large-cnn'</span>)
+text = <span class="str">"Long mechanical engineering paper..."</span>
+summary = summarizer(text, max_length=<span class="num">100</span>)
+print(summary[<span class="num">0</span>][<span class="str">'summary_text'</span>])
+
+<span class="com"># ۳. پاسخ به سؤال</span>
+qa = pipeline(<span class="str">'question-answering'</span>)
+result = qa({
+    <span class="str">'question'</span>: <span class="str">'What is the yield strength?'</span>,
+    <span class="str">'context'</span>: <span class="str">'The steel has yield strength of 250 MPa.'</span>
+})
+print(result)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: CONCEPTS -->
+<div class="slide" data-topic="مفاهیم">
+  <div class="slideInner">
+    <div class="eyebrow">مفاهیم کلیدی</div>
+    <h2>📐 فرمول‌ها و مفاهیم</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$P(w_{t+1} | w_{\leq t}) = \text{softmax}(W h_t)$$
+      <span class="lbl">پیش‌بینی توکن بعدی — کار اصلی LLM</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{Context} = [\text{System}, \text{User}, \text{History}, \text{Retrieved}]$$
+      <span class="lbl">اجزای Context در Prompt</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{Output} \propto \text{Context Quality}$$
+      <span class="lbl">کیفیت خروجی = تابع کیفیت Context</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 نکته:</b> LLM فقط توکن بعدی را پیش‌بینی می‌کند — اما در مقیاس بزرگ، قدرت‌های شگفت‌انگیزی از خود نشان می‌دهد.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۸</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>LLM چیست و چگونه کار می‌کند؟</li>
+          <li><span class="exNum">۲</span>تفاوت Zero-Shot و Few-Shot چیست؟</li>
+          <li><span class="exNum">۳</span>Chain-of-Thought چه کمکی می‌کند؟</li>
+          <li><span class="exNum">۴</span>RAG چه مشکلی را حل می‌کند؟</li>
+          <li><span class="exNum">۵</span>Hallucination چیست و چطور آن را کاهش دهیم؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>با ChatGPT یک کد MATLAB برای مسئله خودتان بگیرید.</li>
+          <li><span class="exNum">۲</span>مقایسه ۳ Prompt مختلف برای یک سؤال مکانیکی.</li>
+          <li><span class="exNum">۳</span>تست Chain-of-Thought در ChatGPT.</li>
+          <li><span class="exNum">۴</span>استفاده از Hugging Face برای خلاصه‌سازی.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره Prompt Engineering.</li>
+          <li><span class="exNum">۲</span>مقایسه ChatGPT، Gemini، Claude، DeepSeek برای یک کار مهندسی.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک Prompt حرفه‌ای برای یک مسئله مکانیکی طراحی کنید.</li>
+          <li><span class="exNum">★</span>چطور می‌توانید از RAG در پروژه خود استفاده کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW18 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۸</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ LLM</h3><p>پیش‌بینی توکن بعدی در مقیاس عظیم</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ مدل‌های پیشرو</h3><p>GPT-4o، Claude، Gemini، DeepSeek، LLaMA</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Prompt Engineering</h3><p>Role + Task + Context + Format</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ ۵ تکنیک</h3><p>Zero/Few-Shot، CoT، Role-Play، RAG</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ محدودیت‌ها</h3><p>Hallucination، Bias، Context Limit، Privacy</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: RAG & AI Agents</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۹</h3>
+        <p style="margin-top:8px;text-align:right">
+          • Vector Database و Embeddings<br>
+          • RAG Pipeline کامل<br>
+          • LangChain و LlamaIndex<br>
+          • AI Agent — Tool Use، Memory<br>
+          • Multi-Agent Systems
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

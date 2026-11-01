@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۲ — Transfer Learning | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۲ — Transfer Learning</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="git-branch" style="width:14px;height:14px"></i> جلسه ۱۲ • فاز ۳ — DL</div>
+      <h1>Transfer Learning عملی</h1>
+      <p class="subtitle-en">Transfer Learning · Fine-Tuning · Feature Extraction<br>From Pre-trained Models to Real Applications</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۱</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="hand"></i></div><h3>جلسه ۱۱</h3><p>MediaPipe، Hand Tracking، Pose</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="git-branch"></i></div><h3>جلسه ۱۲ (امروز)</h3><p>Transfer Learning، Fine-Tuning</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ Transfer Learning چیست؟</p></div>
+      <div class="card"><p style="margin:0">✅ Feature Extraction vs Fine-Tuning</p></div>
+      <div class="card"><p style="margin:0">✅ مدل‌های پیش‌آموزش‌دیده (VGG، ResNet، EfficientNet)</p></div>
+      <div class="card"><p style="margin:0">✅ Freeze کردن لایه‌ها</p></div>
+      <div class="card"><p style="margin:0">✅ Data Augmentation</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🎯 چرا Transfer Learning؟</h2>
+    <p style="font-size:16px">آموزش یک CNN از صفر به داده‌ی عظیم (ImageNet: ۱۴ میلیون تصویر) و محاسبات سنگین نیاز دارد. اما در مسائل واقعی مهندسی مکانیک، معمولاً فقط چند صد تصویر داریم — مثلاً ۵۰۰ عکس از بلبرینگ سالم و معیوب.</p>
+    <p style="font-size:16px"><b>Transfer Learning</b> این مشکل را حل می‌کند: یک مدل که روی میلیون‌ها تصویر آموزش دیده، دانش پایه‌ای (لبه، بافت، شکل) را دارد. ما فقط لایه‌های آخر را برای مسئله خودمان آموزش می‌دهیم — با داده کم.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="zap"></i></div>
+        <h3>آموزش سریع</h3>
+        <p>از هفته‌ها به ساعت‌ها</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="database"></i>
+        </div>
+        <h3>داده کم</h3>
+        <p>چند صد تصویر کافی است</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="award"></i>
+        </div>
+        <h3>دقت بالا</h3>
+        <p>حتی از آموزش از صفر بهتر</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="cpu"></i>
+        </div>
+        <h3>GPU کمتر</h3>
+        <p>روی لپ‌تاپ هم قابل اجراست</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: WHAT IS TRANSFER LEARNING -->
+<div class="slide" data-topic="TL چیست">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم اصلی</div>
+    <h2>📦 Transfer Learning چیست؟</h2>
+    <p>به جای آموزش یک شبکه از صفر، از یک شبکه که قبلاً روی یک مسئله بزرگ (مثلاً ImageNet) آموزش دیده استفاده می‌کنیم. دانش آن مدل را «منتقل» می‌کنیم به مسئله جدید.</p>
+    <img src="images/transfer-learning-hero.png" alt="Transfer Learning" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">مدل بزرگ پیش‌آموزش‌دیده → لایه‌های پایه یخ‌زده → لایه‌های آخر آموزش</div>
+    <div class="formulaBox">
+      $$\theta_{new} = \text{argmin}_{\theta_{head}} L(f_{frozen}(x), y)$$
+      <span class="lbl">تنها پارامترهای لایه‌های آخر (head) آموزش می‌بینند</span>
+    </div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>مفهوم</th><th>معنی</th></tr></thead>
+        <tbody>
+          <tr><td><b>Source Domain</b></td><td>مسئله اصلی — مثلاً ImageNet</td></tr>
+          <tr><td><b>Target Domain</b></td><td>مسئله جدید — مثلاً تشخیص بلبرینگ</td></tr>
+          <tr><td><b>Pre-trained</b></td><td>مدل آموزش‌دیده روی Source</td></tr>
+          <tr><td><b>Fine-Tuning</b></td><td>تنظیم دقیق برای Target</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: FEATURE EXTRACTION VS FINE-TUNING -->
+<div class="slide" data-topic="Feature Extraction vs Fine-Tuning">
+  <div class="slideInner">
+    <div class="eyebrow">دو رویکرد</div>
+    <h2>⚖️ Feature Extraction vs Fine-Tuning</h2>
+    <img src="images/feature-extraction-vs-finetuning.png" alt="FE vs FT" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چپ: فقط لایه آخر آموزش — راست: چند لایه آخر آموزش</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">🔒 Feature Extraction</h3>
+        <p><b>همه</b> لایه‌های پایه یخ‌زده — فقط لایه آخر (head) آموزش می‌بیند.</p>
+        <p style="margin-top:8px"><b>چه زمانی:</b> داده کم (کمتر از ۱۰۰۰)، شبیه بودن دامنه</p>
+        <p style="margin-top:8px"><b>سرعت:</b> بسیار سریع</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">🔥 Fine-Tuning</h3>
+        <p>چند لایه آخر <b>یخ‌زدن‌شده</b> و با نرخ یادگیری کم آموزش می‌بینند.</p>
+        <p style="margin-top:8px"><b>چه زمانی:</b> داده متوسط تا زیاد، دامنه متفاوت</p>
+        <p style="margin-top:8px"><b>سرعت:</b> کندتر، اما دقت بالاتر</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      <b style="color:var(--cyan)">💡 قاعده:</b> اگر داده کم است → Feature Extraction. اگر داده متوسط/زیاد است → Fine-Tuning.
+      <span class="lbl">همیشه با Feature Extraction شروع کنید، بعد در صورت نیاز Fine-Tune</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔒 Freeze/Unfreeze لایه‌ها</h2>
+    <p>لایه‌هایی که یخ‌زده (frozen) می‌شوند، آموزش نمی‌بینند. بقیه لایه‌ها آموزش می‌بینند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="layers"></i> Layer Freezing — Interactive</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simBtns" id="sim1_btns">
+        <button class="btnPrimary" data-mode="head">فقط Head</button>
+        <button class="btnSecondary" data-mode="last2">آخرین ۲ لایه</button>
+        <button class="btnSecondary" data-mode="last4">آخرین ۴ لایه</button>
+        <button class="btnSecondary" data-mode="all">همه Trainable</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>لایه‌های یخ‌زده</small><b id="sim1_frozen">—</b></div>
+        <div class="simRes"><small>لایه‌های آموزش</small><b id="sim1_trainable">—</b></div>
+        <div class="simRes"><small>پارامترها</small><b id="sim1_params">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> یک حالت را انتخاب کنید تا ببینید کدام لایه‌ها آموزش می‌بینند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: PRETRAINED MODELS -->
+<div class="slide" data-topic="مدل‌های پیش‌آموزش‌دیده">
+  <div class="slideInner">
+    <div class="eyebrow">مدل‌های معروف</div>
+    <h2>🏛 مدل‌های پیش‌آموزش‌دیده</h2>
+    <img src="images/pretrained-models.png" alt="Pre-trained models" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از VGG تا EfficientNet — هر کدام برای هدفی طراحی شده</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>مدل</th><th>پارامتر</th><th>دقت ImageNet</th><th>کاربرد</th></tr></thead>
+        <tbody>
+          <tr><td><b>VGG16</b></td><td>۱۳۸M</td><td>۹۲.۷٪</td><td>پایه — سنگین</td></tr>
+          <tr><td><b>ResNet50</b></td><td>۲۵M</td><td>۹۳.۶٪</td><td>پرکاربرد — تعادل</td></tr>
+          <tr><td><b>MobileNetV2</b></td><td>۳.۴M</td><td>۹۰.۱٪</td><td>سبک — موبایل</td></tr>
+          <tr><td><b>EfficientNet-B0</b></td><td>۵.۳M</td><td>۹۳.۲٪</td><td>بهترین نسبت دقت/پارامتر</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: IMAGENET TO MECHANICS -->
+<div class="slide" data-topic="ImageNet به مکانیک">
+  <div class="slideInner">
+    <div class="eyebrow">انتقال دانش</div>
+    <h2>🔄 از ImageNet به مکانیک</h2>
+    <p>مدل ResNet50 که روی ۱۰۰۰ کلاس ImageNet (گربه، سگ، ماشین) آموزش دیده، می‌تواند به تشخیص بلبرینگ سالم/معیوب کمک کند.</p>
+    <img src="images/imagenet-transfer.png" alt="ImageNet transfer" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از ۱۰۰۰ کلاس عمومی → به ۳ کلاس تخصصی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>لایه ۱-۲</h3><p>لبه، رنگ — برای همه تصاویر مفید</p></div>
+      <div class="card"><h3>لایه ۳-۴</h3><p>بافت، شکل — برای همه تصاویر مفید</p></div>
+      <div class="card"><h3>لایه ۵</h3><p>اشیاء کامل — قابل استفاده</p></div>
+      <div class="card"><h3>Head</h3><p>باید بازآموزی شود — مخصوص مکانیک</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>📉 منحنی یادگیری — مقایسه</h2>
+    <p>مقایسه آموزش از صفر با Transfer Learning.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-down"></i> Learning Curves</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim2_run"><i data-lucide="play"></i> اجرا</button>
+        <button class="btnSecondary" id="sim2_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>از صفر (Loss)</small><b id="sim2_loss_scratch">—</b></div>
+        <div class="simRes"><small>Transfer (Loss)</small><b id="sim2_loss_transfer">—</b></div>
+        <div class="simRes"><small>سرعت</small><b id="sim2_speed">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> «اجرا» را بزنید تا هر دو منحنی رسم شوند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: STEPS -->
+<div class="slide" data-topic="گام‌های عملی">
+  <div class="slideInner">
+    <div class="eyebrow">گام‌های عملی</div>
+    <h2>📋 گام‌های Transfer Learning</h2>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">گام ۱</div>
+        <h3>انتخاب مدل</h3>
+        <p>VGG، ResNet یا EfficientNet</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">گام ۲</div>
+        <h3>یخ‌زدن لایه‌ها</h3>
+        <p>Freeze همه لایه‌های پایه</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">گام ۳</div>
+        <h3>افزودن Head</h3>
+        <p>لایه‌های مخصوص مسئله شما</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">گام ۴</div>
+        <h3>آموزش Head</h3>
+        <p>با نرخ یادگیری بالا</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--pink)">
+        <div style="font-size:12px;color:var(--pink);font-weight:800;margin-bottom:8px">گام ۵</div>
+        <h3>Fine-Tune</h3>
+        <p>در صورت نیاز، لایه‌های آخر</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: FREEZE IN KERAS -->
+<div class="slide" data-topic="Freeze در Keras">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Freeze کردن لایه‌ها در Keras</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="freeze">Freeze</button>
+        <button class="codeTabBtn" data-code="unfreeze">Unfreeze</button>
+      </div>
+      <div class="codePane active" id="code-freeze">
+<pre><span class="kw">from</span> tensorflow.keras.applications <span class="kw">import</span> ResNet50
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+
+<span class="com"># ۱. لود مدل پیش‌آموزش‌دیده (بدون head)</span>
+base = ResNet50(weights=<span class="str">'imagenet'</span>, include_top=<span class="kw">False</span>,
+                input_shape=(<span class="num">224</span>, <span class="num">224</span>, <span class="num">3</span>))
+
+<span class="com"># ۲. یخ‌زدن همه لایه‌ها</span>
+<span class="kw">for</span> layer <span class="kw">in</span> base.layers:
+    layer.trainable = <span class="kw">False</span>
+
+<span class="com"># ۳. ساخت مدل جدید</span>
+x = base.output
+x = layers.GlobalAveragePooling2D()(x)
+x = layers.Dense(<span class="num">128</span>, activation=<span class="str">'relu'</span>)(x)
+output = layers.Dense(<span class="num">3</span>, activation=<span class="str">'softmax'</span>)(x)  <span class="com"># ۳ کلاس</span>
+
+model = models.Model(inputs=base.input, outputs=output)</pre>
+      </div>
+      <div class="codePane" id="code-unfreeze">
+<pre><span class="com"># Fine-Tuning: باز کردن چند لایه آخر</span>
+<span class="kw">for</span> layer <span class="kw">in</span> base.layers[:-<span class="num">20</span>]:
+    layer.trainable = <span class="kw">False</span>
+
+<span class="kw">for</span> layer <span class="kw">in</span> base.layers[-<span class="num">20</span>:]:
+    layer.trainable = <span class="kw">True</span>
+
+<span class="com"># کامپایل با نرخ یادگیری کوچک</span>
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(<span class="num">1e-5</span>),
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>📊 اندازه داده و رویکرد</h2>
+    <p>اندازه داده را تغییر دهید و ببینید کدام رویکرد مناسب‌تر است.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="database"></i> Dataset Size Matters</div>
+      <div class="simCanvasWrapper" style="height:380px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>تعداد تصاویر آموزشی <span class="sliderVal" id="sim3_n_val">500</span></label>
+          <input type="range" id="sim3_n" min="100" max="10000" step="100" value="500">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Feature Ext.</small><b id="sim3_fe">—</b></div>
+        <div class="simRes"><small>Fine-Tuning</small><b id="sim3_ft">—</b></div>
+        <div class="simRes"><small>توصیه</small><b id="sim3_rec">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> تعداد داده را تغییر دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: DATA AUGMENTATION -->
+<div class="slide" data-topic="Data Augmentation">
+  <div class="slideInner">
+    <div class="eyebrow">افزایش داده</div>
+    <h2>🔄 Data Augmentation</h2>
+    <p>وقتی داده کم است، از هر تصویر چند نسخه تغییر یافته می‌سازیم. این کار بدون نیاز به داده جدید، تنوع را زیاد می‌کند.</p>
+    <img src="images/data-augmentation-transfer.png" alt="Data augmentation" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از یک تصویر، ۸ نسخه مختلف</div>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="aug">Keras</button>
+      </div>
+      <div class="codePane active" id="code-aug">
+<pre><span class="kw">from</span> tensorflow.keras.preprocessing.image <span class="kw">import</span> ImageDataGenerator
+
+train_datagen = ImageDataGenerator(
+    rescale=<span class="num">1</span>./<span class="num">255</span>,
+    rotation_range=<span class="num">20</span>,        <span class="com"># چرخش</span>
+    width_shift_range=<span class="num">0.1</span>,    <span class="com"># جابه‌جایی افقی</span>
+    height_shift_range=<span class="num">0.1</span>,   <span class="com"># جابه‌جایی عمودی</span>
+    shear_range=<span class="num">0.2</span>,          <span class="com"># کج‌شدگی</span>
+    zoom_range=<span class="num">0.2</span>,           <span class="com"># زوم</span>
+    horizontal_flip=<span class="kw">True</span>,     <span class="com"># آینه افقی</span>
+    fill_mode=<span class="str">'nearest'</span>
+)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: APPLICATIONS -->
+<div class="slide" data-topic="کاربرد مکانیکی">
+  <div class="slideInner">
+    <div class="eyebrow">کاربرد در مکانیک</div>
+    <h2>🔧 Transfer Learning در مکانیک</h2>
+    <img src="images/transfer-mechanics-applications.png" alt="Mechanics applications" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از بلبرینگ تا توربین — همه با Transfer Learning</div>
+    <div class="cardGrid">
+      <div class="card"><h3>تشخیص عیب بلبرینگ</h3><p>با ۵۰۰ تصویر از سطح بلبرینگ</p></div>
+      <div class="card"><h3>تشخیص ترک جوش</h3><p>با ۳۰۰ تصویر از جوش</p></div>
+      <div class="card"><h3>بازرسی توربین</h3><p>با ۲۰۰ تصویر از پره</p></div>
+      <div class="card"><h3>کیفیت سطح</h3><p>با ۴۰۰ تصویر از قطعه</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: FULL PYTHON CODE -->
+<div class="slide" data-topic="کد کامل Python">
+  <div class="slideInner">
+    <div class="eyebrow">کد کامل</div>
+    <h2>💻 کد کامل Transfer Learning (Python)</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="full-code">Keras</button>
+      </div>
+      <div class="codePane active" id="code-full-code">
+<pre><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow.keras.applications <span class="kw">import</span> ResNet50
+<span class="kw">from</span> tensorflow.keras <span class="kw">import</span> layers, models
+<span class="kw">from</span> tensorflow.keras.preprocessing.image <span class="kw">import</span> ImageDataGenerator
+
+<span class="com"># ۱. لود داده با Augmentation</span>
+train_datagen = ImageDataGenerator(
+    rescale=<span class="num">1</span>./<span class="num">255</span>,
+    rotation_range=<span class="num">20</span>,
+    horizontal_flip=<span class="kw">True</span>,
+    validation_split=<span class="num">0.2</span>
+)
+
+train_gen = train_datagen.flow_from_directory(
+    <span class="str">'data/train'</span>, target_size=(<span class="num">224</span>, <span class="num">224</span>),
+    batch_size=<span class="num">32</span>, class_mode=<span class="str">'categorical'</span>,
+    subset=<span class="str">'training'</span>
+)
+val_gen = train_datagen.flow_from_directory(
+    <span class="str">'data/train'</span>, target_size=(<span class="num">224</span>, <span class="num">224</span>),
+    batch_size=<span class="num">32</span>, class_mode=<span class="str">'categorical'</span>,
+    subset=<span class="str">'validation'</span>
+)
+
+<span class="com"># ۲. مدل پیش‌آموزش‌دیده (frozen)</span>
+base = ResNet50(weights=<span class="str">'imagenet'</span>, include_top=<span class="kw">False</span>,
+                input_shape=(<span class="num">224</span>, <span class="num">224</span>, <span class="num">3</span>))
+base.trainable = <span class="kw">False</span>
+
+<span class="com"># ۳. اضافه کردن head</span>
+x = base.output
+x = layers.GlobalAveragePooling2D()(x)
+x = layers.Dense(<span class="num">256</span>, activation=<span class="str">'relu'</span>)(x)
+x = layers.Dropout(<span class="num">0.5</span>)(x)
+output = layers.Dense(<span class="num">3</span>, activation=<span class="str">'softmax'</span>)(x)
+
+model = models.Model(inputs=base.input, outputs=output)
+
+<span class="com"># ۴. کامپایل و آموزش</span>
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(<span class="num">1e-3</span>),
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+history = model.fit(
+    train_gen, validation_data=val_gen,
+    epochs=<span class="num">10</span>
+)
+
+<span class="com"># ۵. Fine-Tuning (اختیاری)</span>
+base.trainable = <span class="kw">True</span>
+<span class="kw">for</span> layer <span class="kw">in</span> base.layers[:-<span class="num">20</span>]:
+    layer.trainable = <span class="kw">False</span>
+
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(<span class="num">1e-5</span>),
+    loss=<span class="str">'categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+model.fit(train_gen, validation_data=val_gen, epochs=<span class="num">5</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: MATLAB -->
+<div class="slide" data-topic="کد MATLAB">
+  <div class="slideInner">
+    <div class="eyebrow">MATLAB</div>
+    <h2>💻 Transfer Learning در MATLAB</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab">MATLAB</button>
+      </div>
+      <div class="codePane active" id="code-matlab">
+<pre><span class="com">% لود ResNet50</span>
+net = <span class="fn">resnet50</span>;
+
+<span class="com">% یخ‌زدن همه لایه‌ها</span>
+layers = net.Layers;
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">numel</span>(layers)
+    <span class="kw">if</span> <span class="fn">isa</span>(layers(i), <span class="str">'nnet.cnn.layer.LearnableLayer'</span>)
+        layers(i).WeightLearnRateFactor = <span class="num">0</span>;
+        layers(i).BiasLearnRateFactor = <span class="num">0</span>;
+    <span class="kw">end</span>
+<span class="kw">end</span>
+
+<span class="com">% جایگزینی لایه آخر</span>
+layers(<span class="fn">end</span>-<span class="num">2</span>:<span class="fn">end</span>) = [
+    <span class="fn">fullyConnectedLayer</span>(<span class="num">3</span>, <span class="str">'WeightLearnRateFactor'</span>, <span class="num">10</span>, ...
+        <span class="str">'BiasLearnRateFactor'</span>, <span class="num">10</span>)
+    <span class="fn">softmaxLayer</span>
+    <span class="fn">classificationLayer</span>
+];
+
+<span class="com">% آموزش</span>
+options = <span class="fn">trainingOptions</span>(<span class="str">'sgdm'</span>, <span class="str">'InitialLearnRate'</span>, <span class="num">1e-4</span>, ...
+    <span class="str">'MaxEpochs'</span>, <span class="num">10</span>, <span class="str">'MiniBatchSize'</span>, <span class="num">32</span>);
+
+net = <span class="fn">trainNetwork</span>(imds, layers, options);</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌ها و مفاهیم</div>
+    <h2>📐 فرمول‌های کلیدی</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$\theta^* = \arg\min_\theta L(\theta; \mathcal{D}_{target})$$
+      <span class="lbl">هدف: پیدا کردن پارامترهای بهینه برای داده هدف</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\theta^*_{head} = \arg\min_{\theta_{head}} L(f_{frozen}(x); \theta_{head})$$
+      <span class="lbl">در Feature Extraction: فقط head آموزش می‌بیند</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\eta_{fine-tune} \ll \eta_{head}$$
+      <span class="lbl">در Fine-Tuning: نرخ یادگیری بسیار کوچک‌تر</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 Feature Extraction</h3><p>سریع، برای داده کم</p></div>
+      <div class="card"><h3>⚡ Fine-Tuning</h3><p>دقت بالا، برای داده متوسط</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۲</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>Transfer Learning چه مشکلی را حل می‌کند؟</li>
+          <li><span class="exNum">۲</span>تفاوت Feature Extraction و Fine-Tuning چیست؟</li>
+          <li><span class="exNum">۳</span>چه زمانی از Transfer Learning استفاده می‌کنیم؟</li>
+          <li><span class="exNum">۴</span>چرا در Fine-Tuning از نرخ یادگیری کم استفاده می‌کنیم؟</li>
+          <li><span class="exNum">۵</span>چرا Data Augmentation در Transfer Learning مهم است؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>ResNet50 را در Colab لود کنید.</li>
+          <li><span class="exNum">۲</span>لایه‌های پایه را Freeze کنید و فقط head را آموزش دهید.</li>
+          <li><span class="exNum">۳</span>Feature Extraction و Fine-Tuning را مقایسه کنید.</li>
+          <li><span class="exNum">۴</span>Data Augmentation اضافه کنید و بهبود را ببینید.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد Transfer Learning در مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه VGG، ResNet، EfficientNet — کدام برای کجا؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک پروژه با Transfer Learning در مکانیک پیشنهاد دهید.</li>
+          <li><span class="exNum">★</span>چرا ResNet50 از VGG16 بهتر است؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW12 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های Transfer Learning</p>
+        <span class="tag">جلسه ۱۲ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد Keras</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>تولید کد Transfer Learning</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «Transfer Learning bearing fault diagnosis 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۲</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ Transfer Learning</h3><p>استفاده از دانش مدل پیش‌آموزش‌دیده</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Feature Extraction</h3><p>فقط head آموزش می‌بیند</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Fine-Tuning</h3><p>چند لایه آخر با نرخ یادگیری کم</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ مدل‌های معروف</h3><p>VGG، ResNet، MobileNet، EfficientNet</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ Data Augmentation</h3><p>افزایش داده بدون داده جدید</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: Reinforcement Learning — Introduction</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۳ — شروع فاز RL</h3>
+        <p style="margin-top:8px;text-align:right">
+          • Reinforcement Learning — مقدمه<br>
+          • Agent، Environment، Reward<br>
+          • MDP — Markov Decision Process<br>
+          • Q-Learning<br>
+          • کاربرد در کنترل و رباتیک
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۱</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

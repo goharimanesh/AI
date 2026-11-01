@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۶ — RL در مکانیک | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۶ — RL در مکانیک</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="bot" style="width:14px;height:14px"></i> جلسه ۱۶ • فاز ۴ — RL</div>
+      <h1>RL در مکانیک — کاربردها</h1>
+      <p class="subtitle-en">Reinforcement Learning in Mechanical Engineering<br>From Simulation to Real-World Control</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۵</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="trending-up"></i></div><h3>جلسه ۱۵</h3><p>Policy Gradient، PPO</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="bot"></i></div><h3>جلسه ۱۶ (امروز)</h3><p>RL در مکانیک — پروژه‌های واقعی</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ آونگ معکوس با RL</p></div>
+      <div class="card"><p style="margin:0">✅ بازوی رباتیک — کنترل پیوسته</p></div>
+      <div class="card"><p style="margin:0">✅ Digital Twin + RL</p></div>
+      <div class="card"><p style="margin:0">✅ برنامه‌ریزی مسیر</p></div>
+      <div class="card"><p style="margin:0">✅ ساختار پروژه RL</p></div>
+      <div class="card"><p style="margin:0">✅ ابزارها: SB3، PyBullet، MuJoCo</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🔧 چرا RL در مکانیک؟</h2>
+    <p style="font-size:16px">مهندسی مکانیک در قلب مسائل کنترلی است — و RL رویکرد جدیدی برای کنترل ارائه می‌دهد که در برخی موارد از کنترل کلاسیک (PID، MPC) بهتر عمل می‌کند. چرا؟ چون RL می‌تواند در محیط‌های پیچیده، غیرخطی، و نویزی سیاستی یاد بگیرد که هیچ کنترلر کلاسیکی نمی‌تواند.</p>
+    <img src="images/rl-mechanics-hero.png" alt="RL in mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از آونگ معکوس تا ربات چهارپا — همه با RL</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="activity"></i></div>
+        <h3>کنترل غیرخطی</h3>
+        <p>PID برای سیستم‌های خطی خوب است — RL برای هر چیزی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="bot"></i>
+        </div>
+        <h3>رباتیک مدرن</h3>
+        <p>استاندارد Boston Dynamics و Tesla</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="copy"></i>
+        </div>
+        <h3>Digital Twin</h3>
+        <p>آموزش در شبیه‌سازی، اجرا در واقعیت</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="target"></i>
+        </div>
+        <h3>بهینه‌سازی</h3>
+        <p>یافتن مسیر و سیاست بهینه</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: 4 PROJECTS -->
+<div class="slide" data-topic="۴ پروژه">
+  <div class="slideInner">
+    <div class="eyebrow">۴ پروژه کلیدی</div>
+    <h2>📋 چهار پروژه اصلی RL در مکانیک</h2>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div class="cardIcon" style="margin:0 auto 10px"><i data-lucide="activity"></i></div>
+        <h3>۱. آونگ معکوس</h3>
+        <p>کنترل کلاسیک — CartPole</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div class="cardIcon" style="margin:0 auto 10px;color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="bot"></i>
+        </div>
+        <h3>۲. بازوی رباتیک</h3>
+        <p>کنترل پیوسته ۳-مفصلی</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div class="cardIcon" style="margin:0 auto 10px;color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="copy"></i>
+        </div>
+        <h3>۳. Digital Twin</h3>
+        <p>شبیه‌سازی + RL</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div class="cardIcon" style="margin:0 auto 10px;color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="map-pin"></i>
+        </div>
+        <h3>۴. مسیریابی</h3>
+        <p>Path Planning</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: INVERTED PENDULUM -->
+<div class="slide" data-topic="آونگ معکوس">
+  <div class="slideInner">
+    <div class="eyebrow">پروژه ۱</div>
+    <h2>🎯 آونگ معکوس — کنترل کلاسیک</h2>
+    <p>یک چوب روی ارابه قرار دارد. هدف: با اعمال نیروی چپ/راست به ارابه، چوب را ایستاده نگه داریم. مسئله کلاسیک کنترل — اما با RL می‌توان آن را بدون معادلات فیزیکی حل کرد.</p>
+    <img src="images/inverted-pendulum.png" alt="Inverted pendulum" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">CartPole: هدف، ایستاده نگه‌داشتن چوب</div>
+    <div class="cardGrid">
+      <div class="card"><h3>State (۴)</h3><p>مکان ارابه، سرعت، زاویه چوب، سرعت زاویه</p></div>
+      <div class="card"><h3>Action (۲)</h3><p>نیروی چپ یا راست به ارابه</p></div>
+      <div class="card"><h3>Reward</h3><p>+۱ برای هر گام که چوب ایستاده بماند</p></div>
+      <div class="card"><h3>هدف</h3><p>بیشترین زمان ایستادن</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🎮 Inverted Pendulum — RL Control</h2>
+    <p>یک کنترلر RL را روی CartPole اجرا کنید و ببینید چطور چوب را ایستاده نگه می‌دارد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> CartPole RL Controller</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>قدرت کنترلر <span class="sliderVal" id="sim1_power_val">1.0</span></label>
+          <input type="range" id="sim1_power" min="0.1" max="2" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim1_run"><i data-lucide="play"></i> اجرا</button>
+        <button class="btnSecondary" id="sim1_pause"><i data-lucide="pause"></i> توقف</button>
+        <button class="btnSecondary" id="sim1_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>زمان ایستاده</small><b id="sim1_time">0.0s</b></div>
+        <div class="simRes"><small>زاویه چوب</small><b id="sim1_angle">0°</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim1_status">آماده</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> «اجرا» را بزنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: ROBOT ARM -->
+<div class="slide" data-topic="بازوی رباتیک">
+  <div class="slideInner">
+    <div class="eyebrow">پروژه ۲</div>
+    <h2>🤖 بازوی رباتیک — کنترل پیوسته</h2>
+    <p>یک بازوی رباتیک ۳-مفصلی را با RL آموزش دهید تا به هدف برسد. اینجا برخلاف CartPole، اعمال <b>پیوسته</b> هستند — DQN کار نمی‌کند، باید از PPO یا SAC استفاده کنیم.</p>
+    <img src="images/robot-arm-rl.png" alt="Robot arm" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">بازوی رباتیک: مفاصل پیوسته، هدف سه‌بعدی</div>
+    <div class="cardGrid">
+      <div class="card"><h3>State</h3><p>زاویه هر مفصل (۳ بعد)</p></div>
+      <div class="card"><h3>Action</h3><p>گشتاور هر مفصل (پیوسته)</p></div>
+      <div class="card"><h3>Reward</h3><p>منفی فاصله تا هدف</p></div>
+      <div class="card"><h3>الگوریتم</h3><p>PPO، SAC، DDPG</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: DIGITAL TWIN -->
+<div class="slide" data-topic="Digital Twin">
+  <div class="slideInner">
+    <div class="eyebrow">پروژه ۳</div>
+    <h2>🔄 Digital Twin + RL</h2>
+    <p><b>Digital Twin</b> نسخه‌ی مجازی یک سیستم فیزیکی است. RL در Digital Twin آموزش می‌بیند و سپس به سیستم واقعی منتقل می‌شود — بدون خطر خرابی یا هزینه.</p>
+    <img src="images/digital-twin-rl.png" alt="Digital Twin" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">آموزش در شبیه‌سازی → انتقال به واقعیت</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 مزایا</h3>
+        <p>بدون خطر، بدون هزینه، هزاران برابر سریع‌تر</p>
+      </div>
+      <div class="card">
+        <h3>⚠ چالش</h3>
+        <p>Sim-to-Real Gap — تفاوت شبیه‌سازی و واقعیت</p>
+      </div>
+      <div class="card">
+        <h3>🔧 راه‌حل</h3>
+        <p>Domain Randomization — تصادفی کردن پارامترها</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: PATH PLANNING -->
+<div class="slide" data-topic="مسیریابی">
+  <div class="slideInner">
+    <div class="eyebrow">پروژه ۴</div>
+    <h2>🗺 برنامه‌ریزی مسیر</h2>
+    <p>یک ربات باید از نقطه شروع به هدف برسد، بدون برخورد با موانع. RL می‌تواند بهینه‌ترین مسیر را خودش یاد بگیرد.</p>
+    <img src="images/path-planning-rl.png" alt="Path planning" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">مسیر یادگرفته‌شده در محیط با موانع</div>
+    <div class="cardGrid">
+      <div class="card"><h3>State</h3><p>موقعیت ربات (x, y)</p></div>
+      <div class="card"><h3>Action</h3><p>بالا، پایین، چپ، راست</p></div>
+      <div class="card"><h3>Reward</h3><p>+۱۰ هدف، -۱ برخورد، -۰.۱ هر گام</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🗺 Path Planning — RL</h2>
+    <p>یک ربات را در محیط با موانع آموزش دهید تا به هدف برسد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="map-pin"></i> Grid Path Planning</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim2_train"><i data-lucide="play"></i> آموزش</button>
+        <button class="btnSecondary" id="sim2_step"><i data-lucide="step-forward"></i> گام</button>
+        <button class="btnSecondary" id="sim2_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Episode</small><b id="sim2_ep">0</b></div>
+        <div class="simRes"><small>گام فعلی</small><b id="sim2_steps">0</b></div>
+        <div class="simRes"><small>پاداش</small><b id="sim2_rew">0</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim2_status">آماده</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> «آموزش» را بزنید تا ربات مسیر بهینه را یاد بگیرد.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: QUADRUPED -->
+<div class="slide" data-topic="ربات چهارپا">
+  <div class="slideInner">
+    <div class="eyebrow">پروژه پیشرفته</div>
+    <h2>🐕 ربات چهارپا — Boston Dynamics</h2>
+    <img src="images/quadruped-rl.png" alt="Quadruped robot" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">ربات چهارپا: ۱۲ مفصل، تعادل، راه‌رفتن</div>
+    <p>Boston Dynamics با ترکیب RL و کنترل کلاسیک، ربات‌هایی ساخت که می‌توانند بدوند، بپرند، و از پله بالا بروند. این پیچیده‌ترین کاربرد RL در مکانیک است.</p>
+    <div class="cardGrid">
+      <div class="card"><h3>State</h3><p>۱۲ زاویه مفصل + سرعت‌ها + IMU</p></div>
+      <div class="card"><h3>Action</h3><p>۱۲ گشتاور مفصل</p></div>
+      <div class="card"><h3>Reward</h3><p>پیشرفت + تعادل + صرفه‌جویی انرژی</p></div>
+      <div class="card"><h3>الگوریتم</h3><p>PPO + Curriculum Learning</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: CHALLENGES -->
+<div class="slide" data-topic="چالش‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">چالش‌ها</div>
+    <h2>⚠️ چالش‌های RL در مکانیک</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. Sim-to-Real Gap</h3>
+        <p>مدل آموزش‌دیده در شبیه‌سازی، در واقعیت کار نمی‌کند</p>
+        <p><b>راه‌حل:</b> Domain Randomization</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۲. ایمنی</h3>
+        <p>RL ممکن است در محیط واقعی رفتار خطرناک انجام دهد</p>
+        <p><b>راه‌حل:</b> Safe RL، محدودیت‌های ایمنی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۳. داده کم</h3>
+        <p>آموزش RL نیاز به میلیون‌ها تجربه دارد</p>
+        <p><b>راه‌حل:</b> Model-Based RL، شبیه‌سازی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۴. تفسیرپذیری</h3>
+        <p>چرا RL این تصمیم را گرفت؟</p>
+        <p><b>راه‌حل:</b> تحلیل سیاست، Explainable RL</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>📊 مقایسه الگوریتم‌های RL</h2>
+    <p>الگوریتم را انتخاب کنید و ببینید برای کدام مسئله مناسب است.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="bar-chart-3"></i> Algorithm Comparison</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns" id="sim3_btns">
+        <button class="btnPrimary" data-algo="dqn">DQN</button>
+        <button class="btnSecondary" data-algo="ppo">PPO</button>
+        <button class="btnSecondary" data-algo="sac">SAC</button>
+        <button class="btnSecondary" data-algo="td3">TD3</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>الگوریتم</small><b id="sim3_algo">DQN</b></div>
+        <div class="simRes"><small>فضای عمل</small><b id="sim3_space">گسسته</b></div>
+        <div class="simRes"><small>پایداری</small><b id="sim3_stability">متوسط</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> یک الگوریتم انتخاب کنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: PROJECT STRUCTURE -->
+<div class="slide" data-topic="ساختار پروژه">
+  <div class="slideInner">
+    <div class="eyebrow">ساختار</div>
+    <h2>📁 ساختار یک پروژه RL مکانیکی</h2>
+    <img src="images/rl-project-structure.png" alt="RL project structure" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">پنج مرحله یک پروژه RL</div>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">مرحله ۱</div>
+        <h3>تعریف مسئله</h3>
+        <p>State، Action، Reward</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">مرحله ۲</div>
+        <h3>طراحی محیط</h3>
+        <p>Gymnasium Environment</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">مرحله ۳</div>
+        <h3>تابع پاداش</h3>
+        <p>Reward Shaping</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">مرحله ۴</div>
+        <h3>انتخاب الگوریتم</h3>
+        <p>PPO، SAC، DQN</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--pink)">
+        <div style="font-size:12px;color:var(--pink);font-weight:800;margin-bottom:8px">مرحله ۵</div>
+        <h3>ارزیابی</h3>
+        <p>Test، Sim-to-Real</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: GYM ENVIRONMENTS -->
+<div class="slide" data-topic="محیط‌های Gym">
+  <div class="slideInner">
+    <div class="eyebrow">محیط‌های آماده</div>
+    <h2>🎮 محیط‌های Gym مخصوص مکانیک</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>محیط</th><th>مسئله</th><th>سطح</th></tr></thead>
+        <tbody>
+          <tr><td><b>CartPole</b></td><td>آونگ معکوس</td><td>مقدماتی</td></tr>
+          <tr><td><b>MountainCar</b></td><td>ماشین در شیب</td><td>مقدماتی</td></tr>
+          <tr><td><b>Pendulum</b></td><td>آونگ ساده</td><td>مقدماتی</td></tr>
+          <tr><td><b>Acrobot</b></td><td>ربات دوقطبی</td><td>متوسط</td></tr>
+          <tr><td><b>LunarLander</b></td><td>فرود فضاپیما</td><td>متوسط</td></tr>
+          <tr><td><b>BipedalWalker</b></td><td>راه‌رفتن دوپا</td><td>پیشرفته</td></tr>
+          <tr><td><b>Reacher</b></td><td>بازوی رباتیک</td><td>پیشرفته</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: TOOLS -->
+<div class="slide" data-topic="ابزارها">
+  <div class="slideInner">
+    <div class="eyebrow">اکوسیستم RL</div>
+    <h2>🛠 ابزارهای RL در مکانیک</h2>
+    <img src="images/rl-tools-ecosystem.png" alt="RL tools" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">اکوسیستم ابزارهای RL</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>Gymnasium</h3>
+        <p>محیط‌های استاندارد RL</p>
+      </div>
+      <div class="card">
+        <h3>Stable-Baselines3</h3>
+        <p>الگوریتم‌های آماده (PPO، SAC، DQN)</p>
+      </div>
+      <div class="card">
+        <h3>PyBullet</h3>
+        <p>شبیه‌سازی فیزیکی (رایگان)</p>
+      </div>
+      <div class="card">
+        <h3>MuJoCo</h3>
+        <p>شبیه‌سازی فیزیکی (استاندارد)</p>
+      </div>
+      <div class="card">
+        <h3>Isaac Sim</h3>
+        <p>شبیه‌سازی NVIDIA (پیشرفته)</p>
+      </div>
+      <div class="card">
+        <h3>Ray RLlib</h3>
+        <p>RL توزیع‌شده</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: CODE PENDULUM -->
+<div class="slide" data-topic="کد آونگ">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Inverted Pendulum با PPO (SB3)</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="pendulum">CartPole</button>
+      </div>
+      <div class="codePane active" id="code-pendulum">
+<pre><span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">from</span> stable_baselines3 <span class="kw">import</span> PPO
+
+<span class="com"># ساخت محیط</span>
+env = gym.make(<span class="str">'CartPole-v1'</span>)
+
+<span class="com"># مدل PPO</span>
+model = PPO(
+    <span class="str">'MlpPolicy'</span>,
+    env,
+    learning_rate=<span class="num">3e-4</span>,
+    n_steps=<span class="num">2048</span>,
+    batch_size=<span class="num">64</span>,
+    n_epochs=<span class="num">10</span>,
+    gamma=<span class="num">0.99</span>,
+    verbose=<span class="num">1</span>
+)
+
+<span class="com"># آموزش</span>
+model.learn(total_timesteps=<span class="num">100000</span>)
+
+<span class="com"># ذخیره</span>
+model.save(<span class="str">'ppo_cartpole'</span>)
+
+<span class="com"># ارزیابی</span>
+env_eval = gym.make(<span class="str">'CartPole-v1'</span>, render_mode=<span class="str">'human'</span>)
+obs, _ = env_eval.reset()
+total_reward = <span class="num">0</span>
+<span class="kw">for</span> _ <span class="kw">in</span> range(<span class="num">500</span>):
+    action, _ = model.predict(obs)
+    obs, reward, done, truncated, _ = env_eval.step(action)
+    total_reward += reward
+    <span class="kw">if</span> done <span class="kw">or</span> truncated: <span class="kw">break</span>
+
+print(<span class="str">f"Total reward: {total_reward}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: CODE PATH -->
+<div class="slide" data-topic="کد مسیریابی">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Path Planning — محیط سفارشی</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="path-env">محیط سفارشی</button>
+      </div>
+      <div class="codePane active" id="code-path-env">
+<pre><span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">from</span> gymnasium <span class="kw">import</span> spaces
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">class</span> <span class="fn">GridWorldEnv</span>(gym.Env):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, size=<span class="num">10</span>):
+        super().__init__()
+        self.size = size
+        self.action_space = spaces.Discrete(<span class="num">4</span>)  <span class="com"># up,down,left,right</span>
+        self.observation_space = spaces.Box(
+            low=<span class="num">0</span>, high=size-<span class="num">1</span>, shape=(<span class="num">2</span>,), dtype=np.int32)
+
+        self.obstacles = [(<span class="num">2</span>,<span class="num">2</span>), (<span class="num">2</span>,<span class="num">3</span>), (<span class="num">4</span>,<span class="num">5</span>), (<span class="num">6</span>,<span class="num">7</span>)]
+        self.goal = (size-<span class="num">1</span>, size-<span class="num">1</span>)
+
+    <span class="kw">def</span> <span class="fn">reset</span>(self, seed=<span class="kw">None</span>, options=<span class="kw">None</span>):
+        self.pos = [<span class="num">0</span>, <span class="num">0</span>]
+        <span class="kw">return</span> np.array(self.pos, dtype=np.int32), {}
+
+    <span class="kw">def</span> <span class="fn">step</span>(self, action):
+        dx, dy = [<span class="num">0</span>,<span class="num">0</span>,-<span class="num">1</span>,<span class="num">1</span>][action], [-<span class="num">1</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>][action]
+        new_x = max(<span class="num">0</span>, min(self.size-<span class="num">1</span>, self.pos[<span class="num">0</span>] + dx))
+        new_y = max(<span class="num">0</span>, min(self.size-<span class="num">1</span>, self.pos[<span class="num">1</span>] + dy))
+
+        <span class="kw">if</span> (new_x, new_y) <span class="kw">in</span> self.obstacles:
+            reward = -<span class="num">1.0</span>  <span class="com"># penalty for collision</span>
+        <span class="kw">else</span>:
+            self.pos = [new_x, new_y]
+            reward = -<span class="num">0.1</span>  <span class="com"># step penalty</span>
+            <span class="kw">if</span> (new_x, new_y) == self.goal:
+                reward = <span class="num">10.0</span>  <span class="com"># reached goal</span>
+
+        done = (new_x, new_y) == self.goal
+        <span class="kw">return</span> np.array(self.pos, dtype=np.int32), reward, done, <span class="kw">False</span>, {}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌ها و نکات</div>
+    <h2>📐 نکات کلیدی</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$R = \sum_{t=0}^{T} \gamma^t r_t$$
+      <span class="lbl">پاداش تجمعی — هدف RL در مکانیک</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\pi^*(s) = \arg\max_a Q^*(s, a)$$
+      <span class="lbl">سیاست بهینه — از DQN</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$L^{CLIP} = \mathbb{E}[\min(r_t A_t, \text{clip}(r_t, 1-\varepsilon, 1+\varepsilon) A_t)]$$
+      <span class="lbl">PPO — استاندارد کنترل مکانیکی</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 توصیه:</b> برای پروژه‌های مکانیکی از Stable-Baselines3 شروع کنید. محیط را در Gymnasium بسازید.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۶</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>چرا RL برای کنترل بهتر از PID است؟</li>
+          <li><span class="exNum">۲</span>Sim-to-Real Gap چیست و چطور حل می‌شود؟</li>
+          <li><span class="exNum">۳</span>چرا DQN برای بازوی رباتیک مناسب نیست؟</li>
+          <li><span class="exNum">۴</span>Digital Twin چه کمکی به RL می‌کند؟</li>
+          <li><span class="exNum">۵</span>Reward Shaping چیست و چرا مهم است؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>CartPole با PPO در Colab.</li>
+          <li><span class="exNum">۲</span>محیط GridWorld سفارشی بسازید و DQN آموزش دهید.</li>
+          <li><span class="exNum">۳</span>BipedalWalker با SAC.</li>
+          <li><span class="exNum">۴</span>Pendulum با PPO.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد RL در یک حوزه مکانیک.</li>
+          <li><span class="exNum">۲</span>مقایسه SAC، PPO، TD3 برای کنترل ربات.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک پروژه RL مکانیکی طراحی کنید (State، Action، Reward).</li>
+          <li><span class="exNum">★</span>چطور می‌توانید از RL در پایان‌نامه خود استفاده کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW16 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های RL مکانیکی</p>
+        <span class="tag">جلسه ۱۶ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد RL</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>تولید کد محیط سفارشی</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «RL for robot control 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۶</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ CartPole</h3><p>آونگ معکوس — شروع کلاسیک</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Robot Arm</h3><p>PPO/SAC برای فضای پیوسته</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Digital Twin</h3><p>Sim-to-Real با Domain Randomization</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ Path Planning</h3><p>محیط سفارشی + DQN/PPO</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ ابزارها</h3><p>SB3، PyBullet، MuJoCo، Gymnasium</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: FINAL PROJECT -->
+<div class="slide" data-topic="پروژه پایانی">
+  <div class="slideInner">
+    <div class="eyebrow">پروژه پایانی — پیشنهاد</div>
+    <h2>🎯 ۱۰ عنوان پروژه RL برای شما</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>#</th><th>عنوان</th><th>سطح</th></tr></thead>
+        <tbody>
+          <tr><td>۱</td><td>CartPole با PPO — گزارش مقایسه‌ای</td><td>مقدماتی</td></tr>
+          <tr><td>۲</td><td>Pendulum با SAC</td><td>مقدماتی</td></tr>
+          <tr><td>۳</td><td>LunarLander با DQN</td><td>متوسط</td></tr>
+          <tr><td>۴</td><td>محیط سفارشی مکانیکی + PPO</td><td>متوسط</td></tr>
+          <tr><td>۵</td><td>BipedalWalker با SAC</td><td>پیشرفته</td></tr>
+          <tr><td>۶</td><td>بازوی رباتیک ۲-مفصلی (Reacher)</td><td>پیشرفته</td></tr>
+          <tr><td>۷</td><td>کنترل معکوس آونگ با DDPG</td><td>پیشرفته</td></tr>
+          <tr><td>۸</td><td>مسیریابی ربات با موانع متحرک</td><td>متوسط</td></tr>
+          <tr><td>۹</td><td>Digital Twin ساده + PPO</td><td>پژوهشی</td></tr>
+          <tr><td>۱۰</td><td>کنترل یک سیستم مکانیکی واقعی (مثلاً آونگ ساده)</td><td>پژوهشی</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: NLP & Transformer — Beginning of Phase 5</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۷ — شروع فاز ۵ (NLP)</h3>
+        <p style="margin-top:8px;text-align:right">
+          • NLP — مقدمه<br>
+          • Tokenization، Embedding<br>
+          • Attention Mechanism<br>
+          • Transformer Architecture<br>
+          • BERT و GPT
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

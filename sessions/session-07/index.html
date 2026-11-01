@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۷ — ANOVA و Taguchi | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۷ — ANOVA و Taguchi</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="شهید محمدمهدی جنگی‌چی">
+  <div class="starTooltip">
+    <img src="images/star-jangichi.png" alt="شهید جنگی‌چی" onerror="this.style.display='none'">
+    <b>شهید محمدمهدی جنگی‌چی</b>
+    <small>دانش‌آموز مدرسه شجره میناب<br>حافظ قرآن — ۱۱ ساله<br>شهید والامقام</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="flask-conical" style="width:14px;height:14px"></i> جلسه ۷ • فاز ۲ — ML کلاسیک</div>
+      <h1>ANOVA و طراحی آزمایش تاگوچی</h1>
+      <p class="subtitle-en">Analysis of Variance · Design of Experiments · Taguchi Method<br>From Statistical Analysis to Robust Optimization</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۶</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="trees"></i></div><h3>جلسه ۶</h3><p>Decision Tree، Random Forest، Ensemble، Vox Populi</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="flask-conical"></i></div><h3>جلسه ۷ (امروز)</h3><p>ANOVA، طراحی آزمایش، تاگوچی</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ تحلیل واریانس (ANOVA)</p></div>
+      <div class="card"><p style="margin:0">✅ مفهوم F-test و p-value</p></div>
+      <div class="card"><p style="margin:0">✅ Design of Experiments (DOE)</p></div>
+      <div class="card"><p style="margin:0">✅ آرایه‌های متعامد تاگوچی</p></div>
+      <div class="card"><p style="margin:0">✅ نسبت Signal-to-Noise (S/N)</p></div>
+      <div class="card"><p style="margin:0">✅ کاربرد در بهینه‌سازی مکانیکی</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🔬 چرا ANOVA و طراحی آزمایش؟</h2>
+    <p style="font-size:16px">فرض کنید می‌خواهید یک قطعه مکانیکی بسازید و ۳ پارامتر دارید: دما، فشار، و زمان. هر کدام ۳ سطح دارند. اگر بخواهید همه ترکیب‌ها را آزمایش کنید، ۳×۳×۳ = ۲۷ آزمایش لازم است — پرهزینه و زمان‌بر.</p>
+    <p style="font-size:16px"><b>ANOVA</b> به شما می‌گوید کدام پارامتر واقعاً اثر معنی‌دار دارد. و <b>روش تاگوچی</b> با یک آرایه متعامد، فقط با <b>۹ آزمایش</b> همان اطلاعات را می‌دهد. این یعنی ۳ برابر صرفه‌جویی در زمان و هزینه.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="flask-conical"></i></div>
+        <h3>ANOVA</h3>
+        <p>تحلیل واریانس — کدام عامل واقعاً مؤثر است؟</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="grid-3x3"></i>
+        </div>
+        <h3>Taguchi</h3>
+        <p>آرایه متعامد — با کمترین آزمایش، بهترین نتیجه</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="trending-up"></i>
+        </div>
+        <h3>S/N Ratio</h3>
+        <p>نسبت سیگنال به نویز — معیار مقاوم‌سازی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="target"></i>
+        </div>
+        <h3>Robust Design</h3>
+        <p>طراحی مقاوم — مقاوم به تغییرات محیطی</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: ANOVA CONCEPTS -->
+<div class="slide" data-topic="ANOVA">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم اول</div>
+    <h2>📊 ANOVA — تحلیل واریانس</h2>
+    <p><b>ANOVA</b> (Analysis of Variance) می‌سنجد آیا میانگین دو یا چند گروه، واقعاً با هم تفاوت دارند یا این تفاوت ناشی از شانس است.</p>
+    <img src="images/anova-basic.png" alt="ANOVA" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">تقسیم واریانس کل به دو بخش: بین‌گروهی و درون‌گروهی</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="arrows-right-left"></i></div>
+        <h3>واریانس بین‌گروهی (MSB)</h3>
+        <p>چقدر میانگین‌ها از هم دورند — اثر متغیرها</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="scatter-chart"></i>
+        </div>
+        <h3>واریانس درون‌گروهی (MSW)</h3>
+        <p>چقدر داده‌های هر گروه پراکنده‌اند — نویز</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:24px">
+      $$F = \frac{MSB}{MSW}$$
+      <span class="lbl">نسبت F — اگر بزرگ باشد، تفاوت معنی‌دار است</span>
+    </div>
+    <p style="margin-top:16px"><b>تفسیر F:</b> اگر $F$ بزرگ باشد (بیشتر از مقدار بحرانی)، یعنی میانگین‌ها واقعاً متفاوت‌اند. اگر نزدیک ۱ باشد، یعنی تفاوت‌ها فقط نویز است.</p>
+  </div>
+</div>
+
+<!-- SLIDE 5: ANOVA MATH -->
+<div class="slide" data-topic="مدل ANOVA">
+  <div class="slideInner">
+    <div class="eyebrow">مدل ریاضی</div>
+    <h2>📐 ANOVA — مدل و F-test</h2>
+    <div class="formulaBox">
+      $$x_{ij} = \mu + \tau_i + \varepsilon_{ij}$$
+      <span class="lbl">$x_{ij}$ = مشاهده، $\mu$ = میانگین کل، $\tau_i$ = اثر گروه $i$، $\varepsilon_{ij}$ = خطا</span>
+    </div>
+    <div class="formulaBox">
+      $$SS_{total} = SS_{between} + SS_{within}$$
+      <span class="lbl">مجموع مربعات کل = بین‌گروهی + درون‌گروهی</span>
+    </div>
+    <div class="formulaBox">
+      $$F = \frac{SS_{between}/(k-1)}{SS_{within}/(N-k)}$$
+      <span class="lbl">آماره F — $k$ = تعداد گروه، $N$ = تعداد کل نمونه</span>
+    </div>
+    <img src="images/anova-table.png" alt="ANOVA table" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">جدول ANOVA — منبع، SS، df، MS، F، p</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>📊 p-value &lt; 0.05</h3>
+        <p>تفاوت معنی‌دار است — اثر عامل واقعی</p>
+      </div>
+      <div class="card">
+        <h3>📊 p-value &gt; 0.05</h3>
+        <p>تفاوت معنی‌دار نیست — ناشی از نویز</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🔬 ANOVA تعاملی — ۳ گروه</h2>
+    <p>میانگین و پراکندگی هر گروه را تنظیم کنید و F و p را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="flask-conical"></i> ANOVA Interactive</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sliderGroup">
+          <label>میانگین گروه A <span class="sliderVal" id="sim1_mA_val">5</span></label>
+          <input type="range" id="sim1_mA" min="0" max="20" step="0.5" value="5">
+        </div>
+        <div class="sliderGroup">
+          <label>میانگین گروه B <span class="sliderVal" id="sim1_mB_val">10</span></label>
+          <input type="range" id="sim1_mB" min="0" max="20" step="0.5" value="10">
+        </div>
+        <div class="sliderGroup">
+          <label>میانگین گروه C <span class="sliderVal" id="sim1_mC_val">15</span></label>
+          <input type="range" id="sim1_mC" min="0" max="20" step="0.5" value="15">
+        </div>
+      </div>
+      <div class="sliderGroup" style="margin-top:12px">
+        <label>پراکندگی درون‌گروهی <span class="sliderVal" id="sim1_noise_val">1.0</span></label>
+        <input type="range" id="sim1_noise" min="0.1" max="5" step="0.1" value="1">
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>F-statistic</small><b id="sim1_F">—</b></div>
+        <div class="simRes"><small>p-value</small><b id="sim1_p">—</b></div>
+        <div class="simRes"><small>نتیجه</small><b id="sim1_result">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>تفسیر:</b> با تغییر میانگین‌ها، F را ببینید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: DOE -->
+<div class="slide" data-topic="DOE">
+  <div class="slideInner">
+    <div class="eyebrow">رویکرد</div>
+    <h2>🧪 Design of Experiments (DOE)</h2>
+    <p><b>DOE</b> هنر برنامه‌ریزی آزمایش‌هایی است که بیشترین اطلاعات را با کمترین تعداد آزمایش بدهد.</p>
+    <img src="images/doe-comparison.png" alt="DOE comparison" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">مقایسه: فاکتوریل کامل (۲۷) در برابر طرح بهینه (۹)</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 Full Factorial</h3>
+        <p>همه ترکیب‌ها — دقیق ولی پرهزینه</p>
+      </div>
+      <div class="card">
+        <h3>⚡ Taguchi</h3>
+        <p>فقط بخشی از ترکیب‌ها — با اطلاعات کامل</p>
+      </div>
+      <div class="card">
+        <h3>🎲 Random Design</h3>
+        <p>تصادفی — کنترل متغیرهای مزاحم</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: TAGUCHI IDEA -->
+<div class="slide" data-topic="ایدۀ تاگوچی">
+  <div class="slideInner">
+    <div class="eyebrow">ایده اصلی</div>
+    <h2>🎯 Taguchi — طراحی مقاوم</h2>
+    <p>دکتر <b>گن‌ایچی تاگوچی</b> (ژاپنی) روشی ابداع کرد که با آن، محصولات را در برابر نویز (تغییرات محیطی، خطای تولید) مقاوم کنیم — حتی اگر نتوانیم نویز را کنترل کنیم.</p>
+    <img src="images/taguchi-factors.png" alt="Taguchi factors" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">فاکتورها و سطوح — ۳ عامل، هر کدام ۳ سطح</div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 هدف</h3>
+        <p>پیدا کردن بهترین ترکیب سطوح</p>
+      </div>
+      <div class="card">
+        <h3>📊 نویز</h3>
+        <p>متغیرهای خارجی که کنترل نمی‌کنیم</p>
+      </div>
+      <div class="card">
+        <h3>🛡 مقاوم‌سازی</h3>
+        <p>محصولی که در هر شرایطی خوب کار کند</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: ORTHOGONAL ARRAY -->
+<div class="slide" data-topic="آرایه متعامد">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار تاگوچی</div>
+    <h2>🔢 آرایه متعامد — Orthogonal Array</h2>
+    <p>یک آرایه متعامد مثل $L_9(3^4)$ یعنی: ۹ آزمایش، ۴ عامل، ۳ سطح. جادوی این آرایه در این است که همه سطوح، به‌طور متعادل توزیع شده‌اند.</p>
+    <img src="images/taguchi-orthogonal.png" alt="Orthogonal Array" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">آرایه L9 — هر عامل ۳ بار در هر سطح ظاهر می‌شود</div>
+    <div class="formulaBox">
+      $$L_9(3^4) = \begin{bmatrix} 1&1&1&1 \\ 1&2&2&2 \\ 1&3&3&3 \\ 2&1&2&3 \\ 2&2&3&1 \\ 2&3&1&2 \\ 3&1&3&2 \\ 3&2&1&3 \\ 3&3&2&1 \end{bmatrix}$$
+      <span class="lbl">آرایه متعامد L9 — ۹ آزمایش، ۴ عامل، ۳ سطح</span>
+    </div>
+    <p>این آرایه به‌گونه‌ای طراحی شده که <b>هر جفت سطح</b> از هر دو عامل، دقیقاً یک بار در جدول ظاهر شود — ویژگی <b>متعادل بودن</b>.</p>
+  </div>
+</div>
+
+<!-- SLIDE 10: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🔢 آرایه متعامد Taguchi — تعاملی</h2>
+    <p>یک عامل را انتخاب کنید و ببینید چطور آرایه L9 توزیع می‌شود.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="grid-3x3"></i> Taguchi Orthogonal Array</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnSecondary" id="sim2_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>آرایه</small><b>L9(3⁴)</b></div>
+        <div class="simRes"><small>آزمایش‌ها</small><b>9</b></div>
+        <div class="simRes"><small>صرفه‌جویی</small><b>67%</b></div>
+      </div>
+      <div class="stepInfo">
+        <b>نکته:</b> هر عامل در هر سطح دقیقاً ۳ بار ظاهر می‌شود. این تعادل، تضمین می‌کند که نتایج تجزیه‌وتحلیل، معنی‌دار باشند.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: S/N RATIO -->
+<div class="slide" data-topic="نسبت S/N">
+  <div class="slideInner">
+    <div class="eyebrow">معیار تاگوچی</div>
+    <h2>📶 نسبت Signal-to-Noise (S/N)</h2>
+    <p>در روش تاگوچی، هدف <b>بیشینه‌سازی</b> نسبت S/N است — یعنی سیگنال (اثر مطلوب) نسبت به نویز (اثر نامطلوب) بزرگ‌تر باشد.</p>
+    <img src="images/sn-ratio.png" alt="S/N Ratio" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">S/N بالا = مقاوم‌تر در برابر نویز</div>
+    <div class="formulaBox">
+      $$\text{S/N}_{larger} = -10 \log_{10}\left(\frac{1}{n}\sum_{i=1}^n \frac{1}{y_i^2}\right)$$
+      <span class="lbl">برای «بزرگ‌تر بهتر است» — مثلاً استحکام</span>
+    </div>
+    <div class="formulaBox">
+      $$\text{S/N}_{smaller} = -10 \log_{10}\left(\frac{1}{n}\sum_{i=1}^n y_i^2\right)$$
+      <span class="lbl">برای «کوچک‌تر بهتر است» — مثلاً خطا</span>
+    </div>
+    <div class="formulaBox">
+      $$\text{S/N}_{nominal} = 10 \log_{10}\left(\frac{\bar{y}^2}{s^2}\right)$$
+      <span class="lbl">برای «مقدار هدف مشخص» — مثلاً قطر قطعه</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>📶 نسبت S/N — تعاملی</h2>
+    <p>نوع مسئله و پراکندگی نویز را تغییر دهید و S/N را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-up"></i> Signal-to-Noise Simulator</div>
+      <div class="simCanvasWrapper" style="height:360px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>مقدار سیگنال (میانگین) <span class="sliderVal" id="sim3_sig_val">10</span></label>
+          <input type="range" id="sim3_sig" min="1" max="20" step="0.5" value="10">
+        </div>
+        <div class="sliderGroup">
+          <label>پراکندگی نویز <span class="sliderVal" id="sim3_noise_val">1.0</span></label>
+          <input type="range" id="sim3_noise" min="0.1" max="5" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>نوع</small><b id="sim3_type">Larger</b></div>
+        <div class="simRes"><small>S/N (dB)</small><b id="sim3_sn">—</b></div>
+        <div class="simRes"><small>ارزیابی</small><b id="sim3_rating">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info">
+        <b>نکته:</b> S/N بالاتر = مقاوم‌تر. اگر سیگنال بزرگ‌تر یا نویز کم‌تر شود، S/N بالا می‌رود.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: TAGUCHI STEPS -->
+<div class="slide" data-topic="گام‌های تاگوچی">
+  <div class="slideInner">
+    <div class="eyebrow">روش کامل</div>
+    <h2>📋 روش تاگوچی — ۵ گام</h2>
+    <img src="images/taguchi-steps.png" alt="Taguchi steps" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">پنج گام روش تاگوچی</div>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">گام ۱</div>
+        <h3>تعریف عوامل</h3>
+        <p>عوامل کنترل‌پذیر و سطوح</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">گام ۲</div>
+        <h3>آرایه متعامد</h3>
+        <p>انتخاب L8، L9، L18 و…</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">گام ۳</div>
+        <h3>اجرای آزمایش</h3>
+        <p>اندازه‌گیری y برای هر ترکیب</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">گام ۴</div>
+        <h3>تحلیل S/N</h3>
+        <p>محاسبه S/N و ANOVA</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--pink)">
+        <div style="font-size:12px;color:var(--pink);font-weight:800;margin-bottom:8px">گام ۵</div>
+        <h3>تأیید</h3>
+        <p>آزمون تأییدی با سطوح بهینه</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: DOE COMPARISON -->
+<div class="slide" data-topic="مقایسه">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ DOE کلاسیک vs تاگوچی</h2>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>فاکتوریل کامل</th><th>Taguchi</th></tr></thead>
+        <tbody>
+          <tr><td><b>تعداد آزمایش</b></td><td>$3^k$</td><td>۹ (L9)</td></tr>
+          <tr><td><b>اطلاعات</b></td><td>کامل</td><td>کامل (برای اثرهای اصلی)</td></tr>
+          <tr><td><b>هزینه</b></td><td>بالا</td><td>پایین</td></tr>
+          <tr><td><b>پیچیدگی تحلیل</b></td><td>بالا</td><td>ساده</td></tr>
+          <tr><td><b>مقاوم‌سازی</b></td><td>محدود</td><td>عالی (S/N)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: CASE STUDY -->
+<div class="slide" data-topic="مطالعه موردی">
+  <div class="slideInner">
+    <div class="eyebrow">مطالعه موردی</div>
+    <h2>🔧 بهینه‌سازی فرآیند تراشکاری</h2>
+    <p>سناریو: بهینه‌سازی نرخ براده‌برداری (MRR) در تراشکاری فولاد.</p>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+      <div class="card"><h3>سرعت برش</h3><p>۳ سطح: ۱۰۰، ۱۵۰، ۲۰۰ m/min</p></div>
+      <div class="card"><h3>نرخ تغذیه</h3><p>۳ سطح: ۰.۱، ۰.۲، ۰.۳ mm/rev</p></div>
+      <div class="card"><h3>عمق برش</h3><p>۳ سطح: ۰.۵، ۱، ۱.۵ mm</p></div>
+    </div>
+    <div class="formulaBox" style="margin-top:24px">
+      $$MRR = v \cdot f \cdot d \cdot 1000 \quad [\text{mm}^3/\text{min}]$$
+      <span class="lbl">هدف: بیشینه‌سازی MRR با حفظ کیفیت سطح</span>
+    </div>
+    <p style="margin-top:16px">با روش تاگوچی L9، فقط با <b>۹ آزمایش</b> می‌توان بهترین ترکیب را پیدا کرد — در حالی که فاکتوریل کامل به <b>۲۷ آزمایش</b> نیاز داشت.</p>
+  </div>
+</div>
+
+<!-- SLIDE 16: CODE -->
+<div class="slide" data-topic="کد">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 ANOVA و Taguchi — MATLAB و Python</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="matlab">MATLAB</button>
+        <button class="codeTabBtn" data-code="python">Python (Colab)</button>
+      </div>
+      <div class="codePane active" id="code-matlab">
+<pre><span class="com">% ANOVA یک‌طرفه</span>
+group1 = <span class="fn">randn</span>(<span class="num">20</span>,<span class="num">1</span>) * <span class="num">1</span> + <span class="num">5</span>;
+group2 = <span class="fn">randn</span>(<span class="num">20</span>,<span class="num">1</span>) * <span class="num">1</span> + <span class="num">10</span>;
+group3 = <span class="fn">randn</span>(<span class="num">20</span>,<span class="num">1</span>) * <span class="num">1</span> + <span class="num">15</span>;
+
+data = [group1; group2; group3];
+group = [<span class="fn">ones</span>(<span class="num">20</span>,<span class="num">1</span>); <span class="num">2</span>*<span class="fn">ones</span>(<span class="num">20</span>,<span class="num">1</span>); <span class="num">3</span>*<span class="fn">ones</span>(<span class="num">20</span>,<span class="num">1</span>)];
+
+[p, tbl, stats] = <span class="fn">anova1</span>(data, group);
+<span class="fn">fprintf</span>(<span class="str">'p-value: %.4f\n'</span>, p);
+
+<span class="com">% Taguchi — آرایه L9</span>
+L9 = [<span class="num">1</span> <span class="num">1</span> <span class="num">1</span>;
+      <span class="num">1</span> <span class="num">2</span> <span class="num">2</span>;
+      <span class="num">1</span> <span class="num">3</span> <span class="num">3</span>;
+      <span class="num">2</span> <span class="num">1</span> <span class="num">2</span>;
+      <span class="num">2</span> <span class="num">2</span> <span class="num">3</span>;
+      <span class="num">2</span> <span class="num">3</span> <span class="num">1</span>;
+      <span class="num">3</span> <span class="num">1</span> <span class="num">3</span>;
+      <span class="num">3</span> <span class="num">2</span> <span class="num">1</span>;
+      <span class="num">3</span> <span class="num">3</span> <span class="num">2</span>];
+
+<span class="com">% شبیه‌سازی نتایج</span>
+y = <span class="fn">rand</span>(<span class="num">9</span>,<span class="num">1</span>) * <span class="num">10</span> + <span class="num">50</span>;
+
+<span class="com">% S/N برای «بزرگ‌تر بهتر»</span>
+SN = -<span class="num">10</span> * <span class="fn">log10</span>(<span class="fn">mean</span>(<span class="num">1</span>./y.^<span class="num">2</span>));
+<span class="fn">disp</span>([<span class="str">'S/N mean: '</span>, <span class="fn">num2str</span>(<span class="fn">mean</span>(SN))]);</pre>
+      </div>
+      <div class="codePane" id="code-python">
+<pre><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy <span class="kw">import</span> stats
+
+<span class="com"># ANOVA یک‌طرفه</span>
+np.random.seed(<span class="num">42</span>)
+g1 = np.random.randn(<span class="num">20</span>) + <span class="num">5</span>
+g2 = np.random.randn(<span class="num">20</span>) + <span class="num">10</span>
+g3 = np.random.randn(<span class="num">20</span>) + <span class="num">15</span>
+
+F, p = stats.f_oneway(g1, g2, g3)
+print(<span class="str">f"F = {F:.3f}, p = {p:.4f}"</span>)
+
+<span class="com"># Taguchi — آرایه L9</span>
+L9 = np.array([
+    [<span class="num">1</span>, <span class="num">1</span>, <span class="num">1</span>],
+    [<span class="num">1</span>, <span class="num">2</span>, <span class="num">2</span>],
+    [<span class="num">1</span>, <span class="num">3</span>, <span class="num">3</span>],
+    [<span class="num">2</span>, <span class="num">1</span>, <span class="num">2</span>],
+    [<span class="num">2</span>, <span class="num">2</span>, <span class="num">3</span>],
+    [<span class="num">2</span>, <span class="num">3</span>, <span class="num">1</span>],
+    [<span class="num">3</span>, <span class="num">1</span>, <span class="num">3</span>],
+    [<span class="num">3</span>, <span class="num">2</span>, <span class="num">1</span>],
+    [<span class="num">3</span>, <span class="num">3</span>, <span class="num">2</span>],
+])
+
+<span class="com"># شبیه‌سازی نتایج</span>
+y = np.random.rand(<span class="num">9</span>) * <span class="num">10</span> + <span class="num">50</span>
+
+<span class="com"># S/N برای «بزرگ‌تر بهتر»</span>
+SN = -<span class="num">10</span> * np.log10(np.mean(<span class="num">1</span> / y**<span class="num">2</span>))
+print(<span class="str">f"S/N mean: {SN:.2f} dB"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۷</h2>
+    <div class="formulaBox" style="font-size:17px">
+      $$F = \frac{MSB}{MSW} = \frac{SS_{between}/(k-1)}{SS_{within}/(N-k)}$$
+      <span class="lbl">آماره F در ANOVA</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{S/N}_{larger} = -10 \log_{10}\left(\frac{1}{n}\sum \frac{1}{y_i^2}\right)$$
+      <span class="lbl">S/N برای «بزرگ‌تر بهتر»</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\text{S/N}_{smaller} = -10 \log_{10}\left(\frac{1}{n}\sum y_i^2\right)$$
+      <span class="lbl">S/N برای «کوچک‌تر بهتر»</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\eta_{opt} = \bar{\eta} + \sum_{i=1}^{k} (\bar{\eta}_i - \bar{\eta})$$
+      <span class="lbl">پیش‌بینی S/N در سطوح بهینه</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۷</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>ANOVA چه چیزی را می‌سنجد و چرا به آن «تحلیل واریانس» می‌گویند؟</li>
+          <li><span class="exNum">۲</span>تفاوت واریانس بین‌گروهی و درون‌گروهی چیست؟</li>
+          <li><span class="exNum">۳</span>p-value در ANOVA چه معنایی دارد؟</li>
+          <li><span class="exNum">۴</span>آرایه متعامد چیست و چرا «متعادل» نامیده می‌شود؟</li>
+          <li><span class="exNum">۵</span>سه نوع نسبت S/N را توضیح دهید.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>ANOVA یک‌طرفه روی ۳ گروه در Colab پیاده‌سازی کنید.</li>
+          <li><span class="exNum">۲</span>آرایه L9 را بسازید و S/N هر ترکیب را محاسبه کنید.</li>
+          <li><span class="exNum">۳</span>نمودار main effect (اثر هر سطح) را رسم کنید.</li>
+          <li><span class="exNum">۴</span>سطوح بهینه را تعیین کنید.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره کاربرد Taguchi در بهینه‌سازی مکانیکی بنویسید.</li>
+          <li><span class="exNum">۲</span>مقایسه Taguchi و Response Surface Methodology (RSM).</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله بهینه‌سازی مکانیکی طراحی کنید که با Taguchi حل شود.</li>
+          <li><span class="exNum">★</span>چطور می‌توانید Taguchi را با ML ترکیب کنید؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW07 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <p>برای جست‌وجوی مقالات و مراجع درباره Taguchi و ANOVA.</p>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی علمی با ذکر منابع</p>
+        <span class="tag">جلسه ۷ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد و مقالات</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی Taguchi</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «Taguchi method optimization machining 2024»
+        و ۳ مقاله معتبر پیدا کنید. منابع را در HW07 بنویسید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۷</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ ANOVA</h3><p>مقایسه میانگین چند گروه، F-test، p-value</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ DOE</h3><p>طراحی آزمایش برای بهینه‌سازی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Taguchi</h3><p>آرایه متعامد، کاهش آزمایش از ۲۷ به ۹</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ S/N Ratio</h3><p>سه نوع: Larger، Smaller، Nominal</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ Robust Design</h3><p>مقاوم‌سازی در برابر نویز</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: NEXT -->
+<div class="slide" data-topic="جلسه بعد">
+  <div class="slideInner">
+    <div class="eyebrow">جلسه ۸</div>
+    <h2>📅 جلسه بعد</h2>
+    <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+      border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin-top:20px">
+      <h3 style="color:var(--violet);margin-bottom:10px">SVM و ارزیابی مدل</h3>
+      <p style="margin-top:8px">
+        • Support Vector Machines<br>
+        • Kernel Trick<br>
+        • Cross-Validation<br>
+        • Confusion Matrix، Precision، Recall<br>
+        • ROC Curve و AUC<br>
+        • کاربرد در مکانیک
+      </p>
+    </div>
+    <div style="margin-top:22px;padding:20px;border-radius:14px;
+      background:rgba(77,212,255,.12);border:1px solid rgba(77,212,255,.5)">
+      <h4 style="color:var(--cyan);margin-bottom:8px;font-size:16px">📁 قبل از جلسه ۸</h4>
+      <p style="margin:0;font-size:14px">
+        ۱. HW07 را در Google Drive آپلود کنید<br>
+        ۲. کتاب Géron فصل ۳ و ۵ را مرور کنید<br>
+        ۳. با Claude درباره «SVM» بحث کنید
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: SVM & Model Evaluation</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۲</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

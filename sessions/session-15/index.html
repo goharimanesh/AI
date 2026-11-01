@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۵ — Policy Gradient و PPO | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۵ — Policy Gradient و PPO</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="trending-up" style="width:14px;height:14px"></i> جلسه ۱۵ • فاز ۴ — RL</div>
+      <h1>Policy Gradient و PPO</h1>
+      <p class="subtitle-en">Policy-Based RL · REINFORCE · Actor-Critic · PPO<br>When Actions Become Continuous</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۴</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="brain-circuit"></i></div><h3>جلسه ۱۴</h3><p>Q-Network، Experience Replay، Target Network</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="trending-up"></i></div><h3>جلسه ۱۵ (امروز)</h3><p>Policy Gradient، REINFORCE، Actor-Critic، PPO</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ محدودیت DQN در فضای پیوسته</p></div>
+      <div class="card"><p style="margin:0">✅ Policy-Based RL</p></div>
+      <div class="card"><p style="margin:0">✅ REINFORCE</p></div>
+      <div class="card"><p style="margin:0">✅ Actor-Critic</p></div>
+      <div class="card"><p style="margin:0">✅ PPO و Clipping</p></div>
+      <div class="card"><p style="margin:0">✅ Stable-Baselines3</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🚀 چرا Policy Gradient؟</h2>
+    <p style="font-size:16px">DQN عالی است برای محیط‌هایی با <b>اعمال گسسته</b> (چپ/راست، بالا/پایین). اما در مکانیک، اعمال ما اغلب <b>پیوسته</b> هستند: گشتاور موتور (۰ تا ۱۰۰ نیوتن‌متر)، زاویه فرمان (-۳۰ تا +۳۰ درجه)، ولتاژ کنترلر (۰ تا ۲۴ ولت).</p>
+    <p style="font-size:16px"><b>Policy Gradient</b> روش‌هایی هستند که مستقیماً <b>سیاست</b> (Policy) را یاد می‌گیرند — بدون نیاز به Q-Table یا $\max$ روی اعمال. و <b>PPO</b> امروز پرکاربردترین الگوریتم RL در صنعت و پژوهش است.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="trending-up"></i></div>
+        <h3>فضای پیوسته</h3>
+        <p>مستقیماً روی اعمال پیوسته کار می‌کند</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="target"></i>
+        </div>
+        <h3>سیاست مستقیم</h3>
+        <p>بدون Q-Table</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="shield"></i>
+        </div>
+        <h3>پایدار</h3>
+        <p>PPO آموزش پایدارتری دارد</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="award"></i>
+        </div>
+        <h3>ChatGPT!</h3>
+        <p>RLHF با PPO آموزش دیده</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: DQN LIMIT -->
+<div class="slide" data-topic="محدودیت DQN">
+  <div class="slideInner">
+    <div class="eyebrow">محدودیت</div>
+    <h2>⚠️ چرا DQN برای اعمال پیوسته مناسب نیست؟</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. $\max$ روی اعمال</h3>
+        <p>DQN نیاز دارد $\max_a Q(s,a)$ را حساب کند — برای اعمال پیوسته، باید بی‌نهایت عمل را امتحان کرد!</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۲. گسسته‌سازی</h3>
+        <p>می‌توانیم گشتاور را به ۱۰۰ سطح تقسیم کنیم — اما دقت پایین و بعد بالا</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۳. عدم قطعیت</h3>
+        <p>در برخی مسائل (مثل بازی سنگ-کاغذ-قیچی)، بهترین سیاست تصادفی است — DQN نمی‌تواند</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 راه‌حل:</b> به جای یادگیری Q، مستقیماً Policy را یاد بگیریم.
+      <span class="lbl">$\pi_\theta(a|s)$ = احتمال انتخاب عمل $a$ در وضعیت $s$</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: VALUE VS POLICY -->
+<div class="slide" data-topic="Value vs Policy">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ Value-Based vs Policy-Based</h2>
+    <img src="images/value-vs-policy.png" alt="Value vs Policy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چپ: Q-Table — راست: توزیع احتمال روی اعمال</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>Value-Based (DQN)</th><th>Policy-Based (PPO)</th></tr></thead>
+        <tbody>
+          <tr><td><b>چه چیزی یاد می‌گیرد؟</b></td><td>$Q(s,a)$ — ارزش اعمال</td><td>$\pi(a|s)$ — توزیع احتمال</td></tr>
+          <tr><td><b>فضای عمل</b></td><td>گسسته</td><td>گسسته و پیوسته</td></tr>
+          <tr><td><b>سیاست تصادفی</b></td><td>مشکل</td><td>طبیعی</td></tr>
+          <tr><td><b>پایداری</b></td><td>متوسط</td><td>بالا (با PPO)</td></tr>
+          <tr><td><b>کارایی داده</b></td><td>بالا (off-policy)</td><td>متوسط (on-policy)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>🎯 Value-Based vs Policy-Based</h2>
+    <p>مقایسه رفتار این دو رویکرد را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="activity"></i> Q-Value vs Policy Distribution</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simControls" style="grid-template-columns:repeat(3,1fr)">
+        <div class="sliderGroup">
+          <label>ارزش عمل ۱ <span class="sliderVal" id="sim1_q1_val">0.8</span></label>
+          <input type="range" id="sim1_q1" min="0" max="1" step="0.05" value="0.8">
+        </div>
+        <div class="sliderGroup">
+          <label>ارزش عمل ۲ <span class="sliderVal" id="sim1_q2_val">0.5</span></label>
+          <input type="range" id="sim1_q2" min="0" max="1" step="0.05" value="0.5">
+        </div>
+        <div class="sliderGroup">
+          <label>ارزش عمل ۳ <span class="sliderVal" id="sim1_q3_val">0.2</span></label>
+          <input type="range" id="sim1_q3" min="0" max="1" step="0.05" value="0.2">
+        </div>
+      </div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>دما (Temperature) <span class="sliderVal" id="sim1_temp_val">1.0</span></label>
+          <input type="range" id="sim1_temp" min="0.1" max="5" step="0.1" value="1">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Q-Table بهترین</small><b id="sim1_best_q">—</b></div>
+        <div class="simRes"><small>Policy انتخاب</small><b id="sim1_policy">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> اسلایدرها را تغییر دهید. Policy-Based می‌تواند تصادفی باشد.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: POLICY -->
+<div class="slide" data-topic="Policy چیست">
+  <div class="slideInner">
+    <div class="eyebrow">پارامتری‌سازی</div>
+    <h2>📐 Policy چیست؟</h2>
+    <img src="images/policy-gradient-hero.png" alt="Policy" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">شبکه Policy: توزیع احتمال روی اعمال</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$\pi_\theta(a|s) = P(a | s, \theta)$$
+      <span class="lbl">سیاست پارامتری — $\theta$ = پارامترهای شبکه</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>🎯 گسسته</h3>
+        <p>Softmax: $\pi(a|s) = \frac{e^{z_a}}{\sum e^{z_i}}$</p>
+      </div>
+      <div class="card">
+        <h3>📊 پیوسته</h3>
+        <p>Gaussian: $\pi(a|s) = \mathcal{N}(\mu_\theta(s), \sigma_\theta(s))$</p>
+      </div>
+    </div>
+    <p style="margin-top:16px;text-align:center;color:var(--muted)">
+      شبکه Policy از وضعیت $s$، پارامترهای توزیع را می‌سازد و از آن نمونه‌گیری می‌کند.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 8: REINFORCE -->
+<div class="slide" data-topic="REINFORCE">
+  <div class="slideInner">
+    <div class="eyebrow">الگوریتم پایه</div>
+    <h2>🎯 REINFORCE — ساده‌ترین PG</h2>
+    <p>REINFORCE از <b>Policy Gradient Theorem</b> استفاده می‌کند: اگر عملی پاداش خوب داد، احتمال آن عمل را زیاد کن.</p>
+    <img src="images/reinforce-algorithm.png" alt="REINFORCE" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">اگر پاداش خوب بود، احتمال اعمال آن مسیر را زیاد کن</div>
+    <div class="formulaBox" style="font-size:18px">
+      $$\nabla_\theta J(\theta) = \mathbb{E}_\pi \left[ \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t|s_t) \cdot G_t \right]$$
+      <span class="lbl">$G_t$ = بازده تجمعی از زمان $t$ به بعد</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$\theta \leftarrow \theta + \alpha \sum_{t} \nabla_\theta \log \pi_\theta(a_t|s_t) \cdot G_t$$
+      <span class="lbl">به‌روزرسانی REINFORCE</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🎯 REINFORCE — آموزش تعاملی</h2>
+    <p>یک سیاست تصادفی را آموزش دهید تا بهترین عمل را انتخاب کند.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="trending-up"></i> REINFORCE Training</div>
+      <div class="simCanvasWrapper" style="height:400px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>نرخ یادگیری <span class="sliderVal" id="sim2_lr_val">0.1</span></label>
+          <input type="range" id="sim2_lr" min="0.01" max="0.5" step="0.01" value="0.1">
+        </div>
+      </div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim2_train"><i data-lucide="play"></i> آموزش</button>
+        <button class="btnSecondary" id="sim2_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Episode</small><b id="sim2_ep">0</b></div>
+        <div class="simRes"><small>Reward</small><b id="sim2_rew">—</b></div>
+        <div class="simRes"><small>Best Action</small><b id="sim2_best">—</b></div>
+        <div class="simRes"><small>پیشرفت</small><b id="sim2_prog">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> «آموزش» را بزنید تا سیاست یاد بگیرد.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: REINFORCE CHALLENGES -->
+<div class="slide" data-topic="چالش‌های REINFORCE">
+  <div class="slideInner">
+    <div class="eyebrow">چالش‌ها</div>
+    <h2>⚠️ مشکلات REINFORCE</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. واریانس بالا</h3>
+        <p>بازده $G_t$ بسیار نویزی است — یادگیری کند</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۲. نمونه‌ناکارآمد</h3>
+        <p>بعد از هر به‌روزرسانی باید داده جدید جمع کنی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۳. حساس به نرخ یادگیری</h3>
+        <p>نرخ یادگیری نامناسب → فروپاشی</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 راه‌حل:</b> Actor-Critic — استفاده از Critic برای کاهش واریانس
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: ACTOR-CRITIC -->
+<div class="slide" data-topic="Actor-Critic">
+  <div class="slideInner">
+    <div class="eyebrow">ترکیب</div>
+    <h2>🎭 Actor-Critic</h2>
+    <p>Actor-Critic دو شبکه دارد: <b>Actor</b> (سیاست) و <b>Critic</b> (ارزش). Critic به Actor می‌گوید عملش خوب بود یا بد.</p>
+    <img src="images/actor-critic.png" alt="Actor-Critic" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Actor تصمیم می‌گیرد، Critic ارزیابی می‌کند</div>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">🎭 Actor</h3>
+        <p>$\pi_\theta(a|s)$ — تصمیم‌گیرنده</p>
+        <p style="margin-top:8px">شبکه‌ای که توزیع احتمال را می‌دهد</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">📊 Critic</h3>
+        <p>$V_\phi(s)$ — ارزیاب</p>
+        <p style="margin-top:8px">شبکه‌ای که ارزش وضعیت را تخمین می‌زند</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="font-size:18px">
+      $$\nabla_\theta J = \mathbb{E}\left[ \nabla_\theta \log \pi_\theta(a|s) \cdot A(s,a) \right]$$
+      <span class="lbl">$A(s,a) = Q(s,a) - V(s)$ — Advantage</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: ADVANTAGE -->
+<div class="slide" data-topic="Advantage">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم کلیدی</div>
+    <h2>📊 Advantage Function</h2>
+    <p><b>Advantage</b> می‌گوید: این عمل چقدر بهتر از میانگین اعمال در این وضعیت است؟</p>
+    <div class="formulaBox" style="font-size:19px">
+      $$A(s, a) = Q(s, a) - V(s)$$
+      <span class="lbl">Advantage — سود نسبی این عمل</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card">
+        <h3>$A > 0$</h3>
+        <p>عمل بهتر از میانگین — احتمال را زیاد کن</p>
+      </div>
+      <div class="card">
+        <h3>$A < 0$</h3>
+        <p>عمل بدتر از میانگین — احتمال را کم کن</p>
+      </div>
+      <div class="card">
+        <h3>$A = 0$</h3>
+        <p>عمل متوسط — تغییری نده</p>
+      </div>
+    </div>
+    <p style="margin-top:16px;text-align:center;color:var(--muted)">
+      این کار واریانس را به‌شدت کاهش می‌دهد — همان چیزی که REINFORCE نداشت.
+    </p>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🎭 Actor-Critic — آموزش</h2>
+    <p>هم‌زمان Actor و Critic را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="users"></i> Actor-Critic Training</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim3_train"><i data-lucide="play"></i> آموزش</button>
+        <button class="btnSecondary" id="sim3_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Episode</small><b id="sim3_ep">0</b></div>
+        <div class="simRes"><small>Reward</small><b id="sim3_rew">—</b></div>
+        <div class="simRes"><small>Actor Loss</small><b id="sim3_al">—</b></div>
+        <div class="simRes"><small>Critic Loss</small><b id="sim3_cl">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> «آموزش» را بزنید تا Actor و Critic هم‌زمان یاد بگیرند.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: PPO -->
+<div class="slide" data-topic="PPO">
+  <div class="slideInner">
+    <div class="eyebrow">الگوریتم مدرن</div>
+    <h2>🚀 PPO — Proximal Policy Optimization</h2>
+    <p><b>PPO</b> در سال ۲۰۱۷ توسط OpenAI معرفی شد. ایده اصلی: <b>گام‌های بزرگ نرو</b> — تغییرات سیاست را محدود کن تا آموزش پایدار بماند.</p>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="shield"></i></div>
+        <h3>پایدار</h3>
+        <p>کمترین نوسان بین الگوریتم‌های RL</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="zap"></i>
+        </div>
+        <h3>سریع</h3>
+        <p>نسبت به TRPO ساده‌تر</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="award"></i>
+        </div>
+        <h3>ChatGPT</h3>
+        <p>RLHF با PPO آموزش دیده!</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="bot"></i>
+        </div>
+        <h3>رباتیک</h3>
+        <p>استاندارد صنعت برای کنترل</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: PPO CLIPPING -->
+<div class="slide" data-topic="PPO Clipping">
+  <div class="slideInner">
+    <div class="eyebrow">نوآوری اصلی</div>
+    <h2>✂️ PPO Clipping</h2>
+    <img src="images/ppo-clipping.png" alt="PPO clipping" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Clip نسبت احتمال بین 0.8 و 1.2</div>
+    <div class="formulaBox" style="font-size:17px">
+      $$r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$$
+      <span class="lbl">نسبت احتمال جدید به قدیم</span>
+    </div>
+    <div class="formulaBox" style="font-size:17px">
+      $$L^{CLIP}(\theta) = \mathbb{E}\left[ \min\left( r_t(\theta) A_t, \text{clip}(r_t(\theta), 1-\varepsilon, 1+\varepsilon) A_t \right) \right]$$
+      <span class="lbl">تابع هدف PPO — کلیپ نسبت $\varepsilon \approx 0.2$</span>
+    </div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 $\varepsilon = 0.2$</h3><p>پیش‌فرض — تعادل خوب</p></div>
+      <div class="card"><h3>$\varepsilon$ کوچک</h3><p>پایدارتر اما کندتر</p></div>
+      <div class="card"><h3>$\varepsilon$ بزرگ</h3><p>سریع‌تر اما ناپایدارتر</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: PPO VS DQN -->
+<div class="slide" data-topic="PPO vs DQN">
+  <div class="slideInner">
+    <div class="eyebrow">مقایسه</div>
+    <h2>⚖️ PPO در برابر DQN</h2>
+    <img src="images/ppo-vs-dqn.png" alt="PPO vs DQN" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">دو رویکرد اصلی RL</div>
+    <div class="tableWrap">
+      <table>
+        <thead><tr><th>ویژگی</th><th>DQN</th><th>PPO</th></tr></thead>
+        <tbody>
+          <tr><td><b>فضای عمل</b></td><td>گسسته</td><td>گسسته و پیوسته</td></tr>
+          <tr><td><b>On/Off Policy</b></td><td>Off-policy</td><td>On-policy</td></tr>
+          <tr><td><b>کارایی داده</b></td><td>بالا</td><td>متوسط</td></tr>
+          <tr><td><b>پایداری</b></td><td>متوسط</td><td>بالا</td></tr>
+          <tr><td><b>حساسیت به LR</b></td><td>زیاد</td><td>کم</td></tr>
+          <tr><td><b>کاربرد صنعتی</b></td><td>کمتر</td><td>استاندارد</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: APPLICATIONS -->
+<div class="slide" data-topic="کاربرد PPO">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 PPO در مکانیک</h2>
+    <img src="images/ppo-mechanics.png" alt="PPO mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از رباتیک تا خودران — استاندارد PPO</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="bot"></i></div>
+        <h3>بازوی رباتیک</h3>
+        <p>کنترل پیوسته</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="activity"></i>
+        </div>
+        <h3>چهارپا (Boston)</h3>
+        <p>راه‌رفتن</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="plane"></i>
+        </div>
+        <h3>پهپاد</h3>
+        <p>کنترل پرواز</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="car"></i>
+        </div>
+        <h3>خودران</h3>
+        <p>تصمیم‌گیری</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: CODE PYTORCH -->
+<div class="slide" data-topic="کد PyTorch">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 PPO کامل — PyTorch</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="ppo-net">شبکه</button>
+        <button class="codeTabBtn" data-code="ppo-train">آموزش</button>
+      </div>
+      <div class="codePane active" id="code-ppo-net">
+<pre><span class="kw">import</span> torch
+<span class="kw">import</span> torch.nn <span class="kw">as</span> nn
+
+<span class="kw">class</span> <span class="fn">ActorCritic</span>(nn.Module):
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, state_dim, action_dim):
+        super().__init__()
+        self.shared = nn.Sequential(
+            nn.Linear(state_dim, <span class="num">64</span>),
+            nn.Tanh(),
+            nn.Linear(<span class="num">64</span>, <span class="num">64</span>),
+            nn.Tanh()
+        )
+        <span class="com"># Actor: توزیع احتمال</span>
+        self.actor = nn.Linear(<span class="num">64</span>, action_dim)
+        <span class="com"># Critic: ارزش وضعیت</span>
+        self.critic = nn.Linear(<span class="num">64</span>, <span class="num">1</span>)
+
+    <span class="kw">def</span> <span class="fn">forward</span>(self, x):
+        features = self.shared(x)
+        logits = self.actor(features)
+        value = self.critic(features)
+        <span class="kw">return</span> logits, value</pre>
+      </div>
+      <div class="codePane" id="code-ppo-train">
+<pre><span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">import</span> torch.optim <span class="kw">as</span> optim
+<span class="kw">from</span> torch.distributions <span class="kw">import</span> Categorical
+
+env = gym.make(<span class="str">'CartPole-v1'</span>)
+model = <span class="fn">ActorCritic</span>(<span class="num">4</span>, <span class="num">2</span>)
+optimizer = optim.Adam(model.parameters(), lr=<span class="num">3e-4</span>)
+
+gamma = <span class="num">0.99</span>
+eps_clip = <span class="num">0.2</span>
+K_epochs = <span class="num">4</span>
+
+<span class="kw">for</span> episode <span class="kw">in</span> range(<span class="num">500</span>):
+    states, actions, rewards, log_probs = [], [], [], []
+    state, _ = env.reset()
+    done = <span class="kw">False</span>
+
+    <span class="com"># جمع‌آوری تجربه</span>
+    <span class="kw">while not</span> done:
+        state_t = torch.FloatTensor(state)
+        logits, value = model(state_t)
+        dist = <span class="fn">Categorical</span>(logits=logits)
+        action = dist.sample()
+        log_prob = dist.log_prob(action)
+
+        next_state, reward, done, truncated, _ = env.step(action.item())
+        done = done <span class="kw">or</span> truncated
+
+        states.append(state)
+        actions.append(action)
+        rewards.append(reward)
+        log_probs.append(log_prob)
+
+        state = next_state
+
+    <span class="com"># محاسبه بازده</span>
+    returns = []
+    G = <span class="num">0</span>
+    <span class="kw">for</span> r <span class="kw">in</span> reversed(rewards):
+        G = r + gamma * G
+        returns.insert(<span class="num">0</span>, G)
+    returns = torch.FloatTensor(returns)
+    returns = (returns - returns.mean()) / (returns.std() + <span class="num">1e-7</span>)
+
+    <span class="com"># PPO update</span>
+    old_states = torch.FloatTensor(states)
+    old_actions = torch.stack(actions)
+    old_log_probs = torch.stack(log_probs).detach()
+
+    <span class="kw">for</span> _ <span class="kw">in</span> range(K_epochs):
+        logits, values = model(old_states)
+        dist = <span class="fn">Categorical</span>(logits=logits)
+        new_log_probs = dist.log_prob(old_actions)
+        entropy = dist.entropy()
+
+        <span class="com"># Advantage (چون Critic داریم)</span>
+        advantages = returns - values.squeeze().detach()
+
+        <span class="com"># Clipping</span>
+        ratios = torch.exp(new_log_probs - old_log_probs)
+        surr1 = ratios * advantages
+        surr2 = torch.clamp(ratios, <span class="num">1</span> - eps_clip, <span class="num">1</span> + eps_clip) * advantages
+        actor_loss = -torch.min(surr1, surr2).mean()
+
+        critic_loss = nn.MSELoss()(values.squeeze(), returns)
+
+        loss = actor_loss + <span class="num">0.5</span> * critic_loss - <span class="num">0.01</span> * entropy.mean()
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+    print(<span class="str">f"Episode {episode}: reward={sum(rewards)}"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: STABLE-BASELINES3 -->
+<div class="slide" data-topic="SB3">
+  <div class="slideInner">
+    <div class="eyebrow">سریع‌ترین راه</div>
+    <h2>⚡ Stable-Baselines3 — چند خط کد</h2>
+    <p>اگر فقط می‌خواهید PPO را اجرا کنید، Stable-Baselines3 سریع‌ترین راه است.</p>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="sb3">SB3</button>
+      </div>
+      <div class="codePane active" id="code-sb3">
+<pre><span class="com"># نصب</span>
+pip install stable-baselines3
+
+<span class="com"># آموزش PPO در ۵ خط</span>
+<span class="kw">import</span> gymnasium <span class="kw">as</span> gym
+<span class="kw">from</span> stable_baselines3 <span class="kw">import</span> PPO
+
+env = gym.make(<span class="str">'CartPole-v1'</span>)
+model = PPO(<span class="str">'MlpPolicy'</span>, env, verbose=<span class="num">1</span>)
+model.learn(total_timesteps=<span class="num">50000</span>)
+
+<span class="com"># ذخیره و بارگذاری</span>
+model.save(<span class="str">'ppo_cartpole'</span>)
+model = PPO.load(<span class="str">'ppo_cartpole'</span>)
+
+<span class="com"># ارزیابی</span>
+obs, _ = env.reset()
+<span class="kw">for</span> _ <span class="kw">in</span> range(<span class="num">1000</span>):
+    action, _ = model.predict(obs)
+    obs, reward, done, truncated, _ = env.step(action)
+    <span class="kw">if</span> done <span class="kw">or</span> truncated: <span class="kw">break</span></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: FORMULAS -->
+<div class="slide" data-topic="فرمول‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">فرمول‌های کلیدی</div>
+    <h2>📐 فرمول‌های جلسه ۱۵</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$\nabla_\theta J(\theta) = \mathbb{E}\left[ \nabla_\theta \log \pi_\theta(a|s) \cdot G_t \right]$$
+      <span class="lbl">Policy Gradient Theorem</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$A(s,a) = Q(s,a) - V(s)$$
+      <span class="lbl">Advantage Function</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$r_t = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{old}}(a_t|s_t)}$$
+      <span class="lbl">نسبت احتمال PPO</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$L^{CLIP} = \mathbb{E}\left[ \min(r_t A_t, \text{clip}(r_t, 1-\varepsilon, 1+\varepsilon) A_t) \right]$$
+      <span class="lbl">PPO Clipped Objective</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۵</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>چرا DQN برای فضای عمل پیوسته مناسب نیست؟</li>
+          <li><span class="exNum">۲</span>تفاوت Value-Based و Policy-Based چیست؟</li>
+          <li><span class="exNum">۳</span>Advantage چه نقشی دارد؟</li>
+          <li><span class="exNum">۴</span>Actor و Critic چه تفاوتی دارند؟</li>
+          <li><span class="exNum">۵</span>PPO Clipping چه مشکلی را حل می‌کند؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>PPO را با SB3 روی CartPole اجرا کنید.</li>
+          <li><span class="exNum">۲</span>PPO برای LunarLander.</li>
+          <li><span class="exNum">۳</span>PPO برای یک مسئله کنترل پیوسته.</li>
+          <li><span class="exNum">۴</span>مقایسه PPO با DQN روی CartPole.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره PPO و کاربردش در مکانیک.</li>
+          <li><span class="exNum">۲</span>چرا ChatGPT از PPO استفاده می‌کند؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک مسئله کنترل مکانیکی برای PPO طراحی کنید.</li>
+          <li><span class="exNum">★</span>مقایسه PPO و SAC — کدام برای پروژه شما مناسب‌تر است؟</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW15 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: AI TOOLS -->
+<div class="slide" data-topic="ابزار AI">
+  <div class="slideInner">
+    <div class="eyebrow">ابزار این جلسه</div>
+    <h2>🔍 Perplexity — پژوهش سریع</h2>
+    <div class="aiTools">
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="search"></i></div>
+        <h4>Perplexity</h4>
+        <p>جست‌وجوی پروژه‌های PPO</p>
+        <span class="tag">جلسه ۱۵ — اصلی</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="book-open"></i></div>
+        <h4>Claude</h4>
+        <p>تحلیل کد PPO</p>
+        <span class="tag">پشتیبان</span>
+      </div>
+      <div class="aiTool">
+        <div class="aiToolIcon"><i data-lucide="message-circle"></i></div>
+        <h4>ChatGPT</h4>
+        <p>کدنویسی PPO</p>
+        <span class="tag">پیشنهادی</span>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:18px 22px;border-radius:14px;
+      background:rgba(245,199,106,.15);border:1px solid rgba(245,199,106,.6)">
+      <b style="color:var(--gold);font-size:15px">💡 تمرین با Perplexity:</b>
+      <p style="margin:6px 0 0;font-size:14px">
+        در Perplexity جست‌وجو کنید: «PPO robotic control 2024»
+        و ۳ مقاله معتبر پیدا کنید.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۵</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ Policy-Based</h3><p>سیاست را مستقیم یاد بگیر</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ REINFORCE</h3><p>ساده‌ترین PG — اما واریانس بالا</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ Actor-Critic</h3><p>ترکیب Actor و Critic — کاهش واریانس</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ PPO</h3><p>Clipping برای آموزش پایدار</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ Stable-Baselines3</h3><p>PPO در ۵ خط کد</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: RL in Mechanics — Applications</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۱۶</h3>
+        <p style="margin-top:8px;text-align:right">
+          • RL در کنترل ربات<br>
+          • Digital Twin با RL<br>
+          • بهینه‌سازی مسیر<br>
+          • پروژه‌های RL در مکانیک<br>
+          • OpenAI Gym برای محیط‌های مکانیکی
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

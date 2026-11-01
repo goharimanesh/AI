@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۲۴: ارائه پایانی و جمع‌بندی | هوش مصنوعی</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#050a14; --bg2:#0a1428;
+  --card:rgba(13,25,45,.72); --card2:rgba(18,34,58,.82);
+  --line:rgba(120,160,220,.14); --line-strong:rgba(120,160,220,.28);
+  --text:#eaf2ff; --muted:#8ba1bd; --muted2:#607694;
+  --cyan:#4dd4ff; --violet:#a78bfa; --gold:#f5c76a;
+  --green:#5ee8a8; --red:#ff7e93; --blue:#74a7ff; --pink:#f472b6;
+  --shadow:0 20px 60px rgba(0,0,0,.4);
+  --radius:20px; --radius-sm:12px;
+}
+[data-theme="light"]{
+  --bg:#f4f7fc; --bg2:#e8eef8;
+  --card:rgba(255,255,255,.85); --card2:rgba(248,251,255,.95);
+  --line:rgba(30,60,110,.12); --line-strong:rgba(30,60,110,.25);
+  --text:#0d1e38; --muted:#5a6f8c; --muted2:#8a9bb5;
+  --cyan:#0891b2; --violet:#7c3aed; --gold:#b45309;
+  --green:#059669; --red:#e11d48; --blue:#2563eb; --pink:#db2777;
+  --shadow:0 20px 60px rgba(30,60,110,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Vazirmatn",Tahoma,sans-serif;
+  background:linear-gradient(135deg,var(--bg),var(--bg2) 50%,var(--bg));
+  color:var(--text); line-height:1.85; min-height:100vh;
+  transition:background .5s, color .4s;
+}
+a{color:inherit;text-decoration:none}
+.container{width:min(1200px,94%);margin:auto}
+
+/* Slide System */
+.slide {
+  display: none;
+  min-height: 100vh;
+  padding: 60px 0;
+  animation: fadeIn 0.5s ease-out;
+}
+.slide.active { display: flex; flex-direction: column; justify-content: center; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+
+.slide-header { margin-bottom: 40px; text-align: center; }
+.slide-header .eyebrow { color: var(--cyan); font-size: 14px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+.slide-header h2 { font-size: clamp(28px, 4vw, 42px); font-weight: 900; margin-top: 10px; background: linear-gradient(135deg, var(--text), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.slide-header p { color: var(--muted); font-size: 16px; max-width: 800px; margin: 10px auto 0; }
+
+/* Cards & Grids */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); backdrop-filter: blur(10px); }
+.card h3 { color: var(--cyan); margin-bottom: 12px; font-size: 18px; }
+.card p { color: var(--muted); font-size: 14px; }
+
+/* Simulators */
+.simulator { background: var(--card2); border: 1px solid var(--cyan); border-radius: var(--radius); padding: 20px; box-shadow: 0 0 20px rgba(77,212,255,0.1); }
+.simulator h4 { color: var(--gold); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+.controls { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+.controls button { padding: 8px 16px; border-radius: 8px; background: var(--cyan); color: #000; border: none; font-family: inherit; font-weight: 700; cursor: pointer; transition: 0.2s; }
+.controls button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(77,212,255,0.4); }
+.controls button.alt { background: var(--gold); }
+.controls button.reset { background: var(--red); color: #fff; }
+
+/* Timer */
+.timer-display { font-size: 60px; font-weight: 900; font-family: 'Courier New', monospace; color: var(--cyan); text-align: center; margin: 20px 0; text-shadow: 0 0 20px rgba(77,212,255,0.3); }
+.timer-display.warning { color: var(--gold); }
+.timer-display.danger { color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+/* Navigation */
+.nav-controls { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; z-index: 100; background: rgba(5,10,20,0.8); padding: 10px 20px; border-radius: 999px; backdrop-filter: blur(10px); border: 1px solid var(--line); }
+.nav-btn { background: var(--card); border: 1px solid var(--line); color: var(--text); width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; transition: 0.3s; }
+.nav-btn:hover { background: var(--cyan); color: #000; border-color: var(--cyan); }
+.slide-counter { display: flex; align-items: center; font-weight: 700; color: var(--cyan); font-size: 15px; padding: 0 10px; }
+
+@media(max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-controls { width: 90%; justify-content: space-between; }
+  .timer-display { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Controls -->
+<div class="nav-controls">
+  <button class="nav-btn" onclick="prevSlide()"><i data-lucide="chevron-right"></i></button>
+  <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">16</span></div>
+  <button class="nav-btn" onclick="nextSlide()"><i data-lucide="chevron-left"></i></button>
+</div>
+
+<div class="container">
+
+  <!-- Slide 1: Title -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-header" style="margin-top: 10vh;">
+      <div class="eyebrow">پایان دوره — جشن دانش</div>
+      <h2>جلسه ۲۴: ارائه‌های پایانی و جمع‌بندی</h2>
+      <p>از مبانی ریاضی تا Scientific AI — مسیری که با هم طی کردیم</p>
+      <div style="margin-top: 30px; font-size: 20px; color: var(--gold);">
+        «رَبِّ زِدْنِي عِلْمًا» (سوره طه)
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Course Journey Recap -->
+  <div class="slide" id="slide-2">
+    <div class="slide-header">
+      <div class="eyebrow">Journey Recap</div>
+      <h2>مرور مسیر ۲۴ جلسه‌ای</h2>
+      <p>ما از کجا شروع کردیم و به کجا رسیدیم؟</p>
+    </div>
+    <div class="grid-3">
+      <div class="card" style="border-top: 4px solid var(--cyan);">
+        <h3>فاز ۱: مبانی (۱-۴)</h3>
+        <p>مقدمه AI، آینده‌پژوهی، جبر خطی، احتمال، و تخمین پارامتر سیستم جرم-فنر-دمپر با GA.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--violet);">
+        <h3>فاز ۲ و ۳: ML و DL (۵-۱۲)</h3>
+        <p>رگرسیون، درخت تصادفی، ANOVA، تاگوچی، شبکه عصبی، CNN، MediaPipe و Transfer Learning.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--green);">
+        <h3>فاز ۴: RL تخصصی (۱۳-۱۶)</h3>
+        <p>MDP، Q-Learning، DQN، PPO و پیاده‌سازی کنترل ربات با RL در محیط‌های شبیه‌سازی.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--gold);">
+        <h3>فاز ۵: NLP و LLM (۱۷-۱۹)</h3>
+        <p>Transformer، مدل‌های زبانی بزرگ (LLM)، Prompt Engineering و ساخت Agent.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--red);">
+        <h3>فاز ۶: Scientific AI (۲۰-۲۲)</h3>
+        <p>PINN، اپراتورهای عصبی، Digital Twin و کاربرد در مکانیک محاسباتی.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--blue);">
+        <h3>فاز ۷: پروژه و پژوهش (۲۳-۲۴)</h3>
+        <p>کارگاه پروژه، استانداردهای مقاله IEEE و ارائه نهایی امروز.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Presentation Structure -->
+  <div class="slide" id="slide-3">
+    <div class="slide-header">
+      <div class="eyebrow">Final Defense</div>
+      <h2>ساختار یک ارائه پایانی موفق</h2>
+      <p>ارائه شما باید یک داستان علمی منسجم باشد.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>۱. مقدمه (۲ دقیقه)</h3>
+        <p>بیان مسئله، انگیزه و هدف پروژه. چرا این موضوع در مهندسی مکانیک مهم است؟</p>
+      </div>
+      <div class="card">
+        <h3>۲. روش‌شناسی (۳ دقیقه)</h3>
+        <p>معرفی داده‌ها، معماری مدل (MLP/CNN/PINN/RL) و تکنیک‌های استفاده شده.</p>
+      </div>
+      <div class="card">
+        <h3>۳. نتایج (۳ دقیقه)</h3>
+        <p>ارائه نمودارها، جداول مقایسه با روش‌های دیگر و معیارهای ارزیابی (RMSE, R2).</p>
+      </div>
+      <div class="card">
+        <h3>۴. نتیجه‌گیری و کارهای آینده (۲ دقیقه)</h3>
+        <p>جمع‌بندی دستاوردها، محدودیت‌ها و پیشنهاد مسیرهای پژوهشی آینده.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Simulator 1 - Defense Timer -->
+  <div class="slide" id="slide-4">
+    <div class="slide-header">
+      <div class="eyebrow">Interactive Simulator 1</div>
+      <h2>شبیه‌ساز تایمر دفاعیه (۱۰ دقیقه)</h2>
+      <p>زمان خود را مدیریت کنید. در دقیقه ۸ چراغ زرد و در دقیقه ۹ چراغ قرمز هشدار می‌دهد.</p>
+    </div>
+    <div class="grid-2">
+      <div class="simulator">
+        <h4><i data-lucide="timer"></i> مدیریت زمان ارائه</h4>
+        <div class="timer-display" id="timerDisplay">10:00</div>
+        <div class="controls" style="justify-content: center;">
+          <button onclick="startTimer()" id="startBtn">شروع</button>
+          <button onclick="stopTimer()" class="alt" id="stopBtn">توقف</button>
+          <button onclick="resetTimer()" class="reset">صفر کردن</button>
+        </div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>نکات طلایی مدیریت زمان</h3>
+        <ul style="color: var(--muted); line-height: 2; padding-right: 20px;">
+          <li>هرگز از زمان تعیین شده فراتر نروید (داوران این را نمی‌پسندند).</li>
+          <li>روی اسلایدها تمرین کنید تا کلمات اضافی حذف شوند.</li>
+          <li>اگر زمان کم آوردید، روی نتایج و نتیجه‌گیری تمرکز کنید و بخش روش‌شناسی را خلاصه کنید.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Q&A Session -->
+  <div class="slide" id="slide-5">
+    <div class="slide-header">
+      <div class="eyebrow">Defense Q&A</div>
+      <h2>مدیریت جلسه پرسش و پاسخ</h2>
+      <p>داوران چه سؤالاتی می‌پرسند و چگونه پاسخ دهیم؟</p>
+    </div>
+    <div class="grid-3">
+      <div class="card" style="border-color: var(--gold);">
+        <h3>سوالات فنی</h3>
+        <p>«چرا از این معماری خاص استفاده کردید؟» — پاسخ باید بر اساس فیزیک مسئله و مقایسه با سایر مدل‌ها باشد.</p>
+      </div>
+      <div class="card" style="border-color: var(--cyan);">
+        <h3>سوالات داده</h3>
+        <p>«داده‌ها از کجا آمده‌اند و آیا نویز آنها را بررسی کرده‌اید؟» — به پیش‌پردازش و روش‌های کاهش نویز اشاره کنید.</p>
+      </div>
+      <div class="card" style="border-color: var(--violet);">
+        <h3>سوالات کاربردی</h3>
+        <p>«آیا این مدل در صنعت قابل استفاده است؟» — به چالش‌های استقرار (Deployment)، سرعت و سخت‌افزار اشاره کنید.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Simulator 2 - Presentation Checklist -->
+  <div class="slide" id="slide-6">
+    <div class="slide-header">
+      <div class="eyebrow">Interactive Simulator 2</div>
+      <h2>چک‌لیست نهایی ارائه</h2>
+      <p>قبل از ورود به جلسه دفاع، این موارد را تیک بزنید.</p>
+    </div>
+    <div class="grid-2">
+      <div class="simulator">
+        <h4><i data-lucide="check-square"></i> آمادگی کامل</h4>
+        <div id="presentationChecklist" style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+          <!-- Items added via JS -->
+        </div>
+        <div style="margin-top: 20px; font-weight: bold; color: var(--cyan);" id="presentationProgress">پیشرفت: 0%</div>
+      </div>
+      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
+        <h3>چند نکته آخر</h3>
+        <p style="margin-bottom: 10px;">🔹 <b>اسلایدها:</b> حداکثر ۱۰ اسلاید (هر اسلاید ۱ دقیقه).</p>
+        <p style="margin-bottom: 10px;">🔹 <b>فونت:</b> حداقل سایز ۲۴ برای خوانایی از فاصله دور.</p>
+        <p style="margin-bottom: 10px;">🔹 <b>تصاویر:</b> از گراف‌های باکیفیت و رنگی استفاده کنید.</p>
+        <p>🔹 <b>تمرین:</b> حداقل ۳ بار ارائه را با صدای بلند تمرین کنید.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Best Projects (Motivation) -->
+  <div class="slide" id="slide-7">
+    <div class="slide-header">
+      <div class="eyebrow">Showcase</div>
+      <h2>پروژه‌های برتر و مسیر ادامه تحصیل</h2>
+      <p>پروژه‌های شما می‌توانند نقطه شروع یک مقاله یا پایان‌نامه باشند.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card" style="border-top: 4px solid var(--gold);">
+        <h3>۱. پروژه‌های PINN</h3>
+        <p>مدل‌سازی معادلات حاکم بر ورق‌ها و پوسته‌ها با شبکه‌های فیزیک‌محور.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--green);">
+        <h3>۲. پروژه‌های RL</h3>
+        <p>کنترل بازوی رباتیک یا سیستم تعلیق خودرو با استفاده از الگوریتم‌های PPO.</p>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--cyan);">
+        <h3>۳. پروژه‌های Digital Twin</h3>
+        <p>ساخت دوقلوی دیجیتال یک سیستم مکانیکی با ترکیب داده‌های سنسور و مدل‌های ML.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: The Future of AI in MechEng -->
+  <div class="slide" id="slide-8">
+    <div class="slide-header">
+      <div class="eyebrow">Future Outlook</div>
+      <h2>آینده هوش مصنوعی در مهندسی مکانیک</h2>
+      <p>شما اکنون در خط مقدم این تحول هستید.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>مدل‌های بنیادین (Foundation Models)</h3>
+        <p>مدل‌های بزرگ نه تنها برای متن، بلکه برای فیزیک و مکانیک (مانند Neural Operators) در حال توسعه هستند.</p>
+      </div>
+      <div class="card">
+        <h3>هوش مصنوعی خودمختار (Autonomous AI)</h3>
+        <p>ربات‌هایی که بدون نیاز به برنامه‌نویسی صریح، در محیط‌های واقعی یاد می‌گیرند و تصمیم می‌گیرند.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Course Feedback -->
+  <div class="slide" id="slide-9">
+    <div class="slide-header">
+      <div class="eyebrow">Feedback</div>
+      <h2>بازخورد شما برای بهتر شدن دوره</h2>
+      <p>نظر شما برای ما بسیار ارزشمند است.</p>
+    </div>
+    <div class="card" style="max-width: 800px; margin: 0 auto; text-align: center;">
+      <p style="font-size: 18px; margin-bottom: 20px;">لطفاً به این سه سؤال پاسخ دهید:</p>
+      <div style="text-align: right; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+        <b>۱.</b> کدام بخش از دوره برای شما مفیدتر بود؟
+      </div>
+      <div style="text-align: right; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+        <b>۲.</b> چه مباحثی را دوست داشتید در جلسات بیشتر ببینید؟
+      </div>
+      <div style="text-align: right; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px;">
+        <b>۳.</b> پیشنهاد شما برای پروژه‌های آینده چیست؟
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Final Words -->
+  <div class="slide" id="slide-10">
+    <div class="slide-header" style="margin-top: 15vh;">
+      <h2>سخن پایانی</h2>
+      <p style="font-size: 20px; margin-top: 20px;">علم، چراغ راه آینده است.</p>
+      <p style="font-size: 18px; color: var(--gold); margin-top: 10px;">«هُوَ الْخَلَّاقُ الْعَلِيمُ»</p>
+      
+      <div style="margin-top: 50px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div style="background: var(--card); padding: 20px; border-radius: 16px; border: 1px solid var(--line); width: 250px;">
+          <h3 style="color: var(--cyan); margin-bottom: 10px;">با تشکر از همراهی شما</h3>
+          <p style="color: var(--muted); font-size: 14px;">امیدوارم این دوره نقطه شروعی برای پژوهش‌های بزرگ شما باشد.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px; font-size: 24px; color: var(--gold); font-family: 'Cambria Math', serif;">
+        e<sup>iπ</sup> + 1 = 0
+      </div>
+      
+      <div style="margin-top: 20px; color: var(--muted); font-size: 14px;">
+        دکتر مسعود گوهریمنش — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// --- Slide Navigation ---
+let currentSlide = 1;
+const totalSlides = 10;
+document.getElementById('totalSlides').innerText = totalSlides;
+
+function updateNav() {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  document.getElementById('slide-' + currentSlide).classList.add('active');
+  document.getElementById('currentSlide').innerText = currentSlide;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextSlide() { if (currentSlide < totalSlides) { currentSlide++; updateNav(); } }
+function prevSlide() { if (currentSlide > 1) { currentSlide--; updateNav(); } }
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft') nextSlide(); // RTL
+  if (e.key === 'ArrowRight') prevSlide();
+});
+
+// --- Simulator 1: Defense Timer ---
+let timerInterval;
+let timeLeft = 600; // 10 minutes in seconds
+let isTimerRunning = false;
+
+const timerDisplay = document.getElementById('timerDisplay');
+const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+function updateTimerDisplay() {
+  timerDisplay.innerText = formatTime(timeLeft);
+  timerDisplay.classList.remove('warning', 'danger');
+  if (timeLeft <= 60) {
+    timerDisplay.classList.add('danger');
+  } else if (timeLeft <= 120) {
+    timerDisplay.classList.add('warning');
+  }
+}
+
+function startTimer() {
+  if (isTimerRunning) return;
+  isTimerRunning = true;
+  startBtn.style.opacity = '0.5';
+  stopBtn.style.opacity = '1';
+  
+  timerInterval = setInterval(() => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      updateTimerDisplay();
+    } else {
+      stopTimer();
+      timerDisplay.innerText = "زمان تمام شد!";
+      timerDisplay.classList.add('danger');
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  isTimerRunning = false;
+  clearInterval(timerInterval);
+  startBtn.style.opacity = '1';
+  stopBtn.style.opacity = '0.5';
+}
+
+function resetTimer() {
+  stopTimer();
+  timeLeft = 600;
+  updateTimerDisplay();
+}
+
+updateTimerDisplay();
+
+// --- Simulator 2: Presentation Checklist ---
+const presentationItems = [
+  "اسلایدها آماده و از نظر گرافیکی بررسی شده‌اند",
+  "زمان‌بندی ۱۰ دقیقه‌ای تمرین شده است",
+  "فایل PDF ارائه را روی فلش و ایمیل خود دارم",
+  "پاسخ به ۵ سؤال احتمالی داوران را آماده کرده‌ام",
+  "کدهای پروژه در Colab یا گیت‌هاب در دسترس است",
+  "کپی چاپی مقاله (در صورت نیاز) آماده است"
+];
+const presentationContainer = document.getElementById('presentationChecklist');
+let presentationCheckedCount = 0;
+
+presentationItems.forEach((item, index) => {
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.alignItems = 'center';
+  div.style.gap = '10px';
+  div.style.padding = '8px 12px';
+  div.style.background = 'rgba(255,255,255,0.05)';
+  div.style.borderRadius = '8px';
+  div.style.cursor = 'pointer';
+  div.innerHTML = `<div style="width:20px; height:20px; border:2px solid var(--gold); border-radius:4px; display:grid; place-items:center;" class="checkbox"></div> <span style="font-size: 13px;">${item}</span>`;
+  
+  div.onclick = () => {
+    const box = div.querySelector('.checkbox');
+    if (box.innerHTML === '') {
+      box.innerHTML = '<i data-lucide="check" style="width:14px; height:14px; color:var(--gold);"></i>';
+      box.style.background = 'rgba(245,199,106,0.2)';
+      presentationCheckedCount++;
+    } else {
+      box.innerHTML = '';
+      box.style.background = 'transparent';
+      presentationCheckedCount--;
+    }
+    lucide.createIcons();
+    document.getElementById('presentationProgress').innerText = `پیشرفت: ${Math.round((presentationCheckedCount/presentationItems.length)*100)}%`;
+  };
+  presentationContainer.appendChild(div);
+});
+
+// Initialize Icons
+lucide.createIcons();
+
+</script>
+</body>
+</html>

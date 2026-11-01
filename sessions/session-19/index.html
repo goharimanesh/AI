@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جلسه ۱۹ — RAG و AI Agent | دکتر گوهری‌منش</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
+  svg: { fontCache: 'global' },
+  chtml: { scale: 1.3 }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+
+<div class="appBar">
+  <div class="appBarRow">
+    <div class="appBarSignature">
+      <img src="images/signature.png" alt="امضای استاد" onerror="this.style.display='none'">
+      <span class="lessonName">جلسه ۱۹ — RAG و Agent</span>
+    </div>
+    <div class="appBarSpacer"></div>
+    <div class="appBarControls">
+      <button class="ctrlBtn" id="themeToggle" title="تم">
+        <i data-lucide="sun" id="themeIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="soundToggle" title="صدا">
+        <i data-lucide="volume-2" id="soundIcon"></i>
+      </button>
+      <button class="ctrlBtn" id="fullscreenBtn" title="تمام‌صفحه">
+        <i data-lucide="maximize"></i>
+      </button>
+      <button class="ctrlBtn" onclick="window.location.href='../../index.html'" title="هاب">
+        <i data-lucide="home"></i>
+      </button>
+    </div>
+  </div>
+  <div class="topicBar" id="topicBar"></div>
+</div>
+
+<div class="star" id="star" title="ستاره این جلسه">
+  <div class="starTooltip">
+    <img src="images/star.png" alt="ستاره جلسه" onerror="this.style.display='none'">
+    <b>ستاره این جلسه</b>
+    <small>به یاد شهدای والامقام<br>دانشمندان و دانش‌آموزان<br>ایران عزیز</small>
+  </div>
+</div>
+
+<div class="slideContainer" id="slideContainer">
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" data-topic="عنوان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <div class="titleBadge"><i data-lucide="search" style="width:14px;height:14px"></i> جلسه ۱۹ • فاز ۵ — NLP</div>
+      <h1>RAG و AI Agent</h1>
+      <p class="subtitle-en">Retrieval-Augmented Generation · AI Agents<br>From Knowledge to Autonomous Action</p>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="graduation-cap"></i>
+        مدرس: <span>دکتر مسعود گوهری‌منش</span> — دانشگاه تربت حیدریه
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: REVIEW -->
+<div class="slide" data-topic="مرور و اهداف">
+  <div class="slideInner">
+    <div class="eyebrow">مرور جلسه ۱۸</div>
+    <h2>📋 از کجا آمده‌ایم؟</h2>
+    <div class="cardGrid">
+      <div class="card"><div class="cardIcon"><i data-lucide="message-circle"></i></div><h3>جلسه ۱۸</h3><p>LLM، Prompt Engineering، مدل‌های زبانی</p></div>
+      <div class="card" style="border-right:4px solid var(--gold)"><div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)"><i data-lucide="search"></i></div><h3>جلسه ۱۹ (امروز)</h3><p>RAG، Vector DB، AI Agent</p></div>
+    </div>
+    <h3 style="margin-top:24px">🎯 اهداف این جلسه</h3>
+    <div class="cardGrid">
+      <div class="card"><p style="margin:0">✅ مشکل دانش محدود LLM</p></div>
+      <div class="card"><p style="margin:0">✅ RAG — Pipeline کامل</p></div>
+      <div class="card"><p style="margin:0">✅ Vector Database و Embeddings</p></div>
+      <div class="card"><p style="margin:0">✅ LangChain و LlamaIndex</p></div>
+      <div class="card"><p style="margin:0">✅ AI Agent — Tool Use، Memory، Planning</p></div>
+      <div class="card"><p style="margin:0">✅ Multi-Agent Systems</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: MOTIVATION -->
+<div class="slide" data-topic="انگیزه">
+  <div class="slideInner">
+    <div class="eyebrow">انگیزه</div>
+    <h2>🚀 چرا RAG و Agent؟</h2>
+    <p style="font-size:16px">LLM که در جلسه قبل دیدیم، یک مشکل اساسی دارد: <b>دانش آن محدود به داده آموزش است</b>. اگر از ChatGPT درباره یک مقاله جدید ۲۰۲۵ بپرسید، نمی‌داند. اگر درباره یک فایل داخلی شرکت بپرسید، نمی‌داند. و اگر اطلاعات نادرست بدهد، <b>Hallucination</b> رخ می‌دهد.</p>
+    <p style="font-size:16px"><b>RAG</b> این مشکل را حل می‌کند: قبل از پاسخ، اطلاعات مرتبط را از یک منبع خارجی بازیابی می‌کنیم. و <b>AI Agent</b> یک قدم فراتر می‌رود — مدل را قادر می‌کند تا خودش تصمیم بگیرد، ابزار استفاده کند، و به‌طور مستقل کار کند.</p>
+    <img src="images/rag-hero.png" alt="RAG concept" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از دانش محدود تا عملکرد خودمختار</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="search"></i></div>
+        <h3>RAG</h3>
+        <p>اتصال به دانش خارجی</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="bot"></i>
+        </div>
+        <h3>AI Agent</h3>
+        <p>عمل مستقل با ابزار</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="database"></i>
+        </div>
+        <h3>Vector DB</h3>
+        <p>ذخیره و جست‌وجوی برداری</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="users"></i>
+        </div>
+        <h3>Multi-Agent</h3>
+        <p>چند Agent همکار</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: LLM LIMIT -->
+<div class="slide" data-topic="مشکل LLM">
+  <div class="slideInner">
+    <div class="eyebrow">مشکل</div>
+    <h2>⚠️ سه محدودیت اصلی LLM</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۱. دانش محدود</h3>
+        <p>LLM فقط تا تاریخ آموزش می‌داند</p>
+        <p style="margin-top:8px"><b>مثال:</b> ChatGPT نمی‌داند مقاله دیروز چه بود</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۲. Hallucination</h3>
+        <p>اطلاعات نادرست با اطمینان تولید می‌کند</p>
+        <p style="margin-top:8px"><b>مثال:</b> ارجاع به مقالاتی که وجود ندارند</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--red)">
+        <h3 style="color:var(--red)">۳. حریم خصوصی</h3>
+        <p>نمی‌توان داده داخلی را به LLM عمومی داد</p>
+        <p style="margin-top:8px"><b>مثال:</b> فایل‌های محرمانه شرکت</p>
+      </div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 راه‌حل RAG:</b> به جای آموزش دوباره مدل، اطلاعات را در زمان پرسش اضافه کن.
+      <span class="lbl">$\text{Answer} = \text{LLM}(\text{Query} + \text{Retrieved Docs})$</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: RAG IDEA -->
+<div class="slide" data-topic="ایده RAG">
+  <div class="slideInner">
+    <div class="eyebrow">ایده اصلی</div>
+    <h2>📚 RAG — تقویت با بازیابی</h2>
+    <p><b>RAG</b> (Retrieval-Augmented Generation — تولید افزوده‌شده با بازیابی) در سال ۲۰۲۰ توسط Facebook AI معرفی شد. ایده ساده: قبل از پاسخ، اسناد مرتبط را پیدا کن، به LLM بده، پاسخ بخواه.</p>
+    <img src="images/rag-pipeline.png" alt="RAG pipeline" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">خط لوله کامل RAG از اسناد تا پاسخ</div>
+    <div class="cardGrid">
+      <div class="card"><h3>📄 Offline</h3><p>Documents → Chunks → Embeddings → Vector DB</p></div>
+      <div class="card"><h3>💬 Online</h3><p>Query → Embed → Search → Augment → LLM → Answer</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: SIM 1 -->
+<div class="slide" data-topic="شبیه‌ساز ۱">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۱</div>
+    <h2>📚 RAG Pipeline — گام‌به‌گام</h2>
+    <p>یک سؤال بپرسید و مراحل RAG را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="search"></i> RAG Pipeline Simulator</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim1Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim1_step"><i data-lucide="step-forward"></i> گام بعدی</button>
+        <button class="btnSecondary" id="sim1_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>سؤال</label>
+          <input type="text" id="sim1_query" value="قانون هوک چیست؟" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--line-strong);background:rgba(0,0,0,0.3);color:var(--text);font-family:inherit;font-size:14px">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>مرحله</small><b id="sim1_stage">0 / 5</b></div>
+        <div class="simRes"><small>اسناد بازیابی</small><b id="sim1_docs">0</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim1_status">آماده</b></div>
+      </div>
+      <div class="stepInfo" id="sim1_info"><b>راهنما:</b> «گام بعدی» را بزنید تا مراحل RAG را ببینید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: VECTOR DB -->
+<div class="slide" data-topic="Vector Database">
+  <div class="slideInner">
+    <div class="eyebrow">زیرساخت</div>
+    <h2>🗄 Vector Database — Embeddings</h2>
+    <p>برای جست‌وجوی معنایی، اسناد را به بردار تبدیل می‌کنیم و در یک دیتابیس برداری ذخیره می‌کنیم.</p>
+    <img src="images/vector-database.png" alt="Vector DB" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">جست‌وجوی نزدیک‌ترین بردارها به query</div>
+    <div class="cardGrid">
+      <div class="card"><h3>📊 Chroma</h3><p>سبک، متن‌باز، برای پروژه‌های کوچک</p></div>
+      <div class="card"><h3>🔍 Pinecone</h3><p>ابری، مقیاس‌پذیر، صنعتی</p></div>
+      <div class="card"><h3>🎯 Weaviate</h3><p>متن‌باز، با فیلتر متادیتا</p></div>
+      <div class="card"><h3>🚀 Qdrant</h3><p>سریع، Rust، متن‌باز</p></div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$\text{similarity}(q, d) = \cos(\theta) = \frac{\vec{q} \cdot \vec{d}}{||\vec{q}|| \cdot ||\vec{d}||}$$
+      <span class="lbl">Cosine Similarity — معیار شباهت</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: CHUNKING -->
+<div class="slide" data-topic="Chunking">
+  <div class="slideInner">
+    <div class="eyebrow">آماده‌سازی</div>
+    <h2>✂️ Chunking — تقسیم اسناد</h2>
+    <p>یک کتاب ۵۰۰ صفحه‌ای را نمی‌توان به‌صورت یکجا به LLM داد. باید آن را به قطعات کوچک (chunk) تقسیم کنیم.</p>
+    <div class="cardGrid">
+      <div class="card"><h3>📏 اندازه</h3><p>معمولاً ۵۰۰ تا ۱۰۰۰ توکن</p></div>
+      <div class="card"><h3>🔀 همپوشانی</h3><p>10-20% بین chunkها — حفظ زمینه</p></div>
+      <div class="card"><h3>🧠 معنایی</h3><p>بر اساس پاراگراف یا بخش</p></div>
+    </div>
+    <div class="formulaBox" style="margin-top:20px">
+      $$\text{Chunk}_i = \text{Text}[i \cdot S : i \cdot S + W]$$
+      <span class="lbl">$S$ = stride، $W$ = window size</span>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: SIM 2 -->
+<div class="slide" data-topic="شبیه‌ساز ۲">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۲</div>
+    <h2>🎯 Vector Search — جست‌وجوی برداری</h2>
+    <p>یک query وارد کنید و نزدیک‌ترین اسناد را ببینید.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="database"></i> Vector Similarity Search</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim2Canvas"></canvas></div>
+      <div class="simControls">
+        <div class="sliderGroup">
+          <label>Query (کلمه جست‌وجو) <span class="sliderVal" id="sim2_q_val">0</span></label>
+          <input type="range" id="sim2_q" min="0" max="4" step="1" value="0">
+        </div>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>Query</small><b id="sim2_query">—</b></div>
+        <div class="simRes"><small>نزدیک‌ترین</small><b id="sim2_top">—</b></div>
+        <div class="simRes"><small>شباهت</small><b id="sim2_sim">—</b></div>
+      </div>
+      <div class="stepInfo" id="sim2_info"><b>راهنما:</b> Query را تغییر دهید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: RAG FULL -->
+<div class="slide" data-topic="RAG کامل">
+  <div class="slideInner">
+    <div class="eyebrow">مسیر کامل</div>
+    <h2>🛤 RAG کامل — ۶ گام</h2>
+    <div class="cardGrid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+      <div class="card" style="text-align:center;border-top:4px solid var(--cyan)">
+        <div style="font-size:12px;color:var(--cyan);font-weight:800;margin-bottom:8px">گام ۱</div>
+        <h3>Documents</h3>
+        <p>اسناد خام</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--violet)">
+        <div style="font-size:12px;color:var(--violet);font-weight:800;margin-bottom:8px">گام ۲</div>
+        <h3>Chunking</h3>
+        <p>تقسیم به قطعات</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--green)">
+        <div style="font-size:12px;color:var(--green);font-weight:800;margin-bottom:8px">گام ۳</div>
+        <h3>Embeddings</h3>
+        <p>تبدیل به بردار</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--gold)">
+        <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:8px">گام ۴</div>
+        <h3>Vector DB</h3>
+        <p>ذخیره بردارها</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--pink)">
+        <div style="font-size:12px;color:var(--pink);font-weight:800;margin-bottom:8px">گام ۵</div>
+        <h3>Retrieve</h3>
+        <p>جست‌وجوی مرتبط‌ها</p>
+      </div>
+      <div class="card" style="text-align:center;border-top:4px solid var(--blue)">
+        <div style="font-size:12px;color:var(--blue);font-weight:800;margin-bottom:8px">گام ۶</div>
+        <h3>Generate</h3>
+        <p>پاسخ با LLM</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: LANGCHAIN -->
+<div class="slide" data-topic="LangChain">
+  <div class="slideInner">
+    <div class="eyebrow">ابزارها</div>
+    <h2>⛓ LangChain و LlamaIndex</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">LangChain</h3>
+        <p>فریم‌ورک همه‌کاره برای ساخت اپلیکیشن‌های LLM</p>
+        <p style="margin-top:8px">RAG، Agent، Memory، Tools</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3 style="color:var(--gold)">LlamaIndex</h3>
+        <p>تخصصی برای RAG و اتصال داده</p>
+        <p style="margin-top:8px">بهترین برای ساخت Knowledge Base</p>
+      </div>
+    </div>
+    <div class="codeTabs" style="margin-top:20px">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="lc">مثال</button>
+      </div>
+      <div class="codePane active" id="code-lc">
+<pre><span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> OpenAIEmbeddings
+
+embeddings = <span class="fn">OpenAIEmbeddings</span>()
+vectorstore = Chroma.<span class="fn">from_documents</span>(docs, embeddings)
+retriever = vectorstore.<span class="fn">as_retriever</span>()
+
+docs = retriever.<span class="fn">get_relevant_documents</span>(<span class="str">"قانون هوک"</span>)
+llm = <span class="fn">ChatOpenAI</span>()
+answer = llm.<span class="fn">invoke</span>(<span class="str">f"بر اساس: {docs}\n پاسخ بده"</span>)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: WHAT IS AGENT -->
+<div class="slide" data-topic="AI Agent">
+  <div class="slideInner">
+    <div class="eyebrow">مفهوم جدید</div>
+    <h2>🤖 AI Agent چیست؟</h2>
+    <p>یک <b>Agent</b> یک سامانه هوشمند است که می‌تواند:</p>
+    <img src="images/agent-architecture.png" alt="Agent architecture" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">Agent: LLM + Tools + Memory + Planning</div>
+    <div class="cardGrid">
+      <div class="card">
+        <div class="cardIcon"><i data-lucide="wrench"></i></div>
+        <h3>Tools</h3>
+        <p>استفاده از ابزار — جست‌وجو، کد، API</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--violet);background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)">
+          <i data-lucide="database"></i>
+        </div>
+        <h3>Memory</h3>
+        <p>حافظه — ذخیره تجربه</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--green);background:rgba(94,232,168,.15);border-color:rgba(94,232,168,.4)">
+          <i data-lucide="git-branch"></i>
+        </div>
+        <h3>Planning</h3>
+        <p>برنامه‌ریزی — تصمیم‌گیری</p>
+      </div>
+      <div class="card">
+        <div class="cardIcon" style="color:var(--gold);background:rgba(245,199,106,.15);border-color:rgba(245,199,106,.4)">
+          <i data-lucide="refresh-cw"></i>
+        </div>
+        <h3>Loop</h3>
+        <p>حلقه — مشاهده، تفکر، اقدام</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: SIM 3 -->
+<div class="slide" data-topic="شبیه‌ساز ۳">
+  <div class="slideInner">
+    <div class="eyebrow">شبیه‌ساز ۳</div>
+    <h2>🤖 Agent Loop — حلقه Agent</h2>
+    <p>یک مأموریت بدهید و ببینید Agent چطور آن را انجام می‌دهد.</p>
+    <div class="sim">
+      <div class="simTitle"><i data-lucide="refresh-cw"></i> Agent Loop</div>
+      <div class="simCanvasWrapper" style="height:420px"><canvas class="simCanvas" id="sim3Canvas"></canvas></div>
+      <div class="simBtns">
+        <button class="btnPrimary" id="sim3_step"><i data-lucide="step-forward"></i> گام بعدی</button>
+        <button class="btnSecondary" id="sim3_reset"><i data-lucide="rotate-ccw"></i> بازنشانی</button>
+      </div>
+      <div class="simResults">
+        <div class="simRes"><small>مرحله</small><b id="sim3_step_n">0</b></div>
+        <div class="simRes"><small>فاز</small><b id="sim3_phase">—</b></div>
+        <div class="simRes"><small>وضعیت</small><b id="sim3_status">آماده</b></div>
+      </div>
+      <div class="stepInfo" id="sim3_info"><b>راهنما:</b> «گام بعدی» را بزنید.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 14: TOOL USE -->
+<div class="slide" data-topic="Tool Use">
+  <div class="slideInner">
+    <div class="eyebrow">قدرت اصلی</div>
+    <h2>🔧 Tool Use — استفاده از ابزار</h2>
+    <p>Agent می‌تواند در حین کار، ابزارهای خارجی را فراخوانی کند. این همان چیزی است که ChatGPT را از یک «چت‌بات» به یک «دستیار» تبدیل می‌کند.</p>
+    <img src="images/agent-tools.png" alt="Agent tools" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">ابزارهای رایج Agent</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🔍 Web Search</h3><p>جست‌وجوی اینترنت</p></div>
+      <div class="card"><h3>💻 Code Exec</h3><p>اجرای کد Python</p></div>
+      <div class="card"><h3>📄 File Read</h3><p>خواندن فایل</p></div>
+      <div class="card"><h3>🧮 Calculator</h3><p>محاسبات دقیق</p></div>
+      <div class="card"><h3>🔌 API Call</h3><p>فراخوانی API خارجی</p></div>
+      <div class="card"><h3>🗄 Database</h3><p>کوئری دیتابیس</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 15: MEMORY -->
+<div class="slide" data-topic="Memory">
+  <div class="slideInner">
+    <div class="eyebrow">حافظه</div>
+    <h2>🧠 Memory — حافظه Agent</h2>
+    <div class="cardGrid">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3 style="color:var(--cyan)">Short-term</h3>
+        <p>حافظه کوتاه‌مدت — همان Context Window</p>
+        <p style="margin-top:8px">مثال: مکالمه فعلی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3 style="color:var(--violet)">Long-term</h3>
+        <p>حافظه بلندمدت — ذخیره در Vector DB</p>
+        <p style="margin-top:8px">مثال: اطلاعات کاربر</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3 style="color:var(--green)">Episodic</h3>
+        <p>حافظه رویدادی — تجربه‌های گذشته</p>
+        <p style="margin-top:8px">مثال: چه کارهایی قبلاً کردم؟</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 16: PLANNING -->
+<div class="slide" data-topic="Planning">
+  <div class="slideInner">
+    <div class="eyebrow">برنامه‌ریزی</div>
+    <h2>🎯 Planning — برنامه‌ریزی</h2>
+    <p>Agent قبل از عمل، برنامه می‌سازد. این همان چیزی است که به آن قدرت «تفکر» می‌دهد.</p>
+    <div class="cardGrid">
+      <div class="card"><h3>ReAct</h3><p>Reasoning + Acting — فکر کن، عمل کن، تکرار</p></div>
+      <div class="card"><h3>CoT</h3><p>Chain-of-Thought — استدلال گام‌به‌گام</p></div>
+      <div class="card"><h3>Tree-of-Thought</h3><p>درخت تفکر — انشعاب و بررسی</p></div>
+      <div class="card"><h3>Self-Reflection</h3><p>بازبینی خود — بررسی نتایج</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 17: MULTI-AGENT -->
+<div class="slide" data-topic="Multi-Agent">
+  <div class="slideInner">
+    <div class="eyebrow">جلوتر</div>
+    <h2>👥 Multi-Agent Systems</h2>
+    <p>به جای یک Agent تنها، چند Agent تخصصی با هم کار می‌کنند.</p>
+    <img src="images/multi-agent.png" alt="Multi-agent" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">چند Agent تخصصی + هماهنگ‌کننده</div>
+    <div class="cardGrid">
+      <div class="card"><h3>🎯 Orchestrator</h3><p>Agent اصلی — تقسیم وظایف</p></div>
+      <div class="card"><h3>🔍 Researcher</h3><p>جست‌وجو و جمع‌آوری</p></div>
+      <div class="card"><h3>💻 Coder</h3><p>نوشتن کد</p></div>
+      <div class="card"><h3>✍️ Writer</h3><p>نوشتن گزارش</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 18: MECHANICS -->
+<div class="slide" data-topic="کاربرد مکانیک">
+  <div class="slideInner">
+    <div class="eyebrow">کاربردها</div>
+    <h2>🔧 RAG و Agent در مکانیک</h2>
+    <img src="images/agent-mechanics.png" alt="Agent in mechanics" class="eduImg" onclick="openImage(this.src)">
+    <div class="eduCaption">از طراحی تا تحلیل داده</div>
+    <div class="cardGrid">
+      <div class="card"><h3>📚 دستیار پژوهشی</h3><p>RAG روی مقالات خودتان</p></div>
+      <div class="card"><h3>🤖 طراحی خودکار</h3><p>Agent + CAD API</p></div>
+      <div class="card"><h3>📊 تحلیل داده</h3><p>Agent + Python</p></div>
+      <div class="card"><h3>⚙️ کنترل فرآیند</h3><p>Agent + سنسورها</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 19: CODE RAG -->
+<div class="slide" data-topic="کد RAG">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 RAG ساده — Python + LangChain</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="rag">RAG</button>
+      </div>
+      <div class="codePane active" id="code-rag">
+<pre><span class="com"># نصب</span>
+pip install langchain langchain-openai chromadb
+
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI, OpenAIEmbeddings
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> RetrievalQA
+
+<span class="com"># ۱. بارگذاری سند</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'paper.txt'</span>) <span class="kw">as</span> f:
+    text = f.<span class="fn">read</span>()
+
+<span class="com"># ۲. Chunking</span>
+splitter = <span class="fn">RecursiveCharacterTextSplitter</span>(
+    chunk_size=<span class="num">500</span>, chunk_overlap=<span class="num">50</span>)
+chunks = splitter.<span class="fn">split_text</span>(text)
+
+<span class="com"># ۳. Embeddings + Vector DB</span>
+embeddings = <span class="fn">OpenAIEmbeddings</span>()
+vectorstore = Chroma.<span class="fn">from_texts</span>(chunks, embeddings)
+
+<span class="com"># ۴. Retriever</span>
+retriever = vectorstore.<span class="fn">as_retriever</span>(search_kwargs={<span class="str">"k"</span>: <span class="num">3</span>})
+
+<span class="com"># ۵. LLM</span>
+llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>, temperature=<span class="num">0</span>)
+
+<span class="com"># ۶. Chain</span>
+qa_chain = <span class="fn">RetrievalQA</span>.<span class="fn">from_chain_type</span>(
+    llm=llm, retriever=retriever, return_source_documents=<span class="kw">True</span>)
+
+result = qa_chain.<span class="fn">invoke</span>({<span class="str">"query"</span>: <span class="str">"قانون هوک چیست؟"</span>})
+print(result[<span class="str">"result"</span>])
+print(result[<span class="str">"source_documents"</span>])</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 20: CODE AGENT -->
+<div class="slide" data-topic="کد Agent">
+  <div class="slideInner">
+    <div class="eyebrow">کدنویسی</div>
+    <h2>💻 Agent ساده — Python + LangChain</h2>
+    <div class="codeTabs">
+      <div class="codeTabsNav">
+        <button class="codeTabBtn active" data-code="agent">Agent</button>
+      </div>
+      <div class="codePane active" id="code-agent">
+<pre><span class="kw">from</span> langchain.agents <span class="kw">import</span> initialize_agent, Tool
+<span class="kw">from</span> langchain.agents <span class="kw">import</span> AgentType
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> ChatOpenAI
+<span class="kw">from</span> langchain.tools <span class="kw">import</span> DuckDuckGoSearchRun
+<span class="kw">from</span> langchain.utilities <span class="kw">import</span> PythonREPL
+
+<span class="com"># ابزارها</span>
+search = <span class="fn">DuckDuckGoSearchRun</span>()
+python_repl = <span class="fn">PythonREPL</span>()
+
+tools = [
+    <span class="fn">Tool</span>(name=<span class="str">"Search"</span>,
+         func=search.run,
+         description=<span class="str">"جست‌وجوی اینترنت"</span>),
+    <span class="fn">Tool</span>(name=<span class="str">"Python"</span>,
+         func=python_repl.run,
+         description=<span class="str">"اجرای کد Python"</span>),
+    <span class="fn">Tool</span>(name=<span class="str">"Calculator"</span>,
+         func=<span class="kw">lambda</span> x: <span class="fn">eval</span>(x),
+         description=<span class="str">"محاسبات ریاضی"</span>)
+]
+
+<span class="com"># Agent</span>
+llm = <span class="fn">ChatOpenAI</span>(model=<span class="str">"gpt-4o"</span>, temperature=<span class="num">0</span>)
+agent = <span class="fn">initialize_agent</span>(
+    tools, llm,
+    agent=AgentType.OPENAI_FUNCTIONS,
+    verbose=<span class="kw">True</span>
+)
+
+<span class="com"># اجرا</span>
+result = agent.<span class="fn">run</span>(
+    <span class="str">"قیمت فعلی فولاد را جست‌وجو کن و هزینه ۱۰۰ کیلو را حساب کن"</span>
+)
+print(result)</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 21: CONCEPTS -->
+<div class="slide" data-topic="مفاهیم">
+  <div class="slideInner">
+    <div class="eyebrow">مفاهیم کلیدی</div>
+    <h2>📐 مفاهیم و فرمول‌ها</h2>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{RAG} = \text{Retrieve}(q) \rightarrow \text{Augment}(q, D) \rightarrow \text{Generate}$$
+      <span class="lbl">سه مرحله اصلی RAG</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{Agent} = \text{LLM} + \text{Tools} + \text{Memory} + \text{Planning}$$
+      <span class="lbl">چهار جزء اصلی Agent</span>
+    </div>
+    <div class="formulaBox" style="font-size:16px">
+      $$\text{similarity}(q, d) = \frac{\vec{q} \cdot \vec{d}}{||\vec{q}|| \cdot ||\vec{d}||}$$
+      <span class="lbl">Cosine Similarity</span>
+    </div>
+    <div class="stepInfo" style="margin-top:20px">
+      <b style="color:var(--gold)">📌 نکته:</b> RAG + Agent = سیستم هوشمندی که می‌تواند درباره دانش شما صحبت کند و کارهای واقعی انجام دهد.
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 22: EXERCISES -->
+<div class="slide" data-topic="تمرین‌ها">
+  <div class="slideInner">
+    <div class="eyebrow">تمرین‌های جلسه ۱۹</div>
+    <h2>📝 تکالیف — ۴ بخش</h2>
+    <div class="exercises">
+      <div class="exSection ex-yellow">
+        <div class="exHeader"><div class="exIcon" style="color:#ffcc33"><i data-lucide="help-circle"></i></div><h4>الف) سؤالات مفهومی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>RAG چه مشکلی از LLM را حل می‌کند؟</li>
+          <li><span class="exNum">۲</span>Vector Database چیست و چطور کار می‌کند؟</li>
+          <li><span class="exNum">۳</span>تفاوت Agent و LLM معمولی چیست؟</li>
+          <li><span class="exNum">۴</span>Memory و Planning در Agent چه نقشی دارند؟</li>
+          <li><span class="exNum">۵</span>Multi-Agent چه مزیتی بر Single-Agent دارد؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-green">
+        <div class="exHeader"><div class="exIcon" style="color:var(--green)"><i data-lucide="terminal"></i></div><h4>ب) تمرین عملی — کدنویسی</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>RAG ساده برای یک مقاله مکانیکی در Colab.</li>
+          <li><span class="exNum">۲</span>Chroma DB با ۱۰ سند.</li>
+          <li><span class="exNum">۳</span>Agent ساده با LangChain.</li>
+          <li><span class="exNum">۴</span>مقایسه RAG با LLM پایه.</li>
+        </ul>
+      </div>
+      <div class="exSection ex-purple">
+        <div class="exHeader"><div class="exIcon" style="color:var(--violet)"><i data-lucide="pen-tool"></i></div><h4>ج) نوشتاری</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">۱</span>یک صفحه درباره RAG و کاربردش در مکانیک.</li>
+          <li><span class="exNum">۲</span>چرا Agent برای مهندسان مهم است؟</li>
+        </ul>
+      </div>
+      <div class="exSection ex-red">
+        <div class="exHeader"><div class="exIcon" style="color:var(--red)"><i data-lucide="sparkles"></i></div><h4>د) چالش خلاقانه ★</h4></div>
+        <ul class="exList">
+          <li><span class="exNum">★</span>یک RAG برای کتاب‌های مکانیک خودتان طراحی کنید.</li>
+          <li><span class="exNum">★</span>یک Multi-Agent برای حل مسائل مکانیکی پیشنهاد دهید.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="emailBanner">
+      📧 ارسال: <code>[AI] HW19 - نام - شماره دانشجویی</code> به <code>arcslab.uth@gmail.com</code>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 23: SUMMARY -->
+<div class="slide" data-topic="جمع‌بندی">
+  <div class="slideInner">
+    <div class="eyebrow">جمع‌بندی</div>
+    <h2>🎯 خلاصه جلسه ۱۹</h2>
+    <div class="cardGrid" style="grid-template-columns:1fr">
+      <div class="card" style="border-right:4px solid var(--cyan)">
+        <h3>✅ RAG</h3><p>اتصال LLM به دانش خارجی</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--violet)">
+        <h3>✅ Vector DB</h3><p>Chroma، Pinecone، Weaviate، Qdrant</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--green)">
+        <h3>✅ AI Agent</h3><p>Tools + Memory + Planning</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--gold)">
+        <h3>✅ Tool Use</h3><p>جست‌وجو، کد، محاسبه، API</p>
+      </div>
+      <div class="card" style="border-right:4px solid var(--pink)">
+        <h3>✅ Multi-Agent</h3><p>Orchestrator + Specialist Agents</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 24: NEXT + END -->
+<div class="slide" data-topic="پایان">
+  <div class="slideInner">
+    <div class="titleSlide">
+      <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+      <div class="khaligh">هُوَ الْخَلَّاقُ الْعَلِيمُ</div>
+      <h1>با تشکر از توجه شما</h1>
+      <p class="subtitle-en">Next Session: Introduction to Scientific AI</p>
+      <div style="background:linear-gradient(135deg,rgba(167,139,250,.15),rgba(77,212,255,.12));
+        border:1px solid rgba(167,139,250,.5);border-radius:16px;padding:24px;margin:24px 0;max-width:700px">
+        <h3 style="color:var(--violet);margin-bottom:10px;font-size:18px">📅 جلسه ۲۰ — شروع فاز ۶</h3>
+        <p style="margin-top:8px;text-align:right">
+          • Scientific AI — AI برای علم<br>
+          • Neural Operators<br>
+          • Surrogate Models<br>
+          • Physics-Informed ML<br>
+          • کاربرد در مکانیک
+        </p>
+      </div>
+      <div class="hadith">
+        <div class="hadithText">«الْعِلْمُ سُلْطَانٌ، مَنْ وَجَدَهُ صَالَ بِهِ، وَ مَنْ لَمْ يَجِدْهُ صَالَ عَلَيْهِ»</div>
+        <span class="hadithRef">— امام علی علیه‌السلام، نهج‌البلاغه، حکمت ۱۴۶</span>
+      </div>
+      <div class="titleTeacher" style="margin-top:24px">
+        <i data-lucide="mail"></i><span>m.goharimanesh@torbath.ac.ir</span>
+      </div>
+      <div class="titleTeacher">
+        <i data-lucide="inbox"></i><span>arcslab.uth@gmail.com</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navBottom">
+  <button class="navBtn" id="prevBtn" disabled>
+    <i data-lucide="chevron-right"></i> قبلی
+  </button>
+  <div class="slideCounter">
+    <i data-lucide="file-text" style="width:14px;height:14px;color:var(--muted)"></i>
+    اسلاید <b id="currentNum">۱</b> <small>از</small> <b id="totalNum">۲۴</b>
+  </div>
+  <div class="dots" id="dots"></div>
+  <button class="navBtn primary" id="nextBtn">
+    بعدی <i data-lucide="chevron-left"></i>
+  </button>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="modalClose" onclick="closeImage()"><i data-lucide="x"></i></button>
+    <img id="modalImg" src="" alt="">
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
