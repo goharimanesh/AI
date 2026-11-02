@@ -401,6 +401,405 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
 @media(max-width:480px){
   .sessionsGrid{grid-template-columns:1fr}
 }
+
+/* ===== دائره‌المعارف (ادغام‌شده) ===== */
+.cluster .tag{padding:4px 9px;border-radius:7px;background:color-mix(in srgb,var(--text),transparent 95%);font-size:10.5px;color:var(--muted);border:1px solid var(--line);font-weight:500}
+.constellationWrap{position:relative}
+.constellation{height:700px;border:1px solid var(--line);border-radius:28px;overflow:hidden;
+  background:
+    radial-gradient(circle at center,color-mix(in srgb,var(--cyan),transparent 94%),transparent 40%),
+    radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--violet),transparent 96%),transparent 60%),
+    color-mix(in srgb,var(--bg),transparent 40%);
+  position:relative;box-shadow:var(--shadow);transition:background .5s}
+#mindmapCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.centerOrb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:160px;height:160px;border-radius:50%;display:grid;place-items:center;text-align:center;
+  background:radial-gradient(circle at 35% 28%,color-mix(in srgb,var(--cyan),var(--bg) 65%),color-mix(in srgb,var(--bg2),var(--bg) 30%));
+  border:2px solid color-mix(in srgb,var(--cyan),transparent 45%);
+  box-shadow:0 0 0 14px color-mix(in srgb,var(--cyan),transparent 97%),
+             0 0 80px color-mix(in srgb,var(--cyan),transparent 75%);
+  z-index:10;pointer-events:none}
+.centerOrb strong{font-size:28px;font-weight:900;letter-spacing:1px;display:block;color:var(--text)}
+.centerOrb small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.orb{position:absolute;width:118px;height:118px;border-radius:50%;
+  display:grid;place-items:center;text-align:center;z-index:6;cursor:pointer;
+  background:linear-gradient(145deg,var(--card2),color-mix(in srgb,var(--bg),var(--card) 50%));
+  border:1px solid var(--c);
+  box-shadow:0 0 32px color-mix(in srgb,var(--c),transparent 72%),
+             inset 0 0 20px color-mix(in srgb,var(--c),transparent 92%);
+  transition:transform .35s cubic-bezier(.2,.9,.3,1.3), box-shadow .35s;
+  -webkit-user-select:none;user-select:none}
+.orb:hover{transform:scale(1.1);box-shadow:0 0 50px color-mix(in srgb,var(--c),transparent 55%),
+  inset 0 0 30px color-mix(in srgb,var(--c),transparent 85%)}
+.orb.active{transform:scale(1.12);
+  box-shadow:0 0 60px color-mix(in srgb,var(--c),transparent 40%),
+             inset 0 0 35px color-mix(in srgb,var(--c),transparent 75%)}
+.orb b{font-size:13px;font-weight:700;display:block;line-height:1.3;color:var(--text)}
+.orb small{display:block;color:var(--muted);font-size:9px;margin-top:3px;line-height:1.3}
+.o1{right:6%;top:9%;--c:var(--cyan)}
+.o2{left:6%;top:9%;--c:var(--violet)}
+.o3{right:4%;bottom:10%;--c:var(--green)}
+.o4{left:4%;bottom:10%;--c:var(--gold)}
+.o5{left:50%;top:3%;transform:translateX(-50%);--c:var(--red)}
+.o6{left:50%;bottom:3%;transform:translateX(-50%);--c:var(--blue)}
+.o5:hover{transform:translateX(-50%) scale(1.1)}
+.o6:hover{transform:translateX(-50%) scale(1.1)}
+.o5.active{transform:translateX(-50%) scale(1.12)}
+.o6.active{transform:translateX(-50%) scale(1.12)}
+.subOrb{position:absolute;width:76px;height:76px;border-radius:50%;
+  display:grid;place-items:center;text-align:center;z-index:5;cursor:pointer;
+  background:linear-gradient(145deg,var(--card2),color-mix(in srgb,var(--bg),var(--card) 55%));
+  border:1px solid color-mix(in srgb,var(--sc),transparent 45%);
+  box-shadow:0 0 18px color-mix(in srgb,var(--sc),transparent 75%);
+  transition:transform .3s, box-shadow .3s, opacity .4s;
+  opacity:0;pointer-events:none;-webkit-user-select:none;user-select:none}
+.subOrb.show{opacity:1;pointer-events:auto}
+.subOrb:hover{transform:scale(1.15);
+  box-shadow:0 0 30px color-mix(in srgb,var(--sc),transparent 50%)}
+.subOrb b{font-size:9px;font-weight:600;color:var(--text);
+  line-height:1.25;display:block;padding:0 4px}
+.legend{position:absolute;bottom:14px;right:16px;left:16px;
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;z-index:8;pointer-events:none}
+.legend span{font-size:10px;color:var(--muted);background:color-mix(in srgb,var(--bg),transparent 40%);
+  padding:5px 10px;border-radius:8px;border:1px solid var(--line);backdrop-filter:blur(8px)}
+.hint{position:absolute;top:16px;right:16px;z-index:8;
+  font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--bg),transparent 30%);
+  padding:6px 12px;border-radius:10px;border:1px solid var(--line);
+  backdrop-filter:blur(8px);pointer-events:none}
+.clusters{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cluster{position:relative;overflow:hidden;
+  background:linear-gradient(150deg,var(--card),color-mix(in srgb,var(--bg),var(--card) 40%));
+  border:1px solid var(--line);border-radius:var(--radius);padding:24px;
+  box-shadow:var(--shadow);transition:.35s cubic-bezier(.2,.9,.3,1.1);cursor:pointer}
+.cluster:hover{transform:translateY(-6px);border-color:var(--accent);
+  box-shadow:0 26px 70px color-mix(in srgb,var(--bg),transparent 40%),
+             0 0 0 1px color-mix(in srgb,var(--accent),transparent 60%)}
+.cluster::after{content:"";position:absolute;width:170px;height:170px;
+  left:-70px;bottom:-85px;border-radius:50%;background:var(--accent);
+  filter:blur(50px);opacity:.1;transition:.35s}
+.cluster:hover::after{opacity:.2}
+.clusterIcon{width:52px;height:52px;display:grid;place-items:center;
+  border-radius:14px;background:color-mix(in srgb,var(--accent),transparent 88%);
+  color:var(--accent);margin-bottom:14px;
+  border:1px solid color-mix(in srgb,var(--accent),transparent 75%)}
+.cluster h3{margin:0;font-size:19px;font-weight:700}
+.cluster p{color:var(--muted);font-size:12.5px;margin:8px 0 14px;line-height:1.75}
+.tags{display:flex;flex-wrap:wrap;gap:6px;position:relative;z-index:2}
+.cluster .count{position:absolute;left:20px;top:22px;font-size:11px;
+  color:var(--muted2);font-weight:600;letter-spacing:1px}
+.searchbar{display:flex;gap:10px;margin:22px 0 16px;position:relative}
+.searchbar input{width:100%;background:color-mix(in srgb,var(--text),transparent 96%);
+  border:1px solid var(--line);border-radius:14px;color:var(--text);
+  padding:14px 46px 14px 18px;font:inherit;font-size:14px;outline:none;
+  transition:.25s}
+.searchbar input:focus{border-color:var(--cyan);
+  background:color-mix(in srgb,var(--cyan),transparent 94%);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--cyan),transparent 88%)}
+.searchbar input::placeholder{color:var(--muted2)}
+.searchbar .searchIcon{position:absolute;right:16px;top:15px;color:var(--cyan);
+  pointer-events:none}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:26px}
+.filter{border:1px solid var(--line);background:color-mix(in srgb,var(--text),transparent 97%);
+  color:var(--muted);padding:7px 14px;border-radius:999px;cursor:pointer;
+  font-family:inherit;font-size:12px;font-weight:500;transition:.2s}
+.filter.active,.filter:hover{background:color-mix(in srgb,var(--cyan),transparent 90%);
+  border-color:color-mix(in srgb,var(--cyan),transparent 60%);color:var(--text)}
+.termGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.term{padding:16px;border:1px solid var(--line);border-radius:14px;
+  background:color-mix(in srgb,var(--text),transparent 97%);
+  cursor:pointer;transition:.25s;
+  min-height:124px;display:flex;flex-direction:column;
+  position:relative;overflow:hidden}
+.term::before{content:"";position:absolute;top:0;right:0;width:3px;height:0;
+  background:var(--accent,var(--cyan));transition:.3s}
+.term:hover::before{height:100%}
+.term:hover{transform:translateY(-3px);
+  background:color-mix(in srgb,var(--cyan),transparent 94%);
+  border-color:color-mix(in srgb,var(--cyan),transparent 70%)}
+.term .en{color:var(--cyan);font-size:10px;direction:ltr;text-align:right;
+  font-weight:600;letter-spacing:.3px}
+.term h3{margin:6px 0 5px;font-size:15px;font-weight:700;line-height:1.4}
+.term p{margin:0;color:var(--muted);font-size:11px;line-height:1.75;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden}
+.empty{display:none;text-align:center;padding:50px;color:var(--muted2)}
+.empty.show{display:block}
+.modal{position:fixed;inset:0;z-index:100;display:none;place-items:center;
+  background:color-mix(in srgb,var(--bg),transparent 18%);
+  backdrop-filter:blur(10px);padding:20px}
+.modal.open{display:grid;animation:fadeIn .25s}
+.modalBox{width:min(820px,100%);max-height:88vh;overflow-y:auto;
+  background:linear-gradient(150deg,var(--card2),color-mix(in srgb,var(--bg),var(--card) 30%));
+  border:1px solid color-mix(in srgb,var(--cyan),transparent 72%);
+  border-radius:26px;padding:32px;
+  box-shadow:0 40px 120px color-mix(in srgb,var(--bg),transparent 40%);
+  position:relative;animation:slideUp .35s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modalBox::-webkit-scrollbar{width:8px}
+.modalBox::-webkit-scrollbar-track{background:transparent}
+.modalBox::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--cyan),transparent 70%);
+  border-radius:4px}
+.close{position:absolute;left:20px;top:18px;border:0;
+  background:color-mix(in srgb,var(--text),transparent 94%);color:var(--text);
+  width:38px;height:38px;border-radius:11px;cursor:pointer;transition:.2s;
+  display:grid;place-items:center}
+.close:hover{background:color-mix(in srgb,var(--red),transparent 85%);color:var(--red)}
+.modalBox .en{color:var(--cyan);font-size:11px;direction:ltr;
+  text-align:right;font-weight:600;letter-spacing:.4px}
+.modalBox h2{font-size:26px;margin:8px 0 14px}
+.modalBox .desc{color:var(--muted);font-size:14px;line-height:2}
+.modalBox .desc p{margin-bottom:12px}
+.modalBox .formula{margin:20px 0 0;padding:14px 16px;border-radius:12px;
+  background:color-mix(in srgb,var(--bg),transparent 60%);
+  border-right:3px solid var(--gold);color:var(--text);font-size:12.5px}
+.modalBox .formula b{color:var(--gold);font-weight:700}
+.modalBox .related{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+.modalBox .related h4{font-size:11px;color:var(--muted2);
+  text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.modalBox .related .rel-tags{display:flex;flex-wrap:wrap;gap:6px}
+.modalBox .related .rel-tag{padding:5px 10px;border-radius:8px;
+  background:color-mix(in srgb,var(--cyan),transparent 92%);
+  border:1px solid color-mix(in srgb,var(--cyan),transparent 80%);
+  font-size:11px;color:var(--text);cursor:pointer;transition:.2s}
+.modalBox .related .rel-tag:hover{background:color-mix(in srgb,var(--cyan),transparent 82%);}
+.cycle{display:flex;justify-content:center;align-items:center;
+  gap:0;flex-wrap:wrap;padding:40px 20px;position:relative}
+.cycleStep{display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:18px 14px;min-width:110px;position:relative}
+.cycleStep .circle{width:70px;height:70px;border-radius:50%;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--card2),color-mix(in srgb,var(--bg),var(--card) 50%));
+  border:2px solid var(--cc);
+  box-shadow:0 0 24px color-mix(in srgb,var(--cc),transparent 78%);
+  color:var(--cc);transition:.3s}
+.cycleStep:hover .circle{transform:scale(1.1);
+  box-shadow:0 0 36px color-mix(in srgb,var(--cc),transparent 60%)}
+.cycleStep .label{font-size:12px;font-weight:600;color:var(--text);text-align:center}
+.cycleStep .sub{font-size:9.5px;color:var(--muted);direction:ltr;text-align:center}
+.cycleArrow{color:var(--muted2);flex-shrink:0;margin:0 -4px}
+.frontiers{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.frontier{position:relative;overflow:hidden;
+  background:linear-gradient(150deg,var(--card),color-mix(in srgb,var(--bg),var(--card) 40%));
+  border:1px solid var(--line);border-radius:var(--radius);padding:24px;
+  transition:.35s}
+.frontier:hover{transform:translateY(-5px);border-color:var(--accent)}
+.frontier .ficon{width:48px;height:48px;display:grid;place-items:center;
+  border-radius:13px;background:color-mix(in srgb,var(--accent),transparent 88%);
+  color:var(--accent);margin-bottom:12px;
+  border:1px solid color-mix(in srgb,var(--accent),transparent 75%)}
+.frontier h3{margin:0 0 8px;font-size:17px;font-weight:700}
+.frontier p{color:var(--muted);font-size:12px;line-height:1.8;margin:0 0 12px}
+.frontier ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:5px}
+.frontier li{font-size:11px;color:var(--muted);direction:ltr;text-align:left;
+  padding:4px 8px;border-radius:6px;
+  background:color-mix(in srgb,var(--text),transparent 96%)}
+@media(max-width:1100px){.clusters,.frontiers{grid-template-columns:repeat(2,1fr)}
+.termGrid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.clusters,.quiz,.frontiers{grid-template-columns:1fr}
+.termGrid{grid-template-columns:repeat(2,1fr)}
+.constellation{height:620px}
+.orb{width:90px;height:90px}
+.orb b{font-size:10.5px}
+.orb small{font-size:8px}
+.subOrb{width:60px;height:60px}
+.subOrb b{font-size:7.5px}
+.centerOrb{width:120px;height:120px}
+.centerOrb strong{font-size:20px}
+.centerOrb small{font-size:9.5px}
+.modalBox{padding:24px}
+.cycleStep{min-width:90px;padding:12px 8px}
+.cycleStep .circle{width:56px;height:56px}}
+@media(max-width:480px){.termGrid{grid-template-columns:1fr}
+.constellation{height:580px}
+.orb{width:76px;height:76px}
+.orb b{font-size:9px}
+.orb small{display:none}
+.subOrb{width:52px;height:52px}
+.subOrb b{font-size:6.5px}
+.centerOrb{width:100px;height:100px}
+.centerOrb strong{font-size:17px}}
+
+/* ================================================================
+   افزوده‌ها: پادکست، دائره‌المعارف ادغام‌شده، آزمایشگاه تعاملی
+   ================================================================ */
+:root{--grid-color:rgba(255,255,255,.02)}
+[data-theme="light"]{--grid-color:rgba(30,60,110,.04)}
+
+/* --- کارت جلسات با دکمه جلسه/پادکست --- */
+.sessionCard{cursor:default}
+.sessionLinks{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.sBtn{flex:1;min-width:92px;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:7px 10px;border-radius:10px;font-size:11.5px;font-weight:700;text-decoration:none;
+  border:1px solid;transition:.2s;white-space:nowrap}
+.sBtn svg{width:14px;height:14px}
+.sBtn.lesson{color:var(--cyan);border-color:color-mix(in srgb,var(--cyan),transparent 65%);
+  background:color-mix(in srgb,var(--cyan),transparent 92%)}
+.sBtn.lesson:hover{background:var(--cyan);color:var(--bg)}
+.sBtn.podcast{color:var(--violet);border-color:color-mix(in srgb,var(--violet),transparent 65%);
+  background:color-mix(in srgb,var(--violet),transparent 92%)}
+.sBtn.podcast:hover{background:var(--violet);color:var(--bg)}
+.sBtn.missing{opacity:.35;pointer-events:none;filter:grayscale(1)}
+.sBtn.missing::after{content:" (به‌زودی)";font-weight:400}
+.labChips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.labChip{font-size:10.5px;padding:3px 9px;border-radius:20px;cursor:pointer;font-family:inherit;
+  border:1px dashed color-mix(in srgb,var(--gold),transparent 50%);color:var(--gold);
+  background:color-mix(in srgb,var(--gold),transparent 92%);transition:.2s}
+.labChip:hover{background:var(--gold);color:var(--bg)}
+.syllabusLinks{display:flex;gap:6px;flex-wrap:wrap}
+.syllabusLinks .sBtn{flex:0 0 auto;min-width:0;padding:5px 9px;font-size:11px}
+.folderNote{margin-top:18px;text-align:center;font-size:12px;color:var(--muted2)}
+.folderNote code{direction:ltr;display:inline-block;padding:2px 8px;border-radius:6px;
+  background:color-mix(in srgb,var(--text),transparent 94%);color:var(--cyan)}
+
+/* --- زیرمنوی دائره‌المعارف --- */
+.encNav{position:sticky;top:58px;z-index:30;margin:0 auto;
+  background:color-mix(in srgb,var(--bg),transparent 10%);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line)}
+.navin{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:9px 0;scrollbar-width:none}
+.navin::-webkit-scrollbar{display:none}
+.navin a{white-space:nowrap;padding:6px 13px;border-radius:10px;color:var(--muted);
+  font-size:12.5px;font-weight:500;transition:.2s;text-decoration:none}
+.navin a:hover{background:color-mix(in srgb,var(--cyan),transparent 88%);color:var(--text)}
+#tab-encyclopedia .section{scroll-margin-top:120px}
+.encIntro{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+.encIntro .stat{flex:1;min-width:120px}
+
+/* --- FAQ و آزمون (در فایل اصلی دائره‌المعارف استایل نداشتند) --- */
+.accordion{display:flex;flex-direction:column;gap:10px}
+.faq{border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  background:linear-gradient(150deg,var(--card),color-mix(in srgb,var(--bg),var(--card) 40%));transition:.25s}
+.faq.open{border-color:color-mix(in srgb,var(--cyan),transparent 50%)}
+.faq button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:15px 18px;background:transparent;border:0;color:var(--text);font-family:inherit;
+  font-size:14px;font-weight:700;cursor:pointer;text-align:right}
+.faq button svg{width:18px;height:18px;flex-shrink:0;transition:transform .3s;color:var(--cyan)}
+.faq.open button svg{transform:rotate(180deg)}
+.faq .answer{max-height:0;overflow:hidden;padding:0 18px;color:var(--muted);font-size:13px;
+  line-height:2;transition:max-height .4s ease,padding .3s}
+.faq.open .answer{max-height:600px;padding:0 18px 16px}
+.progress{height:8px;border-radius:20px;background:color-mix(in srgb,var(--text),transparent 92%);
+  overflow:hidden;margin-bottom:14px}
+.progress i{display:block;height:100%;width:0;border-radius:20px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width .5s}
+.quiz{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.qcard{border:1px solid var(--line);border-radius:16px;padding:18px;
+  background:linear-gradient(150deg,var(--card),color-mix(in srgb,var(--bg),var(--card) 40%))}
+.qcard .qnum{font-size:11px;font-weight:800;color:var(--violet);margin-bottom:6px}
+.qcard h3{font-size:14.5px;line-height:1.8;margin:0 0 12px}
+.options{display:flex;flex-direction:column;gap:8px}
+.option{padding:10px 14px;border-radius:11px;border:1px solid var(--line);font-size:13px;
+  cursor:pointer;transition:.2s;color:var(--text)}
+.option:hover{border-color:var(--cyan);background:color-mix(in srgb,var(--cyan),transparent 92%)}
+.qcard[data-done] .option{cursor:default}
+.qcard[data-done] .option:hover{border-color:var(--line);background:transparent}
+.option.correct,.qcard[data-done] .option.correct:hover{border-color:var(--green);
+  background:color-mix(in srgb,var(--green),transparent 85%);color:var(--green);font-weight:700}
+.option.wrong,.qcard[data-done] .option.wrong:hover{border-color:var(--red);
+  background:color-mix(in srgb,var(--red),transparent 85%);color:var(--red)}
+.cluster .tag{direction:ltr}
+.cycle{display:flex;justify-content:center;align-items:center;gap:0;flex-wrap:wrap;padding:30px 10px;position:relative}
+@media(max-width:760px){.quiz{grid-template-columns:1fr}.encNav{top:54px}}
+
+/* --- آزمایشگاه تعاملی --- */
+.labGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.labCard{position:relative;overflow:hidden;text-align:right;cursor:pointer;font-family:inherit;color:var(--text);
+  background:linear-gradient(150deg,var(--card),color-mix(in srgb,var(--bg),var(--card) 40%));
+  border:1px solid var(--line);border-radius:18px;padding:0;transition:.3s;display:flex;flex-direction:column}
+.labCard:hover{transform:translateY(-6px);border-color:var(--lc);
+  box-shadow:0 20px 50px color-mix(in srgb,var(--lc),transparent 82%)}
+.labCard canvas{width:100%;height:120px;display:block;border-bottom:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg),transparent 30%)}
+.labCard .lcBody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.labCard .lcHead{display:flex;align-items:center;gap:8px}
+.labCard .lcIcon{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+  background:color-mix(in srgb,var(--lc),transparent 82%);color:var(--lc);flex-shrink:0}
+.labCard .lcIcon svg{width:16px;height:16px}
+.labCard h4{font-size:14px;font-weight:800;margin:0;line-height:1.5}
+.labCard p{font-size:11.5px;color:var(--muted);margin:0;line-height:1.8;flex:1}
+.labCard .lcFoot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:10.5px}
+.labCard .lcFoot span{color:var(--lc);font-weight:700}
+.labCard .lcOpen{display:inline-flex;align-items:center;gap:4px;color:var(--muted)}
+.labCard:hover .lcOpen{color:var(--lc)}
+.labIntro{display:flex;gap:14px;align-items:flex-start;padding:16px 20px;border-radius:16px;margin-bottom:20px;
+  border:1px solid color-mix(in srgb,var(--gold),transparent 65%);
+  background:linear-gradient(135deg,color-mix(in srgb,var(--gold),transparent 90%),transparent);
+  font-size:13px;color:var(--muted);line-height:2}
+.labIntro b{color:var(--text)}
+.labIntro svg{color:var(--gold);flex-shrink:0;margin-top:4px}
+
+.labWin{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  padding:20px;background:color-mix(in srgb,var(--bg),transparent 25%);backdrop-filter:blur(10px)}
+.labWin.open{display:flex;animation:fadeIn .25s}
+.labWinBox{width:min(1180px,100%);max-height:calc(100vh - 40px);overflow:auto;border-radius:22px;
+  background:linear-gradient(160deg,var(--card2),color-mix(in srgb,var(--bg),var(--card) 50%));
+  border:1px solid var(--line-strong);box-shadow:var(--shadow);animation:labUp .35s ease}
+@keyframes labUp{from{transform:translateY(30px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.labWinHead{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;padding:14px 18px;
+  border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--card2),transparent 5%);backdrop-filter:blur(12px)}
+.labWinHead .dots{display:flex;gap:6px}
+.labWinHead .dots i{width:11px;height:11px;border-radius:50%;display:block}
+.labWinHead h3{font-size:15.5px;margin:0;font-weight:800;flex:1;display:flex;align-items:center;gap:8px}
+.labWinHead h3 svg{color:var(--lc);width:18px;height:18px}
+.labWinHead .sessChip{font-size:11px;padding:3px 10px;border-radius:20px;color:var(--lc);
+  background:color-mix(in srgb,var(--lc),transparent 88%);border:1px solid color-mix(in srgb,var(--lc),transparent 70%)}
+.labWinHead button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:transparent;
+  color:var(--text);cursor:pointer;display:grid;place-items:center}
+.labWinHead button:hover{border-color:var(--red);color:var(--red)}
+.labWinBody{display:grid;grid-template-columns:1fr 300px;gap:16px;padding:18px}
+.labStage{display:flex;flex-direction:column;gap:10px;min-width:0}
+.labStage canvas{width:100%;display:block;border-radius:14px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--bg),transparent 20%);touch-action:none}
+.labStage .twin{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.labPanel{display:flex;flex-direction:column;gap:12px}
+.ctl{display:flex;flex-direction:column;gap:5px}
+.ctl label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.ctl label b{color:var(--lc);direction:ltr;font-family:Consolas,monospace;font-size:12px}
+.ctl input[type=range]{width:100%;accent-color:var(--lc)}
+.ctl select{width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);
+  color:var(--text);font-family:inherit;font-size:12.5px}
+.seg{display:flex;flex-wrap:wrap;gap:5px}
+.seg button,.lbtn{padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:transparent;
+  color:var(--text);font-family:inherit;font-size:12px;cursor:pointer;transition:.2s;
+  display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.seg button.on{border-color:var(--lc);color:var(--lc);background:color-mix(in srgb,var(--lc),transparent 88%)}
+.lbtn:hover{border-color:var(--lc);color:var(--lc)}
+.lbtn.primary{background:color-mix(in srgb,var(--lc),transparent 80%);border-color:var(--lc);color:var(--text);font-weight:700}
+.lbtns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.readout{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.readout div{padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--text),transparent 95%);
+  border:1px solid var(--line);font-size:11px;color:var(--muted)}
+.readout b{display:block;font-size:15px;color:var(--text);direction:ltr;text-align:right;font-family:Consolas,monospace}
+.labNote{font-size:12px;line-height:2;color:var(--muted);padding:12px 14px;border-radius:12px;
+  border-right:3px solid var(--lc);background:color-mix(in srgb,var(--lc),transparent 93%)}
+.labNote b{color:var(--text)}
+.labHint{font-size:11.5px;color:var(--muted2);text-align:center}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th,.tbl td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:center}
+.tbl th{color:var(--muted);font-weight:600}
+.tbl td{font-family:Consolas,monospace;direction:ltr}
+.tokBars{display:flex;flex-direction:column;gap:6px}
+.tokBar{display:grid;grid-template-columns:120px 1fr 56px;align-items:center;gap:8px;font-size:12.5px}
+.tokBar .tk{text-align:left;direction:rtl;font-weight:700}
+.tokBar .bar{height:22px;border-radius:7px;background:color-mix(in srgb,var(--text),transparent 94%);overflow:hidden}
+.tokBar .bar i{display:block;height:100%;border-radius:7px;transition:width .35s;
+  background:linear-gradient(90deg,var(--lc),var(--violet))}
+.tokBar.off{opacity:.35}
+.tokBar .pv{font-family:Consolas,monospace;direction:ltr;font-size:11.5px;color:var(--muted)}
+.sentence{padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:15px;line-height:2.2;min-height:60px;
+  background:color-mix(in srgb,var(--bg),transparent 30%)}
+.sentence .pick{padding:2px 8px;border-radius:7px;background:color-mix(in srgb,var(--lc),transparent 75%);color:var(--text);font-weight:700}
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.kgrid input{width:100%;padding:6px 2px;text-align:center;border-radius:8px;border:1px solid var(--line);
+  background:var(--card);color:var(--text);font-family:Consolas,monospace;font-size:12px}
+@media(max-width:1100px){.labGrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:860px){.labWinBody{grid-template-columns:1fr}.labWin{padding:0}
+  .labWinBox{max-height:100vh;height:100vh;border-radius:0}}
+@media(max-width:520px){.labGrid{grid-template-columns:1fr}.labStage .twin{grid-template-columns:1fr}
+  .tokBar{grid-template-columns:90px 1fr 50px}.labWinHead .sessChip{display:none}}
+
+@media(min-width:761px){.tabsInner{padding-left:110px}}
+.option bdi{unicode-bidi:isolate}
+
 </style>
 </head>
 <body>
@@ -454,11 +853,14 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
     </div>
 
     <div class="heroActions">
-      <a href="#sessions" class="btn btn-primary" onclick="switchTab('sessions')">
+      <a href="#sessions" class="btn btn-primary">
         <i data-lucide="play-circle"></i> شروع جلسات
       </a>
-      <a href="encyclopedia.html" class="btn">
+      <a href="#encyclopedia" data-tab-link="encyclopedia" class="btn">
         <i data-lucide="book-open"></i> دائره‌المعارف AI
+      </a>
+      <a href="#lab" data-tab-link="lab" class="btn">
+        <i data-lucide="flask-conical"></i> آزمایشگاه تعاملی
       </a>
       <a href="https://colab.research.google.com" target="_blank" class="btn">
         <i data-lucide="code-2"></i> Google Colab
@@ -475,7 +877,8 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
     <div class="stat"><b>۴</b><small>جلسه RL</small></div>
     <div class="stat"><b>۱۰</b><small>پروژه</small></div>
     <div class="stat"><b>۸+۸</b><small>تمرین+پروژه</small></div>
-    <div class="stat"><b>∞</b><small>یادگیری</small></div>
+    <div class="stat"><b>۸</b><small>آزمایشگاه تعاملی</small></div>
+    <div class="stat"><b>۲۴</b><small>پادکست</small></div>
   </div>
 </div>
 
@@ -486,6 +889,7 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
     <button class="tabBtn" data-tab="sessions"><i data-lucide="play-square" style="width:15px;height:15px"></i> جلسات</button>
     <button class="tabBtn" data-tab="syllabus"><i data-lucide="list" style="width:15px;height:15px"></i> سیلابس</button>
     <button class="tabBtn" data-tab="rl"><i data-lucide="gamepad-2" style="width:15px;height:15px"></i> یادگیری تقویتی</button>
+    <button class="tabBtn" data-tab="lab"><i data-lucide="flask-conical" style="width:15px;height:15px"></i> آزمایشگاه تعاملی</button>
     <button class="tabBtn" data-tab="evaluation"><i data-lucide="award" style="width:15px;height:15px"></i> ارزشیابی</button>
     <button class="tabBtn" data-tab="projects"><i data-lucide="rocket" style="width:15px;height:15px"></i> پروژه‌ها</button>
     <button class="tabBtn" data-tab="proposal"><i data-lucide="file-text" style="width:15px;height:15px"></i> پروپوزال</button>
@@ -523,15 +927,24 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
         </div>
       </div>
 
+      <div class="encBanner" style="margin-top:18px">
+        <div class="encBannerInner">
+          <div class="encText">
+            <h3>🧪 آزمایشگاه تعاملی هوش مصنوعی</h3>
+            <p>۸ پنجره تعاملی: گرادیان نزولی، رگرسیون و بیش‌برازش، شبکه عصبی زنده، K-Means، شناسایی پارامتر با GA، کانولوشن، Q-Learning و دمای LLM.</p>
+          </div>
+          <a href="#lab" data-tab-link="lab" class="encBtn"><i data-lucide="flask-conical" style="width:18px;height:18px"></i> ورود</a>
+        </div>
+      </div>
       <!-- Encyclopedia -->
       <div class="encBanner">
         <div class="encBannerInner">
           <div class="encText">
             <h3>📚 دائره‌المعارف جامع هوش مصنوعی</h3>
-            <p>۱۵۰+ اصطلاح تخصصی، نقشه ذهنی سه‌بعدی، مرزهای پژوهش و آزمون خودسنجی.</p>
+            <p>اصطلاحات تخصصی با توضیح کامل، نقشه ذهنی تعاملی، چرخه AI، مرزهای پژوهش، پرسش‌های متداول و آزمون خودسنجی — همین‌جا در هاب.</p>
           </div>
-          <a href="encyclopedia.html" class="encBtn">
-            <i data-lucide="external-link" style="width:18px;height:18px"></i>
+          <a href="#encyclopedia" data-tab-link="encyclopedia" class="encBtn">
+            <i data-lucide="arrow-left" style="width:18px;height:18px"></i>
             ورود
           </a>
         </div>
@@ -549,9 +962,10 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
           <div class="eyebrow">24 SESSIONS</div>
           <h2>جلسات درس</h2>
         </div>
-        <p class="lead">روی هر جلسه آماده کلیک کنید. جلسات با نشان سبز آماده هستند.</p>
+        <p class="lead">هر جلسه دو خروجی دارد: محتوای جلسه و پادکست/ارائه مجزا. آزمایشگاه‌های تعاملی مرتبط هم زیر هر جلسه آمده‌اند.</p>
       </div>
       <div class="sessionsGrid" id="sessionsGrid"></div>
+      <p class="folderNote">ساختار پوشه‌ها: <code>sessions/session-XX/index.html</code> و <code>sessions/session-XX/podcast-XX/index.html</code></p>
     </div>
   </section>
 </div>
@@ -574,6 +988,7 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
               <th>عنوان جلسه</th>
               <th>فاز</th>
               <th>مباحث کلیدی</th>
+              <th>محتوا</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -599,6 +1014,22 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
   </section>
 </div>
 
+<!-- TAB: LAB -->
+<div class="tabContent" id="tab-lab">
+  <section class="section">
+    <div class="container">
+      <div class="sectionHead">
+        <div>
+          <div class="eyebrow">INTERACTIVE AI LAB</div>
+          <h2>آزمایشگاه تعاملی هوش مصنوعی</h2>
+        </div>
+        <p class="lead">هر کارت یک پنجره تعاملی باز می‌کند که الگوریتم را واقعاً در مرورگر اجرا می‌کند — پارامترها را تغییر دهید و نتیجه را همان لحظه ببینید.</p>
+      </div>
+      <div class="labIntro"><i data-lucide="lightbulb"></i><div><b>پیشنهاد استفاده:</b> پیش از هر جلسه، آزمایشگاه مرتبط با آن را باز کنید و با پارامترها بازی کنید؛ سپس همان الگوریتم را در Notebook همان جلسه در Colab پیاده‌سازی کنید. لینک مستقیم هر پنجره را هم می‌توانید در کلاس به اشتراک بگذارید.</div></div>
+      <div class="labGrid" id="labGrid"></div>
+    </div>
+  </section>
+</div>
 <!-- TAB: EVALUATION -->
 <div class="tabContent" id="tab-evaluation">
   <section class="section">
@@ -719,28 +1150,235 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
 
 <!-- TAB: ENCYCLOPEDIA -->
 <div class="tabContent" id="tab-encyclopedia">
-  <section class="section">
+  <div class="encNav">
+    <div class="container navin">
+      <a href="#map">نقشه مفهومی</a>
+      <a href="#cycle">چرخه AI</a>
+      <a href="#clusters">خوشه‌ها</a>
+      <a href="#terms">اصطلاحات</a>
+      <a href="#frontiers">مرزهای پژوهش</a>
+      <a href="#faq">پرسش‌های متداول</a>
+      <a href="#quiz">پرسش کلاسی</a>
+      <a href="#path">مسیر یادگیری</a>
+    </div>
+  </div>
+  <section class="section" style="padding-bottom:0">
     <div class="container">
       <div class="sectionHead">
         <div>
           <div class="eyebrow">AI ENCYCLOPEDIA</div>
-          <h2>دائره‌المعارف هوش مصنوعی</h2>
+          <h2>دانشنامه تعاملی جامع هوش مصنوعی</h2>
         </div>
+        <p class="lead">نقشه مفهومی، دائره‌المعارف تعاملی و مسیر یادگیری از مبانی ریاضی تا مدل‌های مولد، عامل‌های هوشمند و مرزهای پژوهش.</p>
       </div>
-      <div class="encBanner" style="margin-top:0">
-        <div class="encBannerInner">
-          <div class="encText">
-            <h3>🎯 ۱۵۰+ اصطلاح در ۶ خوشه</h3>
-            <p>نقشه ذهنی • اصطلاحات • مرزهای پژوهش • پرسش‌ها • آزمون</p>
-          </div>
-          <a href="encyclopedia.html" class="encBtn">
-            <i data-lucide="arrow-left" style="width:18px;height:18px"></i>
-            ورود
-          </a>
-        </div>
+      <div class="encIntro">
+        <div class="stat"><b id="encTermCount">—</b><small>اصطلاح تخصصی</small></div>
+        <div class="stat"><b>۶</b><small>خوشه دانش</small></div>
+        <div class="stat"><b id="encFaqCount">—</b><small>پرسش متداول</small></div>
+        <div class="stat"><b id="encQuizCount">—</b><small>پرسش خودسنجی</small></div>
       </div>
     </div>
   </section>
+
+
+<!-- ============ MIND MAP ============ -->
+<section class="section" id="map">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">CONCEPTUAL CONSTELLATION</div>
+        <h2>نقشه ذهنی سه‌بعدی هوش مصنوعی</h2>
+      </div>
+      <p class="lead">روی گوی‌های اصلی کلیک کنید تا زیرشاخه‌ها باز شوند. با کلیک روی هر زیرشاخه، توضیحات کامل آن باز می‌شود.</p>
+    </div>
+    <div class="constellationWrap">
+      <div class="constellation" id="constellation">
+        <canvas id="mindmapCanvas"></canvas>
+        <div class="centerOrb"><div><strong>AI</strong><small>هوش مصنوعی</small></div></div>
+
+        <div class="orb o1" data-cluster="learning"><div><b>یادگیری</b><small>ML · DL · RL</small></div></div>
+        <div class="orb o2" data-cluster="perception"><div><b>ادراک و زبان</b><small>CV · NLP · Audio</small></div></div>
+        <div class="orb o3" data-cluster="modern"><div><b>AI مدرن</b><small>GenAI · LLM · Agent</small></div></div>
+        <div class="orb o4" data-cluster="reason"><div><b>استدلال و عمل</b><small>Planning · Robotics</small></div></div>
+        <div class="orb o5" data-cluster="foundation"><div><b>مبانی</b><small>Math · Concepts</small></div></div>
+        <div class="orb o6" data-cluster="engineering"><div><b>مهندسی و ایمنی</b><small>MLOps · Safety</small></div></div>
+
+        <div class="hint">💡 روی گوی‌ها کلیک کنید</div>
+        <div class="legend">
+          <span>● ۶ خوشه اصلی</span>
+          <span>⌁ زیرشاخه‌ها با کلیک باز می‌شوند</span>
+          <span>✦ حرکت ماوس برای چرخش</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AI CYCLE ============ -->
+<section class="section" id="cycle">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">AI LIFECYCLE</div>
+        <h2>چرخه کلی هوش مصنوعی</h2>
+      </div>
+      <p class="lead">از داده خام تا تصمیم و بازخورد — یک چرخه پیوسته بهبود.</p>
+    </div>
+    <div class="cycle" id="cycleContainer"></div>
+  </div>
+</section>
+
+<!-- ============ CLUSTERS ============ -->
+<section class="section" id="clusters">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">KNOWLEDGE CLUSTERS</div>
+        <h2>خوشه‌های اصلی دانش</h2>
+      </div>
+      <p class="lead">ساختار دانشنامه از ۶ خوشه اصلی تشکیل شده که هر کدام زیرشاخه‌های تخصصی خود را دارند.</p>
+    </div>
+    <div class="clusters">
+      <article class="cluster" id="cluster-foundation" style="--accent:#4dd4ff" data-keywords="foundation math probability optimization agi narrow">
+        <div class="count">01</div><div class="clusterIcon"><i data-lucide="sigma"></i></div>
+        <h3>مبانی و مفاهیم بنیادی</h3>
+        <p>تعریف AI، اهداف، تاریخچه، طبقه‌بندی و ریاضیات موردنیاز.</p>
+        <div class="tags"><span class="tag">AI</span><span class="tag">AGI</span><span class="tag">ASI</span><span class="tag">Math</span><span class="tag">Probability</span><span class="tag">Optimization</span><span class="tag">Model</span><span class="tag">Loss</span></div>
+      </article>
+      <article class="cluster" id="cluster-learning" style="--accent:#a78bfa" data-keywords="machine learning deep learning supervised unsupervised reinforcement neural cnn rnn lstm transformer">
+        <div class="count">02</div><div class="clusterIcon"><i data-lucide="network"></i></div>
+        <h3>یادگیری ماشین و عمیق</h3>
+        <p>پارادایم‌های یادگیری، شبکه‌های عصبی، آموزش، تعمیم و انتقال دانش.</p>
+        <div class="tags"><span class="tag">ML</span><span class="tag">DL</span><span class="tag">RL</span><span class="tag">CNN</span><span class="tag">RNN</span><span class="tag">LSTM</span><span class="tag">Transformer</span><span class="tag">GAN</span></div>
+      </article>
+      <article class="cluster" id="cluster-perception" style="--accent:#5ee8a8" data-keywords="computer vision nlp speech language embedding transformer attention tokenization">
+        <div class="count">03</div><div class="clusterIcon"><i data-lucide="scan-face"></i></div>
+        <h3>ادراک، زبان و بازنمایی</h3>
+        <p>بینایی ماشین، NLP، گفتار، Embedding و معماری Transformer.</p>
+        <div class="tags"><span class="tag">CV</span><span class="tag">NLP</span><span class="tag">Speech</span><span class="tag">Embedding</span><span class="tag">Attention</span><span class="tag">LLM</span></div>
+      </article>
+      <article class="cluster" id="cluster-reason" style="--accent:#f5c76a" data-keywords="reasoning search planning knowledge robotics multi agent control expert system">
+        <div class="count">04</div><div class="clusterIcon"><i data-lucide="route"></i></div>
+        <h3>استدلال، دانش، برنامه‌ریزی و اقدام</h3>
+        <p>استدلال، جست‌وجو، نمایش دانش، عامل‌ها، رباتیک و کنترل هوشمند.</p>
+        <div class="tags"><span class="tag">Reasoning</span><span class="tag">Search</span><span class="tag">Planning</span><span class="tag">Knowledge</span><span class="tag">Robotics</span><span class="tag">MAS</span><span class="tag">Expert</span><span class="tag">Control</span></div>
+      </article>
+      <article class="cluster" id="cluster-modern" style="--accent:#ff7e93" data-keywords="generative ai foundation model multimodal rag agent prompt finetuning llm diffusion">
+        <div class="count">05</div><div class="clusterIcon"><i data-lucide="sparkles"></i></div>
+        <h3>هوش مصنوعی مولد و مدرن</h3>
+        <p>Generative AI، Foundation Models، LLM، RAG، Multimodal و Agentic AI.</p>
+        <div class="tags"><span class="tag">GenAI</span><span class="tag">LLM</span><span class="tag">RAG</span><span class="tag">Agents</span><span class="tag">Diffusion</span><span class="tag">Fine-Tuning</span><span class="tag">RLHF</span><span class="tag">Prompt</span></div>
+      </article>
+      <article class="cluster" id="cluster-engineering" style="--accent:#74a7ff" data-keywords="applications evaluation mlops deployment ethics safety security governance xai bias privacy">
+        <div class="count">06</div><div class="clusterIcon"><i data-lucide="shield-check"></i></div>
+        <h3>کاربرد، مهندسی، ارزیابی و ایمنی</h3>
+        <p>کاربردهای AI، ارزیابی مدل، MLOps، استقرار، اخلاق، امنیت و حکمرانی.</p>
+        <div class="tags"><span class="tag">MLOps</span><span class="tag">Evaluation</span><span class="tag">Deployment</span><span class="tag">Ethics</span><span class="tag">Safety</span><span class="tag">XAI</span><span class="tag">Bias</span><span class="tag">Privacy</span></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TERMS ============ -->
+<section class="section" id="terms">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">AI GLOSSARY</div>
+        <h2>دائره‌المعارف اصطلاحات تخصصی</h2>
+      </div>
+      <p class="lead">عبارت فارسی یا انگلیسی را جست‌وجو کنید؛ با کلیک روی هر اصطلاح، توضیح کامل آن باز می‌شود.</p>
+    </div>
+    <div class="searchbar">
+      <i data-lucide="search" class="searchIcon"></i>
+      <input id="termSearch" placeholder="مثلاً: Transformer، RAG، یادگیری تقویتی، Agent، Diffusion ...">
+    </div>
+    <div class="filters" id="filters">
+      <button class="filter active" data-filter="all">همه</button>
+      <button class="filter" data-filter="foundation">مبانی</button>
+      <button class="filter" data-filter="learning">یادگیری</button>
+      <button class="filter" data-filter="perception">ادراک و زبان</button>
+      <button class="filter" data-filter="reason">استدلال و رباتیک</button>
+      <button class="filter" data-filter="modern">AI مدرن</button>
+      <button class="filter" data-filter="engineering">مهندسی و ایمنی</button>
+    </div>
+    <div class="termGrid" id="termGrid"></div>
+    <div class="empty" id="empty">اصطلاحی با این مشخصات پیدا نشد.</div>
+  </div>
+</section>
+
+<!-- ============ RESEARCH FRONTIERS ============ -->
+<section class="section" id="frontiers">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">RESEARCH FRONTIERS</div>
+        <h2>مرزهای پژوهش هوش مصنوعی</h2>
+      </div>
+      <p class="lead">حوزه‌هایی که در لبه دانش امروز قرار دارند و آینده AI را شکل می‌دهند.</p>
+    </div>
+    <div class="frontiers" id="frontiersContainer"></div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">FREQUENTLY ASKED QUESTIONS</div>
+        <h2>پرسش‌های متداول</h2>
+      </div>
+      <p class="lead">سؤالات کوتاه برای رفع ابهام‌های رایج در کلاس.</p>
+    </div>
+    <div class="accordion" id="faqList"></div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="section" id="quiz">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">CLASSROOM CHECK</div>
+        <h2>پرسش‌های کلاسی</h2>
+      </div>
+      <p class="lead">پیشرفت شما به‌صورت خودکار ذخیره می‌شود.</p>
+    </div>
+    <div class="progress"><i id="quizProgress"></i></div>
+    <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+      <button class="filter" id="resetQuiz" style="cursor:pointer">
+        <i data-lucide="rotate-ccw" style="width:14px;height:14px;display:inline;vertical-align:middle"></i>
+        بازنشانی پیشرفت
+      </button>
+      <span id="quizStatus" style="color:var(--muted);font-size:12px;align-self:center"></span>
+    </div>
+    <div class="quiz" id="quizList"></div>
+  </div>
+</section>
+
+<!-- ============ LEARNING PATH ============ -->
+<section class="section" id="path">
+  <div class="container">
+    <div class="sectionHead">
+      <div>
+        <div class="eyebrow">LEARNING PATH</div>
+        <h2>مسیر پیشنهادی یادگیری AI</h2>
+      </div>
+      <p class="lead">از مبانی ریاضی و برنامه‌نویسی تا پژوهش و استقرار سامانه‌های هوشمند.</p>
+    </div>
+    <div class="clusters">
+      <article class="cluster" style="--accent:#4dd4ff"><div class="clusterIcon"><i data-lucide="code-2"></i></div><h3>۱. برنامه‌نویسی</h3><p>Python، الگوریتم‌ها، ساختمان داده و Git</p></article>
+      <article class="cluster" style="--accent:#a78bfa"><div class="clusterIcon"><i data-lucide="calculator"></i></div><h3>۲. ریاضیات</h3><p>جبر خطی، احتمال، آمار، حساب و بهینه‌سازی</p></article>
+      <article class="cluster" style="--accent:#5ee8a8"><div class="clusterIcon"><i data-lucide="brain"></i></div><h3>۳. Machine Learning</h3><p>Regression، Classification، Clustering و Evaluation</p></article>
+      <article class="cluster" style="--accent:#f5c76a"><div class="clusterIcon"><i data-lucide="layers-3"></i></div><h3>۴. Deep Learning</h3><p>Neural Networks، CNN، RNN و Transformer</p></article>
+      <article class="cluster" style="--accent:#ff7e93"><div class="clusterIcon"><i data-lucide="wand-sparkles"></i></div><h3>۵. تخصص</h3><p>CV، NLP، Robotics، RL یا Generative AI</p></article>
+      <article class="cluster" style="--accent:#74a7ff"><div class="clusterIcon"><i data-lucide="rocket"></i></div><h3>۶. AI مدرن و پژوهش</h3><p>LLM، RAG، Agents، MLOps و پژوهش پیشرفته</p></article>
+    </div>
+  </div>
+</section>
+
+
 </div>
 
 <!-- TAB: RULES -->
@@ -806,6 +1444,730 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
   <i data-lucide="arrow-up"></i>
 </button>
 
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <button class="close" id="closeModal"><i data-lucide="x"></i></button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+
+<div class="labWin" id="labWin" role="dialog" aria-modal="true">
+  <div class="labWinBox">
+    <div class="labWinHead">
+      <span class="dots"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></span>
+      <h3 class="lwTitle"></h3>
+      <span class="sessChip lwSess"></span>
+      <button class="lwClose" title="بستن (Esc)" aria-label="بستن">✕</button>
+    </div>
+    <div class="labWinBody"></div>
+  </div>
+</div>
+<script>
+/* =====================================================================
+   آزمایشگاه تعاملی هوش مصنوعی — ۸ پنجره تعاملی (Vanilla JS + Canvas)
+   ===================================================================== */
+const AILab = (() => {
+  const root = document.documentElement;
+  const cv = n => getComputedStyle(root).getPropertyValue(n).trim() || '#4dd4ff';
+  const rgb = h => { h = h.replace('#', ''); if (h.length === 3) h = h.split('').map(c => c + c).join(''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const mix = (a, b, t) => [0, 1, 2].map(i => Math.round(a[i] + (b[i] - a[i]) * t));
+  const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+  const randn = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const fmt = (x, d = 3) => (Math.abs(x) >= 1e4 || (Math.abs(x) < 1e-3 && x !== 0)) ? x.toExponential(2) : x.toFixed(d);
+  const isMobile = () => window.innerWidth < 760;
+  const faD = v => String(v).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+
+  function fit(canvas, h) {
+    const d = window.devicePixelRatio || 1, w = Math.max(10, canvas.clientWidth);
+    canvas.width = Math.round(w * d); canvas.height = Math.round(h * d); canvas.style.height = h + 'px';
+    const c = canvas.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); c.direction = 'ltr';
+    return { c, w, h };
+  }
+  function pos(canvas, e) {
+    const r = canvas.getBoundingClientRect(), p = e.touches ? e.touches[0] : e;
+    return { x: p.clientX - r.left, y: p.clientY - r.top };
+  }
+  const theme = () => ({
+    bg: rgb(cv('--bg')), bg2: rgb(cv('--bg2')), text: rgb(cv('--text')), muted: rgb(cv('--muted')),
+    cyan: rgb(cv('--cyan')), violet: rgb(cv('--violet')), gold: rgb(cv('--gold')),
+    green: rgb(cv('--green')), red: rgb(cv('--red')), blue: rgb(cv('--blue')), pink: rgb(cv('--pink')),
+    light: root.getAttribute('data-theme') === 'light'
+  });
+
+  /* ---------- سازنده رابط کاربری ---------- */
+  function ui(panel) {
+    const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+    return {
+      slider(label, { min, max, step, value, show = v => v, log = false, on }) {
+        const w = el('div', 'ctl'); const lb = el('label'); const s = el('input');
+        s.type = 'range'; s.min = log ? Math.log10(min) : min; s.max = log ? Math.log10(max) : max;
+        s.step = log ? 0.01 : step; s.value = log ? Math.log10(value) : value;
+        const get = () => log ? Math.pow(10, +s.value) : +s.value;
+        const upd = () => lb.innerHTML = `<span>${label}</span><b>${show(get())}</b>`;
+        s.addEventListener('input', () => { upd(); on && on(get()); });
+        upd(); w.append(lb, s); panel.append(w);
+        return { get, set: v => { s.value = log ? Math.log10(v) : v; upd(); } };
+      },
+      seg(label, options, value, on) {
+        const w = el('div', 'ctl'); if (label) w.append(el('label', null, `<span>${label}</span>`));
+        const g = el('div', 'seg'); let cur = value;
+        options.forEach(([k, t]) => {
+          const b = el('button', k === value ? 'on' : '', t); b.type = 'button';
+          b.onclick = () => { cur = k; g.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); on && on(k); };
+          g.append(b);
+        });
+        w.append(g); panel.append(w);
+        return { get: () => cur };
+      },
+      buttons(list) {
+        const g = el('div', 'lbtns'); const out = {};
+        list.forEach(([key, text, on, primary]) => { const b = el('button', 'lbtn' + (primary ? ' primary' : ''), text); b.type = 'button'; b.onclick = on; g.append(b); out[key] = b; });
+        panel.append(g); return out;
+      },
+      readout(keys) {
+        const g = el('div', 'readout'); const cells = {};
+        keys.forEach(([k, t]) => { const d = el('div', null, `${t}<b>—</b>`); g.append(d); cells[k] = d.querySelector('b'); });
+        panel.append(g);
+        return (k, v) => { if (cells[k]) cells[k].textContent = v; };
+      },
+      note(html) { const n = el('div', 'labNote', html); panel.append(n); return n; },
+      html(cls, html) { const n = el('div', cls, html); panel.append(n); return n; }
+    };
+  }
+
+  /* ================================================================
+     ۱) گرادیان نزولی
+     ================================================================ */
+  const W_GD = {
+    id: 'gd', title: 'گرادیان نزولی و بهینه‌سازها', icon: 'mountain-snow', color: '#4dd4ff', sessions: [5, 9],
+    desc: 'روی سطح تابع زیان کلیک کنید و مسیر GD، Momentum و Adam را هم‌زمان مقایسه کنید.',
+    preview(c, w, h, T) {
+      for (let i = 9; i > 0; i--) { c.beginPath(); c.ellipse(w / 2, h / 2, i * w / 20, i * h / 26, 0, 0, 7); c.strokeStyle = rgba(T.cyan, .08 + (9 - i) * .04); c.stroke(); }
+      c.beginPath(); let x = w * .1, y = h * .2; c.moveTo(x, y);
+      for (let k = 0; k < 9; k++) { x += (w / 2 - x) * .35; y = h / 2 + (k % 2 ? 1 : -1) * (h * .3) * Math.pow(.6, k); c.lineTo(x, y); }
+      c.strokeStyle = rgba(T.red, .9); c.lineWidth = 2; c.stroke();
+      c.beginPath(); c.moveTo(w * .1, h * .2); c.quadraticCurveTo(w * .3, h * .55, w / 2, h / 2); c.strokeStyle = rgba(T.green, .9); c.stroke();
+    },
+    build(stage, P, api) {
+      const FN = {
+        bowl: { n: 'کاسه', f: (x, y) => x * x + y * y, X: [-3, 3], Y: [-3, 3], s: [-2.6, 2.2] },
+        valley: { n: 'دره باریک', f: (x, y) => 0.08 * x * x + 2.5 * y * y, X: [-3, 3], Y: [-3, 3], s: [-2.8, 1.6] },
+        rosen: { n: 'روزنبراک', f: (x, y) => (1 - x) ** 2 + 10 * (y - x * x) ** 2, X: [-2, 2], Y: [-1, 3], s: [-1.6, 2.4] },
+        himmel: { n: 'چند کمینه‌ای', f: (x, y) => ((x * x + y - 11) ** 2 + (x + y * y - 7) ** 2) / 40, X: [-5, 5], Y: [-5, 5], s: [0.2, 0.3] }
+      };
+      const OPT = [{ k: 'gd', n: 'GD', c: 'red' }, { k: 'mom', n: 'Momentum', c: 'gold' }, { k: 'adam', n: 'Adam', c: 'green' }];
+      const canvas = document.createElement('canvas'); stage.append(canvas);
+      stage.append(Object.assign(document.createElement('div'), { className: 'labHint', textContent: 'روی هر نقطه از سطح کلیک کنید تا بهینه‌سازها از آنجا شروع کنند.' }));
+      const U = ui(P);
+      let fk = 'valley', F = FN[fk], start = F.s.slice(), runs = [], heat = null, running = true, it = 0;
+      U.seg('تابع زیان', Object.entries(FN).map(([k, v]) => [k, v.n]), fk, k => { fk = k; F = FN[k]; start = F.s.slice(); heat = null; reset(); });
+      const lr = U.slider('نرخ یادگیری η', { min: 0.001, max: 0.6, value: 0.05, log: true, show: v => v.toFixed(3), on: reset });
+      const beta = U.slider('ضریب مومنتوم β', { min: 0, max: 0.98, step: 0.01, value: 0.9, show: v => v.toFixed(2), on: reset });
+      const speed = U.slider('سرعت (گام در فریم)', { min: 1, max: 10, step: 1, value: 2 });
+      const B = U.buttons([['run', '⏸ توقف', () => { running = !running; B.run.textContent = running ? '⏸ توقف' : '▶ ادامه'; }, true], ['reset', '↺ شروع دوباره', reset]]);
+      const R = U.readout([['it', 'تکرار'], ['gd', 'زیان GD'], ['mom', 'زیان Momentum'], ['adam', 'زیان Adam']]);
+      U.note('<b>چه ببینیم؟</b> در «دره باریک» GD زیگزاگ می‌زند چون شیب در دو جهت بسیار متفاوت است؛ مومنتوم این نوسان را میرا می‌کند و Adam گام هر جهت را جداگانه مقیاس می‌دهد. نرخ یادگیری را زیاد کنید تا <b>واگرایی</b> را ببینید.');
+      const grad = (x, y) => { const h = 1e-4; return [(F.f(x + h, y) - F.f(x - h, y)) / (2 * h), (F.f(x, y + h) - F.f(x, y - h)) / (2 * h)]; };
+      function reset() { it = 0; runs = OPT.map(o => ({ ...o, x: start[0], y: start[1], vx: 0, vy: 0, m: [0, 0], v: [0, 0], path: [[start[0], start[1]]], dead: false })); }
+      let g = fit(canvas, isMobile() ? 320 : 430);
+      const toPx = (x, y) => [(x - F.X[0]) / (F.X[1] - F.X[0]) * g.w, (1 - (y - F.Y[0]) / (F.Y[1] - F.Y[0])) * g.h];
+      const toW = (px, py) => [F.X[0] + px / g.w * (F.X[1] - F.X[0]), F.Y[0] + (1 - py / g.h) * (F.Y[1] - F.Y[0])];
+      function buildHeat() {
+        const T = theme(), s = 3, cw = Math.ceil(g.w / s), ch = Math.ceil(g.h / s), vals = new Float32Array(cw * ch);
+        let lo = Infinity, hi = -Infinity;
+        for (let j = 0; j < ch; j++) for (let i = 0; i < cw; i++) { const [x, y] = toW(i * s, j * s); const v = Math.log(F.f(x, y) + 1e-3); vals[j * cw + i] = v; lo = Math.min(lo, v); hi = Math.max(hi, v); }
+        const off = document.createElement('canvas'); off.width = cw; off.height = ch; const oc = off.getContext('2d'); const img = oc.createImageData(cw, ch);
+        const A = T.light ? [235, 242, 252] : T.bg, Bc = T.light ? T.blue : T.cyan;
+        for (let k = 0; k < vals.length; k++) {
+          const t = (vals[k] - lo) / (hi - lo); let col = mix(Bc, A, Math.pow(t, .8));
+          if (((t * 16) % 1) < .07) col = mix(col, T.text, .25);
+          img.data.set([...col, 255], k * 4);
+        }
+        oc.putImageData(img, 0, 0); heat = off;
+      }
+      function step() {
+        const η = lr.get(), β = beta.get();
+        runs.forEach(r => {
+          if (r.dead) return;
+          const [gx, gy] = grad(r.x, r.y);
+          if (r.k === 'gd') { r.x -= η * gx; r.y -= η * gy; }
+          else if (r.k === 'mom') { r.vx = β * r.vx + gx; r.vy = β * r.vy + gy; r.x -= η * r.vx; r.y -= η * r.vy; }
+          else { const b1 = .9, b2 = .999, t = it + 1; r.m = [b1 * r.m[0] + (1 - b1) * gx, b1 * r.m[1] + (1 - b1) * gy]; r.v = [b2 * r.v[0] + (1 - b2) * gx * gx, b2 * r.v[1] + (1 - b2) * gy * gy];
+            r.x -= η * (r.m[0] / (1 - b1 ** t)) / (Math.sqrt(r.v[0] / (1 - b2 ** t)) + 1e-8); r.y -= η * (r.m[1] / (1 - b1 ** t)) / (Math.sqrt(r.v[1] / (1 - b2 ** t)) + 1e-8); }
+          if (!isFinite(r.x) || !isFinite(r.y) || Math.abs(r.x) > 50 || Math.abs(r.y) > 50) r.dead = true; else r.path.push([r.x, r.y]);
+        });
+        it++;
+      }
+      function draw() {
+        if (!heat) buildHeat();
+        const T = theme(), c = g.c; c.clearRect(0, 0, g.w, g.h); c.imageSmoothingEnabled = true; c.drawImage(heat, 0, 0, g.w, g.h);
+        runs.forEach(r => {
+          c.beginPath(); r.path.forEach(([x, y], i) => { const [px, py] = toPx(x, y); i ? c.lineTo(px, py) : c.moveTo(px, py); });
+          c.strokeStyle = rgba(T[r.c], .95); c.lineWidth = 2.2; c.stroke();
+          const [px, py] = toPx(...r.path[r.path.length - 1]); c.beginPath(); c.arc(px, py, 5, 0, 7); c.fillStyle = rgba(T[r.c], 1); c.fill();
+          R(r.k, r.dead ? 'واگرا ✕' : fmt(F.f(r.x, r.y), 4));
+        });
+        const [sx, sy] = toPx(...start); c.beginPath(); c.arc(sx, sy, 6, 0, 7); c.strokeStyle = rgba(T.text, .9); c.lineWidth = 2; c.stroke();
+        c.font = '12px Vazirmatn'; let ly = 18; OPT.forEach(o => { c.fillStyle = rgba(T[o.c], 1); c.fillRect(10, ly - 9, 14, 4); c.fillStyle = rgba(T.text, .85); c.fillText(o.n, 30, ly - 3); ly += 18; });
+        R('it', it);
+      }
+      canvas.addEventListener('pointerdown', e => { const p = pos(canvas, e); start = toW(p.x, p.y); reset(); running = true; B.run.textContent = '⏸ توقف'; });
+      api.onResize(() => { g = fit(canvas, isMobile() ? 320 : 430); heat = null; });
+      reset();
+      api.loop(() => { if (running && it < 600) for (let i = 0; i < speed.get(); i++) step(); draw(); });
+    }
+  };
+
+  /* ================================================================
+     ۲) رگرسیون چندجمله‌ای و بیش‌برازش
+     ================================================================ */
+  function solve(A, b) {
+    const n = b.length; A = A.map((r, i) => [...r, b[i]]);
+    for (let i = 0; i < n; i++) {
+      let p = i; for (let k = i + 1; k < n; k++) if (Math.abs(A[k][i]) > Math.abs(A[p][i])) p = k;
+      [A[i], A[p]] = [A[p], A[i]]; const d = A[i][i] || 1e-12;
+      for (let k = i + 1; k < n; k++) { const f = A[k][i] / d; for (let j = i; j <= n; j++) A[k][j] -= f * A[i][j]; }
+    }
+    const x = new Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) { let s = A[i][n]; for (let j = i + 1; j < n; j++) s -= A[i][j] * x[j]; x[i] = s / (A[i][i] || 1e-12); }
+    return x;
+  }
+  const W_REG = {
+    id: 'reg', title: 'رگرسیون و بیش‌برازش', icon: 'chart-spline', color: '#a78bfa', sessions: [5],
+    desc: 'نقطه اضافه کنید، درجه چندجمله‌ای و منظم‌سازی را تغییر دهید و منحنی خطای آموزش/آزمون را ببینید.',
+    preview(c, w, h, T) {
+      for (let i = 0; i < 14; i++) { const x = (i + .5) / 14, y = .5 + .32 * Math.sin(6.28 * x) + (Math.sin(i * 7.3) * .08); c.beginPath(); c.arc(x * w, (1 - y) * h, 3.2, 0, 7); c.fillStyle = rgba(T.cyan, .9); c.fill(); }
+      c.beginPath(); for (let px = 0; px <= w; px += 2) { const x = px / w; const y = .5 + .32 * Math.sin(6.28 * x) + .05 * Math.sin(40 * x); px ? c.lineTo(px, (1 - y) * h) : c.moveTo(px, (1 - y) * h); }
+      c.strokeStyle = rgba(T.violet, 1); c.lineWidth = 2; c.stroke();
+    },
+    build(stage, P, api) {
+      const c1 = document.createElement('canvas'), c2 = document.createElement('canvas'); stage.append(c1, c2);
+      stage.append(Object.assign(document.createElement('div'), { className: 'labHint', textContent: 'کلیک: افزودن نقطه • کلیک روی نقطه موجود: حذف • نقاط توخالی داده آزمون هستند.' }));
+      const U = ui(P);
+      let pts = [];
+      const sample = () => { pts = []; for (let i = 0; i < 18; i++) { const x = (i + Math.random() * .8 + .1) / 18; pts.push([x, .5 + .3 * Math.sin(2 * Math.PI * x) + randn() * .06]); } };
+      const lin = () => { pts = []; for (let i = 0; i < 16; i++) { const x = Math.random(); pts.push([x, .2 + .6 * x + randn() * .05]); } };
+      sample();
+      const deg = U.slider('درجه چندجمله‌ای', { min: 1, max: 15, step: 1, value: 3, on: draw });
+      const lam = U.slider('منظم‌سازی Ridge λ', { min: 1e-8, max: 10, value: 1e-8, log: true, show: v => v < 2e-8 ? '0' : v.toExponential(1), on: draw });
+      let split = true;
+      U.seg('تقسیم داده', [['on', 'آموزش / آزمون'], ['off', 'همه آموزشی']], 'on', k => { split = k === 'on'; draw(); });
+      U.buttons([['s', 'داده سینوسی', () => { sample(); draw(); }], ['l', 'داده خطی', () => { lin(); draw(); }], ['c', 'پاک کردن', () => { pts = []; draw(); }]]);
+      const R = U.readout([['tr', 'MSE آموزش'], ['te', 'MSE آزمون'], ['n', 'تعداد نقاط'], ['w', 'بزرگ‌ترین |w|']]);
+      U.note('<b>چه ببینیم؟</b> با افزایش درجه، خطای آموزش همیشه کم می‌شود اما خطای آزمون از جایی به بعد <b>بالا می‌رود</b> — این همان بیش‌برازش است. λ را زیاد کنید تا وزن‌ها کوچک و منحنی هموار شود.');
+      const isTest = i => split && i % 3 === 2;
+      const feats = (x, d) => { const u = 2 * x - 1, f = [1]; for (let j = 1; j <= d; j++) f.push(f[j - 1] * u); return f; };
+      function fitPoly(d, λ) {
+        const tr = pts.filter((p, i) => !isTest(i)); if (tr.length === 0) return null;
+        const n = d + 1, A = Array.from({ length: n }, () => new Array(n).fill(0)), b = new Array(n).fill(0);
+        tr.forEach(([x, y]) => { const f = feats(x, d); for (let i = 0; i < n; i++) { b[i] += f[i] * y; for (let j = 0; j < n; j++) A[i][j] += f[i] * f[j]; } });
+        for (let i = 1; i < n; i++) A[i][i] += λ * tr.length; A[0][0] += 1e-10;
+        return solve(A, b);
+      }
+      const pred = (w, x) => feats(x, w.length - 1).reduce((s, f, i) => s + f * w[i], 0);
+      const mse = (w, test) => { const s = pts.filter((p, i) => test ? isTest(i) : !isTest(i)); if (!s.length || !w) return NaN; return s.reduce((a, [x, y]) => a + (pred(w, x) - y) ** 2, 0) / s.length; };
+      let g1 = fit(c1, isMobile() ? 280 : 360), g2 = fit(c2, 150);
+      function draw() {
+        const T = theme(), c = g1.c, W = g1.w, H = g1.h; c.clearRect(0, 0, W, H);
+        c.strokeStyle = rgba(T.text, .06); for (let i = 1; i < 10; i++) { c.beginPath(); c.moveTo(i * W / 10, 0); c.lineTo(i * W / 10, H); c.moveTo(0, i * H / 10); c.lineTo(W, i * H / 10); c.stroke(); }
+        const w = fitPoly(deg.get(), lam.get());
+        if (w) { c.save(); c.beginPath(); for (let px = 0; px <= W; px += 2) { const y = pred(w, px / W); px ? c.lineTo(px, (1 - y) * H) : c.moveTo(px, (1 - y) * H); } c.strokeStyle = rgba(T.violet, 1); c.lineWidth = 2.6; c.stroke(); c.restore(); }
+        pts.forEach(([x, y], i) => { c.beginPath(); c.arc(x * W, (1 - y) * H, 5.5, 0, 7); if (isTest(i)) { c.strokeStyle = rgba(T.gold, 1); c.lineWidth = 2; c.stroke(); } else { c.fillStyle = rgba(T.cyan, 1); c.fill(); } });
+        R('tr', fmt(mse(w, false), 4)); R('te', split ? fmt(mse(w, true), 4) : '—'); R('n', pts.length); R('w', w ? fmt(Math.max(...w.map(Math.abs)), 2) : '—');
+        // منحنی خطا بر حسب درجه
+        const d = g2.c, W2 = g2.w, H2 = g2.h; d.clearRect(0, 0, W2, H2);
+        const ds = [...Array(15)].map((_, i) => i + 1), tr = [], te = [];
+        ds.forEach(k => { const ww = fitPoly(k, lam.get()); tr.push(mse(ww, false)); te.push(split ? mse(ww, true) : NaN); });
+        const all = [...tr, ...te].filter(isFinite).map(v => Math.log10(v + 1e-6)); const lo = Math.min(...all, -4), hi = Math.max(...all, -1);
+        const X = k => 34 + (k - 1) / 14 * (W2 - 48), Y = v => 14 + (1 - (Math.log10(v + 1e-6) - lo) / (hi - lo + 1e-9)) * (H2 - 36);
+        d.fillStyle = rgba(T.text, .5); d.font = '11px Vazirmatn'; d.fillText('خطا (لگاریتمی) بر حسب درجه', W2 - 160, 12);
+        [[tr, T.cyan, 'آموزش'], [te, T.gold, 'آزمون']].forEach(([arr, col, name], q) => {
+          d.beginPath(); let st = false; arr.forEach((v, i) => { if (!isFinite(v)) return; const x = X(i + 1), y = Y(v); st ? d.lineTo(x, y) : d.moveTo(x, y); st = true; });
+          d.strokeStyle = rgba(col, 1); d.lineWidth = 2; d.stroke(); d.fillStyle = rgba(col, 1); d.fillText(name, 40 + q * 60, 12);
+        });
+        d.strokeStyle = rgba(T.violet, .8); d.setLineDash([4, 4]); d.beginPath(); d.moveTo(X(deg.get()), 14); d.lineTo(X(deg.get()), H2 - 22); d.stroke(); d.setLineDash([]);
+        d.fillStyle = rgba(T.text, .55); ds.forEach(k => { if (k % 2) d.fillText(k, X(k) - 3, H2 - 6); });
+      }
+      c1.addEventListener('pointerdown', e => {
+        const p = pos(c1, e), x = p.x / g1.w, y = 1 - p.y / g1.h;
+        const i = pts.findIndex(([a, b]) => Math.hypot((a - x) * g1.w, (b - y) * g1.h) < 10);
+        if (i >= 0) pts.splice(i, 1); else pts.push([x, y]); draw();
+      });
+      api.onResize(() => { g1 = fit(c1, isMobile() ? 280 : 360); g2 = fit(c2, 150); draw(); });
+      draw();
+    }
+  };
+
+  /* ================================================================
+     ۳) شبکه عصبی — طبقه‌بندی دوبعدی
+     ================================================================ */
+  const W_NN = {
+    id: 'nn', title: 'شبکه عصبی زنده (طبقه‌بندی)', icon: 'brain-circuit', color: '#5ee8a8', sessions: [9],
+    desc: 'یک MLP واقعی در مرورگر آموزش می‌بیند؛ مرز تصمیم، وزن‌ها و تابع زیان را لحظه‌به‌لحظه ببینید.',
+    preview(c, w, h, T) {
+      const g = c.createRadialGradient(w / 2, h / 2, 5, w / 2, h / 2, h * .6); g.addColorStop(0, rgba(T.cyan, .35)); g.addColorStop(1, rgba(T.red, .25)); c.fillStyle = g; c.fillRect(0, 0, w, h);
+      for (let i = 0; i < 70; i++) { const a = Math.random() * 6.28, r = i % 2 ? Math.random() * .25 : .35 + Math.random() * .12; c.beginPath(); c.arc(w / 2 + Math.cos(a) * r * h * 1.4, h / 2 + Math.sin(a) * r * h, 2.6, 0, 7); c.fillStyle = rgba(i % 2 ? T.cyan : T.red, 1); c.fill(); }
+    },
+    build(stage, P, api) {
+      const c1 = document.createElement('canvas'), c2 = document.createElement('canvas'); stage.append(c1, c2);
+      stage.append(Object.assign(document.createElement('div'), { className: 'labHint', textContent: 'روی صفحه کلیک کنید تا نقطه‌ای از کلاس انتخاب‌شده اضافه شود.' }));
+      const U = ui(P);
+      let data = [], net, epoch = 0, running = true, cls = 1, ds = 'circle';
+      const gen = k => {
+        data = []; const N = 160;
+        for (let i = 0; i < N; i++) {
+          let x, y, l;
+          if (k === 'circle') { const r = i % 2 ? Math.random() * .45 : .6 + Math.random() * .3, a = Math.random() * 6.28; x = r * Math.cos(a); y = r * Math.sin(a); l = i % 2 ? 1 : 0; }
+          else if (k === 'xor') { x = Math.random() * 2 - 1; y = Math.random() * 2 - 1; if (Math.abs(x) < .08 || Math.abs(y) < .08) { i--; continue; } l = x * y > 0 ? 1 : 0; }
+          else if (k === 'moons') { const t = Math.random() * Math.PI; if (i % 2) { x = Math.cos(t) * .6 - .25; y = Math.sin(t) * .6 - .15; l = 1; } else { x = .25 - Math.cos(t) * .6; y = .15 - Math.sin(t) * .6; l = 0; } x += randn() * .05; y += randn() * .05; }
+          else { const t = (i >> 1) / (N / 2) * 3.2 + .3, r = t / 3.6 * .9, s = i % 2 ? 0 : Math.PI; x = r * Math.cos(t + s) + randn() * .03; y = r * Math.sin(t + s) + randn() * .03; l = i % 2; }
+          data.push([x, y, l]);
+        }
+      };
+      U.seg('مجموعه داده', [['circle', 'دایره'], ['xor', 'XOR'], ['moons', 'ماه‌ها'], ['spiral', 'مارپیچ']], ds, k => { ds = k; gen(k); init(); });
+      const hid = U.slider('نورون‌های هر لایه پنهان', { min: 1, max: 16, step: 1, value: 6, on: init });
+      let layers = 2, act = 'tanh';
+      U.seg('تعداد لایه پنهان', [[1, '۱'], [2, '۲'], [3, '۳']], 2, k => { layers = k; init(); });
+      U.seg('تابع فعال‌سازی', [['tanh', 'tanh'], ['relu', 'ReLU'], ['lin', 'خطی']], 'tanh', k => { act = k; init(); });
+      const lr = U.slider('نرخ یادگیری', { min: 0.003, max: 1, value: 0.1, log: true, show: v => v.toFixed(3) });
+      U.seg('افزودن نقطه از کلاس', [[1, '● آبی'], [0, '● قرمز']], 1, k => cls = k);
+      const B = U.buttons([['run', '⏸ توقف', () => { running = !running; B.run.textContent = running ? '⏸ توقف' : '▶ آموزش'; }, true], ['init', '↺ وزن‌های تصادفی', init]]);
+      const R = U.readout([['ep', 'ایپاک'], ['loss', 'زیان BCE'], ['acc', 'دقت'], ['par', 'تعداد پارامتر']]);
+      U.note('<b>آزمایش کنید:</b> XOR با فعال‌سازی «خطی» هرگز حل نمی‌شود (چرا؟). مارپیچ به لایه‌های بیشتر نیاز دارد. نرخ یادگیری خیلی بزرگ باعث نوسان زیان می‌شود.');
+      const A = { tanh: [Math.tanh, a => 1 - a * a], relu: [z => z > 0 ? z : 0, a => a > 0 ? 1 : 0], lin: [z => z, () => 1] };
+      function init() {
+        const sizes = [2, ...Array(layers).fill(hid.get()), 1];
+        net = sizes.slice(1).map((n, i) => ({ W: [...Array(n)].map(() => [...Array(sizes[i])].map(() => randn() * Math.sqrt((act === 'relu' ? 2 : 1) / sizes[i]))), b: new Array(n).fill(act === 'relu' ? .05 : 0) }));
+        net.forEach(L => { L.vW = L.W.map(r => r.map(() => 0)); L.vb = L.b.map(() => 0); });
+        epoch = 0; R('par', net.reduce((s, L) => s + L.W.length * (L.W[0].length + 1), 0));
+      }
+      function forward(x) {
+        const as = [x]; let a = x;
+        net.forEach((L, li) => { const last = li === net.length - 1; a = L.W.map((w, j) => { const z = w.reduce((s, wi, k) => s + wi * a[k], L.b[j]); return last ? 1 / (1 + Math.exp(-z)) : A[act][0](z); }); as.push(a); });
+        return as;
+      }
+      function train() {
+        if (!data.length) return;
+        const gW = net.map(L => L.W.map(r => r.map(() => 0))), gb = net.map(L => L.b.map(() => 0)); let loss = 0, ok = 0;
+        data.forEach(([x, y, l]) => {
+          const as = forward([x, y]), p = as[as.length - 1][0];
+          loss += -(l * Math.log(p + 1e-9) + (1 - l) * Math.log(1 - p + 1e-9)); ok += (p > .5) === (l === 1);
+          let delta = [p - l];
+          for (let li = net.length - 1; li >= 0; li--) {
+            const L = net[li], ain = as[li];
+            delta.forEach((d, j) => { gb[li][j] += d; ain.forEach((ai, k) => gW[li][j][k] += d * ai); });
+            if (li > 0) delta = ain.map((ai, k) => L.W.reduce((s, w, j) => s + w[k] * delta[j], 0) * A[act][1](ai));
+          }
+        });
+        const n = data.length, η = lr.get();
+        net.forEach((L, li) => {
+          L.W.forEach((r, j) => r.forEach((_, k) => { L.vW[j][k] = .9 * L.vW[j][k] - η * gW[li][j][k] / n; L.W[j][k] = clamp(L.W[j][k] + L.vW[j][k], -30, 30); }));
+          L.b.forEach((_, j) => { L.vb[j] = .9 * L.vb[j] - η * gb[li][j] / n; L.b[j] += L.vb[j]; });
+        });
+        epoch++; R('ep', epoch); R('loss', fmt(loss / n, 4)); R('acc', (ok / n * 100).toFixed(1) + '%');
+      }
+      let g1 = fit(c1, isMobile() ? 300 : 380), g2 = fit(c2, 150);
+      const off = document.createElement('canvas'), RES = 56; off.width = off.height = RES; const oc = off.getContext('2d'), img = oc.createImageData(RES, RES);
+      function draw() {
+        const T = theme(), c = g1.c, W = g1.w, H = g1.h, s = Math.min(W, H);
+        const ox = (W - s) / 2, base = T.light ? [245, 248, 252] : T.bg;
+        for (let j = 0; j < RES; j++) for (let i = 0; i < RES; i++) {
+          const x = i / (RES - 1) * 2 - 1, y = 1 - j / (RES - 1) * 2, p = forward([x, y]).pop()[0];
+          let col = mix(base, p > .5 ? T.cyan : T.red, Math.abs(p - .5) * 1.1); if (Math.abs(p - .5) < .03) col = mix(col, T.text, .5);
+          img.data.set([...col, 255], (j * RES + i) * 4);
+        }
+        oc.putImageData(img, 0, 0); c.clearRect(0, 0, W, H); c.imageSmoothingEnabled = true; c.drawImage(off, ox, 0, s, s);
+        data.forEach(([x, y, l]) => { c.beginPath(); c.arc(ox + (x + 1) / 2 * s, (1 - y) / 2 * s, 4.2, 0, 7); c.fillStyle = rgba(l ? T.cyan : T.red, 1); c.fill(); c.strokeStyle = T.light ? '#fff' : 'rgba(0,0,0,.6)'; c.lineWidth = 1.2; c.stroke(); });
+        // نمودار معماری شبکه
+        const d = g2.c, W2 = g2.w, H2 = g2.h; d.clearRect(0, 0, W2, H2);
+        const sizes = [2, ...net.map(L => L.W.length)], cols = sizes.length, nx = i => W2 - 40 - i * (W2 - 80) / (cols - 1), ny = (n, j) => H2 / 2 + (j - (n - 1) / 2) * Math.min(18, (H2 - 20) / n);
+        net.forEach((L, li) => L.W.forEach((r, j) => r.forEach((w, k) => { d.beginPath(); d.moveTo(nx(li), ny(sizes[li], k)); d.lineTo(nx(li + 1), ny(sizes[li + 1], j)); d.strokeStyle = rgba(w > 0 ? T.cyan : T.red, Math.min(.9, Math.abs(w) / 2.5 + .05)); d.lineWidth = Math.min(3, Math.abs(w) * .8 + .3); d.stroke(); })));
+        sizes.forEach((n, i) => { for (let j = 0; j < n; j++) { d.beginPath(); d.arc(nx(i), ny(n, j), 5.5, 0, 7); d.fillStyle = rgba(i === 0 ? T.gold : i === cols - 1 ? T.violet : T.green, 1); d.fill(); } });
+        d.fillStyle = rgba(T.text, .55); d.font = '11px Vazirmatn'; d.fillText('ورودی (x,y)', W2 - 70, H2 - 4); d.fillText('خروجی', 18, H2 - 4);
+      }
+      c1.addEventListener('pointerdown', e => { const p = pos(c1, e), s = Math.min(g1.w, g1.h), ox = (g1.w - s) / 2; data.push([(p.x - ox) / s * 2 - 1, 1 - p.y / s * 2, cls]); });
+      api.onResize(() => { g1 = fit(c1, isMobile() ? 300 : 380); g2 = fit(c2, 150); });
+      gen(ds); init();
+      let fr = 0; api.loop(() => { if (running) for (let i = 0; i < 6; i++) train(); if (fr++ % 2 === 0 || !running) draw(); });
+    }
+  };
+
+  /* ================================================================
+     ۴) خوشه‌بندی K-Means
+     ================================================================ */
+  const PAL = T => [T.cyan, T.red, T.gold, T.green, T.violet, T.pink, T.blue, [255, 160, 90]];
+  const W_KM = {
+    id: 'km', title: 'خوشه‌بندی K-Means', icon: 'shapes', color: '#f472b6', sessions: [5, 6],
+    desc: 'دو گام «تخصیص» و «به‌روزرسانی مراکز» را قدم‌به‌قدم ببینید و K بهینه را با منحنی آرنج پیدا کنید.',
+    preview(c, w, h, T) {
+      const P = PAL(T), C = [[.25, .35], [.7, .3], [.5, .72]];
+      C.forEach(([cx, cy], k) => { for (let i = 0; i < 22; i++) { c.beginPath(); c.arc((cx + randn() * .07) * w, (cy + randn() * .1) * h, 2.6, 0, 7); c.fillStyle = rgba(P[k], .9); c.fill(); }
+        c.strokeStyle = rgba(T.text, 1); c.lineWidth = 2.5; c.beginPath(); c.moveTo(cx * w - 6, cy * h - 6); c.lineTo(cx * w + 6, cy * h + 6); c.moveTo(cx * w + 6, cy * h - 6); c.lineTo(cx * w - 6, cy * h + 6); c.stroke(); });
+    },
+    build(stage, P, api) {
+      const tw = document.createElement('div'); tw.className = 'twin';
+      const c1 = document.createElement('canvas'), c2 = document.createElement('canvas'); stage.append(c1, c2);
+      const U = ui(P);
+      let pts = [], cent = [], asg = [], phase = 'assign', iter = 0, auto = false, hist = [], last = 0, conv = false;
+      const K = U.slider('تعداد خوشه K', { min: 1, max: 8, step: 1, value: 3, on: () => initC() });
+      let plus = 'pp';
+      U.seg('مقداردهی اولیه', [['rnd', 'تصادفی'], ['pp', 'k-means++']], 'pp', k => { plus = k; initC(); });
+      const B = U.buttons([['step', '⏭ گام بعدی', stepOnce, true], ['auto', '▶ اجرای خودکار', () => { auto = !auto; B.auto.textContent = auto ? '⏸ توقف' : '▶ اجرای خودکار'; }],
+        ['data', '🎲 داده جدید', () => { genData(); initC(); elbow(); }], ['re', '↺ مراکز جدید', () => initC()]]);
+      const R = U.readout([['it', 'تکرار'], ['ph', 'گام بعدی'], ['in', 'اینرسی (SSE)'], ['st', 'وضعیت']]);
+      U.note('<b>الگوریتم:</b> (۱) هر نقطه به نزدیک‌ترین مرکز تخصیص می‌یابد؛ (۲) هر مرکز به میانگین نقاط خوشه‌اش منتقل می‌شود. تکرار تا همگرایی. در منحنی آرنج، K جایی است که کاهش SSE ناگهان کند می‌شود.');
+      function genData() { pts = []; const nb = 3 + Math.floor(Math.random() * 3); for (let b = 0; b < nb; b++) { const cx = .15 + Math.random() * .7, cy = .15 + Math.random() * .7, sx = .03 + Math.random() * .06, sy = .03 + Math.random() * .06; for (let i = 0; i < 40; i++) pts.push([clamp(cx + randn() * sx, .02, .98), clamp(cy + randn() * sy, .02, .98)]); } }
+      const d2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2;
+      function seed(k, pp) { const C = [pts[Math.floor(Math.random() * pts.length)].slice()]; while (C.length < k) { if (!pp) { C.push(pts[Math.floor(Math.random() * pts.length)].slice()); continue; } const ds = pts.map(p => Math.min(...C.map(c => d2(p, c)))), s = ds.reduce((a, b) => a + b, 0); let r = Math.random() * s, i = 0; while (r > ds[i] && i < ds.length - 1) r -= ds[i++]; C.push(pts[i].slice()); } return C; }
+      function initC() { cent = seed(K.get(), plus === 'pp'); hist = cent.map(c => [c.slice()]); asg = pts.map(() => -1); phase = 'assign'; iter = 0; conv = false; upd(); }
+      const sse = () => pts.reduce((s, p, i) => s + (asg[i] >= 0 ? d2(p, cent[asg[i]]) : 0), 0);
+      function stepOnce() {
+        if (conv) return;
+        if (phase === 'assign') { let ch = 0; pts.forEach((p, i) => { let b = 0; cent.forEach((c, k) => { if (d2(p, c) < d2(p, cent[b])) b = k; }); if (asg[i] !== b) ch++; asg[i] = b; }); if (ch === 0 && iter > 0) conv = true; phase = 'update'; }
+        else { cent = cent.map((c, k) => { const m = pts.filter((_, i) => asg[i] === k); return m.length ? [m.reduce((s, p) => s + p[0], 0) / m.length, m.reduce((s, p) => s + p[1], 0) / m.length] : c; }); cent.forEach((c, k) => hist[k].push(c.slice())); phase = 'assign'; iter++; }
+        upd();
+      }
+      function upd() { R('it', iter); R('ph', phase === 'assign' ? 'تخصیص نقاط' : 'جابه‌جایی مراکز'); R('in', asg[0] >= 0 ? fmt(sse(), 3) : '—'); R('st', conv ? 'همگرا شد ✓' : 'در حال اجرا'); if (conv && auto) { auto = false; B.auto.textContent = '▶ اجرای خودکار'; } }
+      let elbowV = [];
+      function elbow() { elbowV = []; for (let k = 1; k <= 8; k++) { let best = Infinity; for (let r = 0; r < 4; r++) { let C = seed(k, true), A = []; for (let t = 0; t < 25; t++) { A = pts.map(p => { let b = 0; C.forEach((c, j) => { if (d2(p, c) < d2(p, C[b])) b = j; }); return b; }); C = C.map((c, j) => { const m = pts.filter((_, i) => A[i] === j); return m.length ? [m.reduce((s, p) => s + p[0], 0) / m.length, m.reduce((s, p) => s + p[1], 0) / m.length] : c; }); } best = Math.min(best, pts.reduce((s, p, i) => s + d2(p, C[A[i]]), 0)); } elbowV.push(best); } }
+      let g1 = fit(c1, isMobile() ? 300 : 380), g2 = fit(c2, 140);
+      const off = document.createElement('canvas'), RS = 70; off.width = off.height = RS; const oc = off.getContext('2d'), img = oc.createImageData(RS, RS);
+      function draw() {
+        const T = theme(), Pl = PAL(T), c = g1.c, W = g1.w, H = g1.h, base = T.light ? [245, 248, 252] : T.bg;
+        for (let j = 0; j < RS; j++) for (let i = 0; i < RS; i++) { const p = [i / RS, j / RS]; let b = 0; cent.forEach((q, k) => { if (d2(p, q) < d2(p, cent[b])) b = k; }); img.data.set([...mix(base, Pl[b % 8], .14), 255], (j * RS + i) * 4); }
+        oc.putImageData(img, 0, 0); c.imageSmoothingEnabled = false; c.drawImage(off, 0, 0, W, H);
+        pts.forEach((p, i) => { c.beginPath(); c.arc(p[0] * W, p[1] * H, 3.6, 0, 7); c.fillStyle = asg[i] >= 0 ? rgba(Pl[asg[i] % 8], 1) : rgba(T.muted, .8); c.fill(); });
+        cent.forEach((q, k) => {
+          c.beginPath(); hist[k].forEach((h, i) => i ? c.lineTo(h[0] * W, h[1] * H) : c.moveTo(h[0] * W, h[1] * H)); c.strokeStyle = rgba(T.text, .5); c.setLineDash([4, 3]); c.lineWidth = 1.5; c.stroke(); c.setLineDash([]);
+          const x = q[0] * W, y = q[1] * H; c.lineWidth = 5; c.strokeStyle = T.light ? '#fff' : '#000'; c.beginPath(); c.moveTo(x - 8, y - 8); c.lineTo(x + 8, y + 8); c.moveTo(x + 8, y - 8); c.lineTo(x - 8, y + 8); c.stroke();
+          c.lineWidth = 3; c.strokeStyle = rgba(Pl[k % 8], 1); c.stroke();
+        });
+        const d = g2.c, W2 = g2.w, H2 = g2.h; d.clearRect(0, 0, W2, H2);
+        if (elbowV.length) { const mx = elbowV[0], X = k => 30 + (k - 1) / 7 * (W2 - 50), Y = v => 16 + (1 - v / mx) * (H2 - 40);
+          d.beginPath(); elbowV.forEach((v, i) => i ? d.lineTo(X(i + 1), Y(v)) : d.moveTo(X(1), Y(v))); d.strokeStyle = rgba(T.pink, 1); d.lineWidth = 2; d.stroke();
+          elbowV.forEach((v, i) => { d.beginPath(); d.arc(X(i + 1), Y(v), i + 1 === K.get() ? 6 : 3.5, 0, 7); d.fillStyle = rgba(i + 1 === K.get() ? T.gold : T.pink, 1); d.fill(); d.fillStyle = rgba(T.text, .6); d.font = '11px Vazirmatn'; d.fillText(i + 1, X(i + 1) - 3, H2 - 6); });
+          d.fillStyle = rgba(T.text, .55); d.fillText('منحنی آرنج: SSE بر حسب K', W2 - 150, 12); }
+      }
+      api.onResize(() => { g1 = fit(c1, isMobile() ? 300 : 380); g2 = fit(c2, 140); });
+      genData(); initC(); elbow();
+      api.loop(t => { if (auto && t - last > 450) { last = t; stepOnce(); } draw(); });
+    }
+  };
+
+  /* ================================================================
+     ۵) الگوریتم ژنتیک — شناسایی پارامتر جرم-فنر-دمپر
+     ================================================================ */
+  const W_GA = {
+    id: 'ga', title: 'شناسایی پارامتر جرم-فنر-دمپر با GA', icon: 'dna', color: '#f5c76a', sessions: [3, 4],
+    desc: 'الگوریتم ژنتیک m، c و k را از پاسخ «اندازه‌گیری‌شده» تخمین می‌زند — دقیقاً موضوع جلسات ۳ و ۴.',
+    preview(c, w, h, T) {
+      for (let i = 0; i < 40; i++) { const t = i / 39 * 8, x = .2 * (1 - Math.exp(-.3 * t) * Math.cos(2 * t)); c.beginPath(); c.arc(t / 8 * w, h - (x / .3) * h * .8 - 8, 2.4, 0, 7); c.fillStyle = rgba(T.gold, 1); c.fill(); }
+      c.beginPath(); for (let px = 0; px <= w; px += 2) { const t = px / w * 8, x = .2 * (1 - Math.exp(-.3 * t) * Math.cos(2 * t)); px ? c.lineTo(px, h - (x / .3) * h * .8 - 8) : c.moveTo(px, h - (x / .3) * h * .8 - 8); } c.strokeStyle = rgba(T.cyan, 1); c.lineWidth = 2; c.stroke();
+    },
+    build(stage, P, api) {
+      const c1 = document.createElement('canvas'), c2 = document.createElement('canvas'); stage.append(c1, c2);
+      const U = ui(P);
+      const BND = { m: [0.2, 3], c: [0, 3], k: [0.5, 10] }, KEYS = ['m', 'c', 'k'], NS = 120, DT = 8 / NS;
+      let truth = { m: 1.2, c: 0.6, k: 5 }, mode = 'step', meas = [], pop = [], gen = 0, hist = [], running = true;
+      function sim(p) {
+        const out = new Float32Array(NS); let x = mode === 'step' ? 0 : 0.2, v = 0; const F = mode === 'step' ? 1 : 0, h = DT / 2;
+        const f = (x, v) => [v, (F - p.c * v - p.k * x) / p.m];
+        for (let i = 0; i < NS; i++) { out[i] = x; for (let s = 0; s < 2; s++) { const k1 = f(x, v), k2 = f(x + h / 2 * k1[0], v + h / 2 * k1[1]), k3 = f(x + h / 2 * k2[0], v + h / 2 * k2[1]), k4 = f(x + h * k3[0], v + h * k3[1]); x += h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]); v += h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]); } }
+        return out;
+      }
+      const cost = p => { const y = sim(p); let s = 0; for (let i = 0; i < NS; i++) s += (y[i] - meas[i]) ** 2; return s / NS; };
+      const rnd = () => { const p = {}; KEYS.forEach(k => p[k] = BND[k][0] + Math.random() * (BND[k][1] - BND[k][0])); return p; };
+      function measure() { const y = sim(truth); meas = Array.from(y, v => v + randn() * 0.004); }
+      function reset() { measure(); pop = [...Array(N.get())].map(() => { const p = rnd(); p.f = cost(p); return p; }); pop.sort((a, b) => a.f - b.f); gen = 0; hist = []; record(); }
+      function record() { const mean = pop.reduce((s, p) => s + p.f, 0) / pop.length; hist.push([pop[0].f, mean]); }
+      function evolve() {
+        const n = N.get(), pm = PM.get(), tour = () => { let b = pop[Math.floor(Math.random() * pop.length)]; for (let i = 0; i < 2; i++) { const c = pop[Math.floor(Math.random() * pop.length)]; if (c.f < b.f) b = c; } return b; };
+        const next = pop.slice(0, 2).map(p => ({ ...p }));
+        while (next.length < n) {
+          const a = tour(), b = tour(), ch = {};
+          KEYS.forEach(k => { const lo = Math.min(a[k], b[k]), hi = Math.max(a[k], b[k]), d = hi - lo, r = BND[k][1] - BND[k][0]; let v = lo - .3 * d + Math.random() * 1.6 * d; if (Math.random() < pm) v += randn() * .1 * r; ch[k] = clamp(v, BND[k][0], BND[k][1]); });
+          ch.f = cost(ch); next.push(ch);
+        }
+        pop = next.sort((a, b) => a.f - b.f); gen++; record();
+      }
+      const N = U.slider('اندازه جمعیت', { min: 10, max: 120, step: 2, value: 40 });
+      const PM = U.slider('نرخ جهش', { min: 0.01, max: 0.6, step: 0.01, value: 0.15, show: v => v.toFixed(2) });
+      const MG = U.slider('حداکثر نسل', { min: 20, max: 200, step: 10, value: 80 });
+      U.seg('نوع آزمایش', [['step', 'پاسخ پله (F=1)'], ['free', 'ارتعاش آزاد']], 'step', k => { mode = k; reset(); });
+      const B = U.buttons([['run', '⏸ توقف', () => { running = !running; B.run.textContent = running ? '⏸ توقف' : '▶ ادامه'; }, true], ['st', '⏭ یک نسل', () => evolve()],
+        ['re', '↺ جمعیت جدید', reset], ['new', '🎲 سیستم جدید', () => { truth = rnd(); truth.c = Math.min(truth.c, 1.5); reset(); }]]);
+      const R = U.readout([['g', 'نسل'], ['f', 'بهترین MSE']]);
+      const tbl = U.html('', '');
+      U.note('<b>نکته کلیدی:</b> در «ارتعاش آزاد» منحنی به‌خوبی برازش می‌شود اما m، c و k به درستی پیدا نمی‌شوند، چون پاسخ آزاد فقط به ωn=√(k/m) و ζ بستگی دارد (<b>مسئله شناسایی‌ناپذیری</b>). با ورودی پله، مقدار نهایی F/k سفتی را مشخص می‌کند و هر سه پارامتر قابل شناسایی می‌شوند.');
+      let g1 = fit(c1, isMobile() ? 260 : 330), g2 = fit(c2, 140);
+      function draw() {
+        const T = theme(), c = g1.c, W = g1.w, H = g1.h; c.clearRect(0, 0, W, H);
+        const all = [...meas, ...sim(pop[0])]; const ymax = Math.max(...all) * 1.15 || 1, ymin = Math.min(0, ...all) * 1.15;
+        const X = i => 36 + i / (NS - 1) * (W - 46), Y = v => 10 + (1 - (v - ymin) / (ymax - ymin)) * (H - 34);
+        c.strokeStyle = rgba(T.text, .1); c.beginPath(); c.moveTo(36, Y(0)); c.lineTo(W - 10, Y(0)); c.stroke();
+        c.fillStyle = rgba(T.text, .55); c.font = '11px Vazirmatn'; c.fillText('زمان [s] →', W - 70, H - 6); c.fillText('x(t)', 4, 16);
+        pop.slice(2, 14).forEach(p => { const y = sim(p); c.beginPath(); y.forEach((v, i) => i ? c.lineTo(X(i), Y(v)) : c.moveTo(X(i), Y(v))); c.strokeStyle = rgba(T.violet, .18); c.lineWidth = 1; c.stroke(); });
+        meas.forEach((v, i) => { if (i % 2) return; c.beginPath(); c.arc(X(i), Y(v), 2.3, 0, 7); c.fillStyle = rgba(T.gold, 1); c.fill(); });
+        const yb = sim(pop[0]); c.beginPath(); yb.forEach((v, i) => i ? c.lineTo(X(i), Y(v)) : c.moveTo(X(i), Y(v))); c.strokeStyle = rgba(T.cyan, 1); c.lineWidth = 2.4; c.stroke();
+        c.fillStyle = rgba(T.gold, 1); c.fillText('● اندازه‌گیری (با نویز)', W - 150, 16); c.fillStyle = rgba(T.cyan, 1); c.fillText('— بهترین فرد', W - 150, 32); c.fillStyle = rgba(T.violet, 1); c.fillText('— سایر افراد جمعیت', W - 150, 48);
+        const d = g2.c, W2 = g2.w, H2 = g2.h; d.clearRect(0, 0, W2, H2);
+        const lg = hist.flatMap(h => h.map(v => Math.log10(v + 1e-9))), lo = Math.min(...lg), hi = Math.max(...lg), mg = Math.max(MG.get(), gen);
+        const X2 = i => 36 + i / mg * (W2 - 46), Y2 = v => 14 + (1 - (Math.log10(v + 1e-9) - lo) / (hi - lo + 1e-9)) * (H2 - 34);
+        [[0, T.cyan, 'بهترین'], [1, T.violet, 'میانگین']].forEach(([q, col, n], z) => { d.beginPath(); hist.forEach((h, i) => i ? d.lineTo(X2(i), Y2(h[q])) : d.moveTo(X2(i), Y2(h[q]))); d.strokeStyle = rgba(col, 1); d.lineWidth = 2; d.stroke(); d.fillStyle = rgba(col, 1); d.font = '11px Vazirmatn'; d.fillText(n, 40 + z * 60, 12); });
+        d.fillStyle = rgba(T.text, .55); d.fillText('log₁₀ MSE بر حسب نسل', W2 - 130, 12);
+        R('g', gen); R('f', pop[0].f.toExponential(2));
+        tbl.innerHTML = `<table class="tbl"><tr><th>پارامتر</th><th>واقعی</th><th>تخمین</th><th>خطا</th></tr>${KEYS.map(k => `<tr><td>${k}</td><td>${truth[k].toFixed(3)}</td><td>${pop[0][k].toFixed(3)}</td><td style="color:${Math.abs(pop[0][k] - truth[k]) / truth[k] < .05 ? 'var(--green)' : 'var(--red)'}">${(Math.abs(pop[0][k] - truth[k]) / Math.max(truth[k], 1e-6) * 100).toFixed(1)}%</td></tr>`).join('')}</table>`;
+      }
+      api.onResize(() => { g1 = fit(c1, isMobile() ? 260 : 330); g2 = fit(c2, 140); });
+      reset();
+      let fr = 0; api.loop(() => { if (running && gen < MG.get() && fr++ % 2 === 0) evolve(); draw(); });
+    }
+  };
+
+  /* ================================================================
+     ۶) کانولوشن (CNN)
+     ================================================================ */
+  const W_CONV = {
+    id: 'conv', title: 'کانولوشن و نقشه ویژگی (CNN)', icon: 'grid-3x3', color: '#74a7ff', sessions: [10, 12],
+    desc: 'روی تصویر نقاشی کنید و ببینید هر کرنل چه ویژگی‌ای (لبه، تاری، تیزی) استخراج می‌کند؛ با ReLU و Max-Pool.',
+    preview(c, w, h, T) {
+      const n = 14, s = Math.min(w / 2.4, h) / n, ox = 10;
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const on = (Math.abs(i - 7) < 2 && j > 2 && j < 12) || (j > 2 && j < 5 && i > 3 && i < 11); c.fillStyle = on ? rgba(T.text, .9) : rgba(T.text, .07); c.fillRect(ox + i * s, (h - n * s) / 2 + j * s, s - 1, s - 1); }
+      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const e = (Math.abs(Math.abs(i - 7) - 2) < 1 && j > 2 && j < 12); c.fillStyle = e ? rgba(T.cyan, .9) : rgba(T.text, .05); c.fillRect(w - 10 - n * s + i * s, (h - n * s) / 2 + j * s, s - 1, s - 1); }
+      c.fillStyle = rgba(T.blue, 1); c.font = 'bold 20px Vazirmatn'; c.fillText('⊛', w / 2 - 8, h / 2 + 6);
+    },
+    build(stage, P, api) {
+      const tw = document.createElement('div'); tw.className = 'twin';
+      const cIn = document.createElement('canvas'), cOut = document.createElement('canvas'); tw.append(cIn, cOut); stage.append(tw);
+      const cPool = document.createElement('canvas'); stage.append(cPool);
+      stage.append(Object.assign(document.createElement('div'), { className: 'labHint', textContent: 'روی تصویر سمت راست بکشید تا نقاشی کنید (کلیک راست یا حالت «پاک‌کن» برای پاک کردن).' }));
+      const U = ui(P), N = 28; let img = new Float32Array(N * N), erase = false;
+      const KER = {
+        edgeX: ['سوبل X (لبه عمودی)', [-1, 0, 1, -2, 0, 2, -1, 0, 1]], edgeY: ['سوبل Y (لبه افقی)', [-1, -2, -1, 0, 0, 0, 1, 2, 1]],
+        lap: ['لاپلاسین', [0, 1, 0, 1, -4, 1, 0, 1, 0]], blur: ['تاری (میانگین)', [1, 1, 1, 1, 1, 1, 1, 1, 1].map(v => v / 9)],
+        gauss: ['گاوسی', [1, 2, 1, 2, 4, 2, 1, 2, 1].map(v => v / 16)], sharp: ['تیز کردن', [0, -1, 0, -1, 5, -1, 0, -1, 0]],
+        emboss: ['برجسته', [-2, -1, 0, -1, 1, 1, 0, 1, 2]], id: ['همانی', [0, 0, 0, 0, 1, 0, 0, 0, 0]]
+      };
+      let kern = KER.edgeX[1].slice(), relu = false;
+      const selW = document.createElement('div'); selW.className = 'ctl'; selW.innerHTML = '<label><span>کرنل ۳×۳</span></label>';
+      const sel = document.createElement('select'); Object.entries(KER).forEach(([k, [n]]) => sel.add(new Option(n, k))); sel.add(new Option('سفارشی (ویرایش جدول)', 'custom'));
+      selW.append(sel); P.append(selW);
+      const kg = document.createElement('div'); kg.className = 'kgrid'; const kin = [...Array(9)].map((_, i) => { const e = document.createElement('input'); e.type = 'number'; e.step = '0.1'; e.oninput = () => { kern[i] = +e.value || 0; sel.value = 'custom'; draw(); }; kg.append(e); return e; }); P.append(kg);
+      const syncK = () => kin.forEach((e, i) => e.value = +kern[i].toFixed(3));
+      sel.onchange = () => { if (sel.value !== 'custom') { kern = KER[sel.value][1].slice(); syncK(); } draw(); };
+      U.seg('غیرخطی‌سازی', [['no', 'بدون ReLU'], ['relu', 'ReLU']], 'no', k => { relu = k === 'relu'; draw(); });
+      U.seg('قلم', [['draw', '✏️ قلم'], ['erase', '🧽 پاک‌کن']], 'draw', k => erase = k === 'erase');
+      const preset = k => { img.fill(0); for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { let v = 0;
+        if (k === 'seven') v = (j >= 5 && j <= 7 && i >= 6 && i <= 21) || (Math.abs((i - 21) + (j - 7) * 0.55) < 1.6 && j > 6 && j < 24) ? 1 : 0;
+        if (k === 'sq') v = (i >= 7 && i <= 20 && j >= 7 && j <= 20) ? 1 : 0;
+        if (k === 'ring') { const r = Math.hypot(i - 13.5, j - 13.5); v = r > 7 && r < 10.5 ? 1 : 0; }
+        if (k === 'grad') v = i / (N - 1);
+        if (k === 'noise') v = Math.random() > .7 ? 1 : 0;
+        img[j * N + i] = v; } draw(); };
+      U.buttons([['a', 'عدد ۷', () => preset('seven')], ['b', 'مربع', () => preset('sq')], ['c', 'حلقه', () => preset('ring')], ['d', 'گرادیان', () => preset('grad')], ['e', 'نویز', () => preset('noise')], ['f', 'پاک کردن', () => preset('none')]]);
+      U.note('<b>چه ببینیم؟</b> سوبل X فقط لبه‌های عمودی را روشن می‌کند و سوبل Y لبه‌های افقی را. رنگ <b>آبی</b> مقدار مثبت و <b>قرمز</b> مقدار منفی است؛ ReLU مقادیر منفی را صفر می‌کند. Max-Pool ابعاد را نصف می‌کند ولی ویژگی‌ها را نگه می‌دارد. در CNN این کرنل‌ها <b>یاد گرفته</b> می‌شوند.');
+      const conv = () => { const o = new Float32Array(N * N); for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { let s = 0; for (let b = -1; b <= 1; b++) for (let a = -1; a <= 1; a++) { const x = i + a, y = j + b; if (x >= 0 && y >= 0 && x < N && y < N) s += img[y * N + x] * kern[(b + 1) * 3 + a + 1]; } o[j * N + i] = relu ? Math.max(0, s) : s; } return o; };
+      let gi, go, gp;
+      const sz = () => { const s = cIn.clientWidth; gi = fit(cIn, s); go = fit(cOut, cOut.clientWidth); gp = fit(cPool, 170); };
+      function grid(g, arr, n, signed, T, title) {
+        const c = g.c, s = Math.min(g.w, g.h) / n, ox = (g.w - s * n) / 2, oy = (g.h - s * n) / 2; c.clearRect(0, 0, g.w, g.h);
+        const mx = Math.max(1e-6, ...Array.from(arr, Math.abs)), base = T.light ? [250, 251, 253] : T.bg;
+        for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) { const v = arr[j * n + i]; const col = signed ? mix(base, v >= 0 ? T.cyan : T.red, Math.min(1, Math.abs(v) / mx)) : mix(base, T.text, clamp(v, 0, 1)); c.fillStyle = rgba(col, 1); c.fillRect(ox + i * s, oy + j * s, s - (s > 6 ? .6 : 0), s - (s > 6 ? .6 : 0)); }
+        c.fillStyle = rgba(T.text, .7); c.font = '12px Vazirmatn'; c.fillText(title, ox + 6, oy + 16);
+      }
+      function draw() {
+        const T = theme(), o = conv(); grid(gi, img, N, false, T, 'ورودی ۲۸×۲۸'); grid(go, o, N, true, T, 'نقشه ویژگی');
+        const M = N / 2, pool = new Float32Array(M * M); for (let j = 0; j < M; j++) for (let i = 0; i < M; i++) { const v = [o[2 * j * N + 2 * i], o[2 * j * N + 2 * i + 1], o[(2 * j + 1) * N + 2 * i], o[(2 * j + 1) * N + 2 * i + 1]]; pool[j * M + i] = v.reduce((a, b) => Math.abs(b) > Math.abs(a) ? b : a); }
+        grid(gp, pool, M, true, T, 'Max-Pool ۲×۲ → ۱۴×۱۴');
+      }
+      let down = false;
+      const paint = e => { e.preventDefault(); const p = pos(cIn, e), s = Math.min(gi.w, gi.h) / N, ox = (gi.w - s * N) / 2, oy = (gi.h - s * N) / 2, cx = (p.x - ox) / s, cy = (p.y - oy) / s;
+        for (let j = Math.floor(cy - 2); j <= cy + 2; j++) for (let i = Math.floor(cx - 2); i <= cx + 2; i++) { if (i < 0 || j < 0 || i >= N || j >= N) continue; const d = Math.hypot(i + .5 - cx, j + .5 - cy), v = clamp(1.6 - d, 0, 1); img[j * N + i] = (erase || e.buttons === 2) ? Math.min(img[j * N + i], 1 - v) : Math.max(img[j * N + i], v); } draw(); };
+      cIn.addEventListener('pointerdown', e => { down = true; cIn.setPointerCapture(e.pointerId); paint(e); });
+      cIn.addEventListener('pointermove', e => { if (down) paint(e); });
+      cIn.addEventListener('pointerup', () => down = false); cIn.addEventListener('contextmenu', e => e.preventDefault());
+      api.onResize(() => { sz(); draw(); });
+      syncK(); sz(); preset('seven');
+    }
+  };
+
+  /* ================================================================
+     ۷) یادگیری تقویتی — Q-Learning در دنیای شبکه‌ای
+     ================================================================ */
+  const W_Q = {
+    id: 'ql', title: 'Q-Learning در دنیای شبکه‌ای', icon: 'gamepad-2', color: '#ff7e93', sessions: [13, 14, 16],
+    desc: 'عامل با آزمون و خطا راه رسیدن به هدف را یاد می‌گیرد؛ دیوار بگذارید و α، γ و ε را تغییر دهید.',
+    preview(c, w, h, T) {
+      const C = 8, Rw = 5, s = Math.min(w / C, h / Rw), ox = (w - C * s) / 2, oy = (h - Rw * s) / 2, ar = ['→', '↑', '→', '↓'];
+      for (let j = 0; j < Rw; j++) for (let i = 0; i < C; i++) { const v = (i + (Rw - j)) / (C + Rw); c.fillStyle = rgba(mix(T.red, T.green, v), .35); c.fillRect(ox + i * s + 1, oy + j * s + 1, s - 2, s - 2); c.fillStyle = rgba(T.text, .7); c.font = `${s * .5}px sans-serif`; c.fillText(ar[(i + j) % 2 ? 0 : 1], ox + i * s + s * .3, oy + j * s + s * .65); }
+      c.fillStyle = rgba(T.gold, 1); c.font = `${s * .6}px sans-serif`; c.fillText('★', ox + (C - 1) * s + s * .2, oy + s * .7);
+    },
+    build(stage, P, api) {
+      const c1 = document.createElement('canvas'), c2 = document.createElement('canvas'); stage.append(c1, c2);
+      stage.append(Object.assign(document.createElement('div'), { className: 'labHint', textContent: 'روی خانه‌ها کلیک کنید: خالی ← دیوار ← گودال (−۱۰) ← خالی' }));
+      const U = ui(P), C = 10, Rw = 7, S = [0, Rw - 1], G = [C - 1, 0], DIR = [[1, 0], [0, -1], [-1, 0], [0, 1]], ARR = ['→', '↑', '←', '↓'];
+      let cell = new Uint8Array(C * Rw), Q = new Float32Array(C * Rw * 4), ag = S.slice(), ep = 0, steps = 0, ret = 0, rets = [], running = true, greedy = null, visited = new Uint8Array(C * Rw);
+      [[3, 2], [3, 3], [3, 4], [3, 5], [6, 1], [6, 2], [6, 3]].forEach(([i, j]) => cell[j * C + i] = 1); [[5, 6], [8, 3], [7, 5]].forEach(([i, j]) => cell[j * C + i] = 2);
+      const α = U.slider('نرخ یادگیری α', { min: 0.01, max: 1, step: 0.01, value: 0.5, show: v => v.toFixed(2) });
+      const γ = U.slider('ضریب تخفیف γ', { min: 0.5, max: 0.999, step: 0.001, value: 0.95, show: v => v.toFixed(3) });
+      const ε = U.slider('اکتشاف ε', { min: 0, max: 1, step: 0.01, value: 0.2, show: v => v.toFixed(2) });
+      const SP = U.slider('سرعت (گام در فریم)', { min: 1, max: 200, step: 1, value: 8 });
+      let showV = true;
+      U.seg('نمایش', [['v', 'ارزش V(s)'], ['n', 'فقط سیاست']], 'v', k => showV = k === 'v');
+      const B = U.buttons([['run', '⏸ توقف', () => { running = !running; greedy = null; B.run.textContent = running ? '⏸ توقف' : '▶ ادامه'; }, true],
+        ['fast', '⚡ ۵۰۰ اپیزود', () => { for (let e = 0; e < 500; e++) { let n = 0; while (!stepEnv() && n++ < 200); } }],
+        ['greedy', '🎯 اجرای سیاست', () => { running = false; B.run.textContent = '▶ ادامه'; greedy = { p: S.slice(), path: [S.slice()], n: 0 }; }],
+        ['reset', '↺ پاک کردن Q', () => { Q.fill(0); visited.fill(0); ep = 0; rets = []; ag = S.slice(); ret = 0; }]]);
+      const R = U.readout([['ep', 'اپیزود'], ['ret', 'بازده آخر'], ['st', 'گام کل'], ['eps', 'سیاست']]);
+      U.note('<b>به‌روزرسانی Q:</b> Q(s,a) ← Q(s,a) + α[r + γ·maxₐ′Q(s′,a′) − Q(s,a)]<br>پاداش: هدف +۱۰، گودال −۱۰، هر گام −۰٫۱. با ε=0 عامل کاوش نمی‌کند و ممکن است در مسیر بد گیر کند؛ با γ کوچک «کوته‌بین» می‌شود.');
+      const idx = (i, j) => j * C + i, terminal = (i, j) => (i === G[0] && j === G[1]) || cell[idx(i, j)] === 2;
+      const best = s => { let b = 0; for (let a = 1; a < 4; a++) if (Q[s * 4 + a] > Q[s * 4 + b]) b = a; return b; };
+      function move([i, j], a) { const ni = i + DIR[a][0], nj = j + DIR[a][1]; if (ni < 0 || nj < 0 || ni >= C || nj >= Rw || cell[idx(ni, nj)] === 1) return [i, j]; return [ni, nj]; }
+      const reward = ([i, j]) => (i === G[0] && j === G[1]) ? 10 : cell[idx(i, j)] === 2 ? -10 : -0.1;
+      function stepEnv() {
+        const s = idx(...ag), a = Math.random() < ε.get() ? Math.floor(Math.random() * 4) : best(s); const n = move(ag, a), r = reward(n), sn = idx(...n), done = terminal(...n);
+        const target = r + (done ? 0 : γ.get() * Q[sn * 4 + best(sn)]); Q[s * 4 + a] += α.get() * (target - Q[s * 4 + a]);
+        visited[s] = 1; ag = n; ret += r; steps++;
+        if (done || ret < -40) { ep++; rets.push(ret); if (rets.length > 400) rets.shift(); ag = S.slice(); ret = 0; return true; } return false;
+      }
+      let g1 = fit(c1, isMobile() ? 260 : 380), g2 = fit(c2, 120);
+      const geom = () => { const s = Math.min(g1.w / C, g1.h / Rw); return { s, ox: (g1.w - C * s) / 2, oy: (g1.h - Rw * s) / 2 }; };
+      function draw() {
+        const T = theme(), c = g1.c, { s, ox, oy } = geom(); c.clearRect(0, 0, g1.w, g1.h);
+        let vmax = 1e-6; for (let k = 0; k < C * Rw; k++) vmax = Math.max(vmax, Math.abs(Q[k * 4 + best(k)]));
+        for (let j = 0; j < Rw; j++) for (let i = 0; i < C; i++) {
+          const k = idx(i, j), x = ox + i * s, y = oy + j * s, v = Q[k * 4 + best(k)];
+          if (cell[k] === 1) { c.fillStyle = rgba(T.text, T.light ? .55 : .35); c.fillRect(x + 1, y + 1, s - 2, s - 2); continue; }
+          c.fillStyle = cell[k] === 2 ? rgba(T.red, .55) : (showV && visited[k]) ? rgba(v >= 0 ? T.green : T.red, Math.min(.6, Math.abs(v) / vmax * .6 + .05)) : rgba(T.text, .04);
+          c.fillRect(x + 1, y + 1, s - 2, s - 2);
+          c.textAlign = 'center'; c.textBaseline = 'middle';
+          if (cell[k] === 2) { c.fillStyle = rgba(T.text, .9); c.font = `bold ${s * .42}px sans-serif`; c.fillText('✕', x + s / 2, y + s / 2); }
+          else if (i === G[0] && j === G[1]) { c.fillStyle = rgba(T.gold, 1); c.font = `${s * .6}px sans-serif`; c.fillText('★', x + s / 2, y + s / 2 + 2); }
+          else if (visited[k]) { c.fillStyle = rgba(T.text, .8); c.font = `bold ${s * .4}px sans-serif`; c.fillText(ARR[best(k)], x + s / 2, y + s / 2); }
+          if (i === S[0] && j === S[1]) { c.strokeStyle = rgba(T.cyan, 1); c.lineWidth = 2; c.strokeRect(x + 3, y + 3, s - 6, s - 6); }
+        }
+        c.textAlign = 'start'; c.textBaseline = 'alphabetic';
+        if (greedy) { c.beginPath(); greedy.path.forEach(([i, j], q) => { const x = ox + i * s + s / 2, y = oy + j * s + s / 2; q ? c.lineTo(x, y) : c.moveTo(x, y); }); c.strokeStyle = rgba(T.gold, 1); c.lineWidth = 3; c.stroke(); }
+        const p = greedy ? greedy.p : ag; c.beginPath(); c.arc(ox + p[0] * s + s / 2, oy + p[1] * s + s / 2, s * .26, 0, 7); c.fillStyle = rgba(T.gold, 1); c.fill(); c.strokeStyle = T.light ? '#fff' : '#000'; c.lineWidth = 2; c.stroke();
+        const d = g2.c, W2 = g2.w, H2 = g2.h; d.clearRect(0, 0, W2, H2);
+        if (rets.length > 1) { const ma = rets.map((_, i) => { const a = rets.slice(Math.max(0, i - 19), i + 1); return a.reduce((x, y) => x + y, 0) / a.length; }), lo = Math.min(...ma, -10), hi = Math.max(...ma, 10);
+          const X = i => 30 + i / (ma.length - 1) * (W2 - 40), Y = v => 14 + (1 - (v - lo) / (hi - lo)) * (H2 - 30);
+          d.strokeStyle = rgba(T.text, .15); d.beginPath(); d.moveTo(30, Y(0)); d.lineTo(W2 - 10, Y(0)); d.stroke();
+          d.beginPath(); ma.forEach((v, i) => i ? d.lineTo(X(i), Y(v)) : d.moveTo(X(i), Y(v))); d.strokeStyle = rgba(T.red, 1); d.lineWidth = 2; d.stroke(); }
+        d.fillStyle = rgba(T.text, .55); d.font = '11px Vazirmatn'; d.fillText('بازده هر اپیزود (میانگین متحرک ۲۰)', W2 - 190, 12);
+        R('ep', ep); R('ret', rets.length ? rets[rets.length - 1].toFixed(1) : '—'); R('st', steps); R('eps', greedy ? 'حریصانه' : 'ε-حریصانه');
+      }
+      c1.addEventListener('pointerdown', e => { const p = pos(c1, e), { s, ox, oy } = geom(), i = Math.floor((p.x - ox) / s), j = Math.floor((p.y - oy) / s);
+        if (i < 0 || j < 0 || i >= C || j >= Rw || (i === S[0] && j === S[1]) || (i === G[0] && j === G[1])) return; const k = idx(i, j); cell[k] = (cell[k] + 1) % 3; for (let a = 0; a < 4; a++) Q[k * 4 + a] = 0; });
+      api.onResize(() => { g1 = fit(c1, isMobile() ? 260 : 380); g2 = fit(c2, 120); });
+      let gt = 0;
+      api.loop(t => {
+        if (running) for (let i = 0; i < SP.get(); i++) stepEnv();
+        if (greedy && t - gt > 140 && greedy.n < 60) { gt = t; const s = idx(...greedy.p); if (!terminal(...greedy.p)) { greedy.p = move(greedy.p, best(s)); greedy.path.push(greedy.p.slice()); greedy.n++; } }
+        draw();
+      });
+    }
+  };
+
+  /* ================================================================
+     ۸) LLM — دما، Top-k و Top-p
+     ================================================================ */
+  const W_LLM = {
+    id: 'llm', title: 'دمای LLM و نمونه‌برداری توکن', icon: 'message-square-text', color: '#a78bfa', sessions: [17, 18],
+    desc: 'ببینید دما، Top-k و Top-p چطور توزیع احتمال توکن بعدی و خلاقیت مدل زبانی را تغییر می‌دهند.',
+    preview(c, w, h, T) { [.9, .7, .45, .3, .18, .1].forEach((v, i) => { const y = 10 + i * (h - 20) / 6; c.fillStyle = rgba(T.text, .07); c.fillRect(w * .3, y, w * .62, (h - 20) / 6 - 5); c.fillStyle = rgba(i < 3 ? T.violet : T.muted, .9); c.fillRect(w * .3, y, w * .62 * v, (h - 20) / 6 - 5); c.fillStyle = rgba(T.text, .5); c.fillRect(w * .05, y + 4, w * .18, 6); }); },
+    build(stage, P, api) {
+      const PROMPTS = [
+        ['ربات صنعتی پس از کالیبراسیون، قطعه را با دقت بالا', [['جابه‌جا کرد', 3.4], ['برداشت', 3.0], ['جوش داد', 2.2], ['بازرسی کرد', 1.9], ['رنگ کرد', 1.1], ['پرتاب کرد', 0.1], ['بوسید', -1.6], ['آواز خواند', -2.6]]],
+        ['برای حل معادله گرما ابتدا از روش', [['جداسازی متغیرها', 3.6], ['تفاضل محدود', 2.8], ['اجزای محدود', 2.3], ['PINN', 1.7], ['تبدیل لاپلاس', 1.5], ['آزمون و خطا', -0.6], ['فال قهوه', -3.0], ['رقص', -3.4]]],
+        ['مهم‌ترین چالش در آموزش شبکه‌های عصبی عمیق،', [['بیش‌برازش', 3.1], ['محوشدگی گرادیان', 2.9], ['کمبود داده', 2.5], ['انتخاب نرخ یادگیری', 2.0], ['هزینه محاسباتی', 1.8], ['رنگ کیبورد', -2.2], ['آب‌وهوا', -2.8], ['ناهار', -3.1]]]
+      ];
+      let pi = 0, counts = null;
+      const U = ui(P);
+      U.seg('جمله ورودی (Prompt)', PROMPTS.map((p, i) => [i, `نمونه ${i + 1}`]), 0, k => { pi = k; counts = null; out.innerHTML = ''; draw(); });
+      const Tm = U.slider('دما (Temperature)', { min: 0.05, max: 3, step: 0.05, value: 1, show: v => v.toFixed(2), on: () => { counts = null; draw(); } });
+      const TK = U.slider('Top-k', { min: 1, max: 8, step: 1, value: 8, on: () => { counts = null; draw(); } });
+      const TP = U.slider('Top-p (نمونه‌برداری هسته‌ای)', { min: 0.05, max: 1, step: 0.01, value: 1, show: v => v.toFixed(2), on: () => { counts = null; draw(); } });
+      U.buttons([['one', '🎲 تولید یک ادامه', () => sample(1), true], ['many', '📊 ۲۰۰ نمونه', () => sample(200)]]);
+      const R = U.readout([['H', 'آنتروپی (بیت)'], ['n', 'توکن‌های مجاز']]);
+      U.note('<b>softmax با دما:</b> pᵢ = exp(zᵢ/T) / Σⱼ exp(zⱼ/T)<br>T→0 مدل همیشه محتمل‌ترین توکن را انتخاب می‌کند (قطعی و تکراری)؛ T بزرگ توزیع را صاف و خروجی را «خلاق» ولی نامعتبر می‌کند. Top-k و Top-p دنباله کم‌احتمال را حذف می‌کنند.');
+      const sent = document.createElement('div'); sent.className = 'sentence'; const bars = document.createElement('div'); bars.className = 'tokBars'; const out = document.createElement('div');
+      stage.append(sent, bars); sent.after(out);
+      function dist() {
+        const L = PROMPTS[pi][1], T = Tm.get(), z = L.map(l => l[1] / T), m = Math.max(...z), e = z.map(v => Math.exp(v - m)), s = e.reduce((a, b) => a + b, 0), p = e.map(v => v / s);
+        const order = p.map((v, i) => i).sort((a, b) => p[b] - p[a]); const keep = new Set(); let cum = 0;
+        for (const i of order) { if (keep.size >= TK.get()) break; if (cum >= TP.get() && keep.size > 0) break; keep.add(i); cum += p[i]; }
+        const z2 = [...keep].reduce((a, i) => a + p[i], 0), q = p.map((v, i) => keep.has(i) ? v / z2 : 0);
+        return { L, p, q, keep };
+      }
+      function sample(n) {
+        const { L, q } = dist(); counts = counts || new Array(L.length).fill(0); let lastI = 0;
+        for (let k = 0; k < n; k++) { let r = Math.random(), i = 0; while (r > q[i] && i < q.length - 1) r -= q[i++]; counts[i]++; lastI = i; }
+        if (n === 1) sent.innerHTML = `${PROMPTS[pi][0]} <span class="pick">${L[lastI][0]}</span>.`;
+        draw();
+      }
+      function draw() {
+        const { L, p, q, keep } = dist(); const tot = counts ? counts.reduce((a, b) => a + b, 0) : 0;
+        if (!sent.querySelector('.pick')) sent.innerHTML = `${PROMPTS[pi][0]} <span style="opacity:.5">…</span>`;
+        bars.innerHTML = L.map((l, i) => `<div class="tokBar ${keep.has(i) ? '' : 'off'}"><span class="tk">${l[0]}</span><span class="bar"><i style="width:${(q[i] * 100).toFixed(1)}%"></i></span><span class="pv">${(q[i] * 100).toFixed(1)}%${counts ? ` · ${counts[i]}` : ''}</span></div>`).join('') +
+          (counts ? `<div class="labHint">ستون آخر: تعداد دفعات انتخاب در ${tot} نمونه</div>` : '');
+        const H = -q.reduce((s, v) => s + (v > 0 ? v * Math.log2(v) : 0), 0); R('H', H.toFixed(2)); R('n', keep.size + ' از ' + L.length);
+      }
+      draw();
+    }
+  };
+
+  const WIDGETS = [W_GA, W_GD, W_REG, W_KM, W_NN, W_CONV, W_Q, W_LLM];
+
+  /* ---------- پنجره (مودال) ---------- */
+  let current = null;
+  function open(id) {
+    const W = WIDGETS.find(w => w.id === id); if (!W) return;
+    close();
+    const win = document.getElementById('labWin'); win.style.setProperty('--lc', W.color);
+    win.querySelector('.lwTitle').innerHTML = `<i data-lucide="${W.icon}"></i> ${W.title}`;
+    win.querySelector('.lwSess').textContent = (W.sessions.length > 1 ? 'جلسات ' : 'جلسه ') + faD(W.sessions.join('، '));
+    const body = win.querySelector('.labWinBody'); body.innerHTML = '';
+    const stage = document.createElement('div'); stage.className = 'labStage'; const panel = document.createElement('div'); panel.className = 'labPanel';
+    body.append(stage, panel); win.classList.add('open'); document.body.style.overflow = 'hidden';
+    const loops = [], resizers = []; let raf = 0, alive = true;
+    const api = { loop: f => loops.push(f), onResize: f => resizers.push(f) };
+    W.build(stage, panel, api);
+    const tick = t => { if (!alive) return; loops.forEach(f => f(t)); raf = requestAnimationFrame(tick); }; raf = requestAnimationFrame(tick);
+    let rt; const onR = () => { clearTimeout(rt); rt = setTimeout(() => resizers.forEach(f => f()), 120); }; window.addEventListener('resize', onR);
+    current = { stop() { alive = false; cancelAnimationFrame(raf); window.removeEventListener('resize', onR); } };
+    if (window.lucide) window.lucide && lucide.createIcons();
+    if (location.hash !== '#lab-' + id) history.replaceState(null, '', '#lab-' + id);
+  }
+  function close() {
+    if (current) current.stop(); current = null;
+    const win = document.getElementById('labWin'); if (win && win.classList.contains('open')) { win.classList.remove('open'); win.querySelector('.labWinBody').innerHTML = ''; document.body.style.overflow = ''; if (location.hash.startsWith('#lab-')) history.replaceState(null, '', '#lab'); }
+  }
+  function renderCards() {
+    const grid = document.getElementById('labGrid'); if (!grid) return; const T = theme();
+    grid.innerHTML = WIDGETS.map(W => `<button class="labCard" data-lab="${W.id}" style="--lc:${W.color}"><canvas></canvas><div class="lcBody"><div class="lcHead"><span class="lcIcon"><i data-lucide="${W.icon}"></i></span><h4>${W.title}</h4></div><p>${W.desc}</p><div class="lcFoot"><span>${W.sessions.length > 1 ? 'جلسات' : 'جلسه'} ${faD(W.sessions.join('، '))}</span><span class="lcOpen">باز کردن پنجره ←</span></div></div></button>`).join('');
+    if (window.lucide) window.lucide && lucide.createIcons();
+    drawPreviews();
+  }
+  function drawPreviews() {
+    const T = theme();
+    document.querySelectorAll('#labGrid .labCard').forEach(card => { const W = WIDGETS.find(w => w.id === card.dataset.lab), cn = card.querySelector('canvas'); if (!cn.clientWidth) return; const g = fit(cn, 120); g.c.clearRect(0, 0, g.w, g.h); try { W.preview(g.c, g.w, g.h, T); } catch (e) {} });
+  }
+  function init() {
+    renderCards();
+    document.addEventListener('click', e => { const b = e.target.closest('[data-lab]'); if (b) { e.preventDefault(); open(b.dataset.lab); } });
+    const win = document.getElementById('labWin');
+    win.querySelector('.lwClose').onclick = close; win.addEventListener('click', e => { if (e.target === win) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawPreviews, 150); });
+    new MutationObserver(drawPreviews).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
+  return { init, open, close, drawPreviews, list: WIDGETS.map(w => ({ id: w.id, title: w.title, sessions: w.sessions })) };
+})();
+
+</script>
 <script>
 /* ============ DATA ============ */
 const phases = [
@@ -1051,25 +2413,37 @@ phases.forEach(p => {
   phasesContainer.appendChild(el);
 });
 
+/* ✅ معماری جلسه + پادکست: sessions/session-XX/index.html و sessions/session-XX/podcast-XX/index.html */
+const CONFIG = {
+  sessionPath: n => `sessions/session-${String(n).padStart(2,'0')}/index.html`,
+  podcastPath: n => `sessions/session-${String(n).padStart(2,'0')}/podcast-${String(n).padStart(2,'0')}/index.html`,
+  checkLinks: true
+};
+const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+const labsFor = n => AILab.list.filter(l => l.sessions.includes(n));
+const linkBtns = n => `
+  <a class="sBtn lesson" href="${CONFIG.sessionPath(n)}" data-check><i data-lucide="presentation"></i> جلسه ${faNum(n)}</a>
+  <a class="sBtn podcast" href="${CONFIG.podcastPath(n)}" data-check><i data-lucide="podcast"></i> پادکست ${faNum(n)}</a>`;
+
 const sessionsGrid = document.getElementById("sessionsGrid");
 sessions.forEach(s => {
-  const phase = phases.find(p => p.n === String(s.phase));
+  const phase = phases.find(p => p.n === faNum(s.phase));
   const el = document.createElement("div");
-  el.className = "sessionCard" + (s.ready ? "" : " coming");
+  el.className = "sessionCard";
+  el.id = "session-card-" + s.n;
   el.style.setProperty("--accent", phase ? phase.color : "#4dd4ff");
+  const labs = labsFor(s.n);
   el.innerHTML = `
     <div class="sessionNum">${s.n}</div>
     <h4>${s.title}</h4>
     <p>${s.topics}</p>
+    ${labs.length ? `<div class="labChips">${labs.map(l => `<button class="labChip" data-lab="${l.id}">🧪 ${l.title}</button>`).join("")}</div>` : ""}
+    <div class="sessionLinks">${linkBtns(s.n)}</div>
     <div class="sessionFooter">
       <span class="tag">Phase ${s.phase}</span>
-      <span class="status ${s.ready ? 'ready' : ''}">${s.ready ? '✓ آماده' : 'به‌زودی'}</span>
+      <span class="status ready">${phase ? phase.title : ""}</span>
     </div>
   `;
-  /* ✅ اتصال به مسیر جلسه */
-  if(s.ready){
-    el.onclick = () => { window.location.href = `sessions/session-${String(s.n).padStart(2,'0')}/index.html`; };
-  }
   sessionsGrid.appendChild(el);
 });
 
@@ -1081,6 +2455,7 @@ sessions.forEach(s => {
     <td><b>${s.title}</b></td>
     <td>فاز ${s.phase}</td>
     <td style="color:var(--muted);font-size:12px">${s.topics}</td>
+    <td><div class="syllabusLinks">${linkBtns(s.n)}</div></td>
   `;
   tbody.appendChild(tr);
 });
@@ -1173,14 +2548,20 @@ rules.forEach((r, i) => {
 });
 
 /* ============ TABS ============ */
-function switchTab(tabName){
+function switchTab(tabName, noScroll){
+  if(!document.getElementById("tab-" + tabName)) tabName = "overview";
   document.querySelectorAll(".tabBtn").forEach(b => {
     b.classList.toggle("active", b.dataset.tab === tabName);
   });
   document.querySelectorAll(".tabContent").forEach(c => {
     c.classList.toggle("active", c.id === "tab-" + tabName);
   });
-  window.scrollTo({top: document.querySelector("nav.tabs").offsetTop, behavior:"smooth"});
+  const btn = document.querySelector(`.tabBtn[data-tab="${tabName}"]`);
+  if(btn) btn.scrollIntoView({block:"nearest", inline:"center"});
+  if(!noScroll) window.scrollTo({top: document.querySelector("nav.tabs").offsetTop, behavior:"smooth"});
+  if(location.hash !== "#" + tabName && !location.hash.startsWith("#lab-")) history.replaceState(null, "", "#" + tabName);
+  // اندازه‌گیری دوباره بوم‌ها (نقشه ذهنی سه‌بعدی، پیش‌نمایش آزمایشگاه)
+  requestAnimationFrame(() => { window.dispatchEvent(new Event("resize")); if(tabName === "lab") AILab.drawPreviews(); });
 }
 
 document.querySelectorAll(".tabBtn").forEach(btn => {
@@ -1189,6 +2570,9 @@ document.querySelectorAll(".tabBtn").forEach(btn => {
 
 document.querySelectorAll('a[href="#sessions"]').forEach(a => {
   a.onclick = (e) => { e.preventDefault(); switchTab("sessions"); };
+});
+document.querySelectorAll('[data-tab-link]').forEach(a => {
+  a.addEventListener("click", e => { e.preventDefault(); switchTab(a.dataset.tabLink); playClick(); });
 });
 
 /* ============ THEME ============ */
@@ -1209,7 +2593,7 @@ themeToggle.onclick = () => {
 
 function updateThemeIcon(theme){
   themeIcon.setAttribute("data-lucide", theme === "dark" ? "sun" : "moon");
-  lucide.createIcons();
+  window.lucide && lucide.createIcons();
 }
 
 /* ============ SOUND ============ */
@@ -1227,7 +2611,7 @@ soundToggle.onclick = () => {
 
 function updateSoundIcon(){
   soundIcon.setAttribute("data-lucide", soundEnabled ? "volume-2" : "volume-x");
-  lucide.createIcons();
+  window.lucide && lucide.createIcons();
 }
 
 let audioCtx = null;
@@ -1253,6 +2637,8 @@ function playClick(){
 }
 
 /* ============ HERO 3D ============ */
+if (window.THREE) {
+
 const heroHost = document.getElementById("hero3d");
 const heroScene = new THREE.Scene();
 const heroCamera = new THREE.PerspectiveCamera(55, heroHost.clientWidth/heroHost.clientHeight, 0.1, 100);
@@ -1298,6 +2684,7 @@ window.addEventListener("resize", () => {
   heroRenderer.setSize(heroHost.clientWidth, heroHost.clientHeight);
 });
 
+}
 /* ============ GSAP ============ */
 if(window.gsap){
   gsap.from(".hero > *", {
@@ -1309,7 +2696,794 @@ if(window.gsap){
 }
 
 /* ============ INIT ============ */
-lucide.createIcons();
+
+/* ============ بررسی وجود فایل جلسه/پادکست (روی GitHub Pages) ============ */
+(function verifyLinks(){
+  if(!CONFIG.checkLinks || !/^https?:/.test(location.protocol)) return;
+  const cache = {};
+  document.querySelectorAll('a[data-check]').forEach(a => {
+    const url = a.getAttribute('href');
+    if(!(url in cache)) cache[url] = fetch(url, {method:'HEAD', cache:'no-store'}).then(r => r.ok).catch(() => true);
+    cache[url].then(ok => { if(!ok){ a.classList.add('missing'); a.setAttribute('aria-disabled','true'); } });
+  });
+})();
+
+/* ================= دائره‌المعارف جامع هوش مصنوعی (ادغام‌شده) ================= */
+(function encyclopedia(){
+
+/* ===================================================
+   TERMS DATABASE
+   =================================================== */
+const terms = [
+/* === 1. مبانی === */
+["AI","هوش مصنوعی","حوزه‌ای میان‌رشته‌ای برای ساخت سامانه‌هایی که وظایفی مانند ادراک، یادگیری، استدلال و تصمیم‌گیری را انجام می‌دهند.","foundation"],
+["AGI","هوش مصنوعی عمومی","مفهومی برای هوشی با توانایی عمومی و انعطاف‌پذیر در طیف گسترده‌ای از وظایف.","foundation"],
+["Narrow AI","هوش مصنوعی محدود","سامانه‌ای که برای یک وظیفه یا دامنه مشخص طراحی و بهینه شده است.","foundation"],
+["ASI","فوق‌هوش مصنوعی","مفهومی نظری درباره هوشی که در دامنه بسیار گسترده‌ای از توانایی‌ها از انسان فراتر باشد.","foundation"],
+["Perception","ادراک","توانایی دریافت و تفسیر اطلاعات از محیط (بینایی، شنوایی، لامسه).","foundation"],
+["Reasoning","استدلال","فرایند استخراج نتیجه یا تصمیم از اطلاعات، قواعد و شواهد موجود.","foundation"],
+["Planning","برنامه‌ریزی","یافتن دنباله‌ای از اعمال برای رسیدن از وضعیت اولیه به هدف.","foundation"],
+["Decision Making","تصمیم‌گیری","انتخاب بهترین گزینه از میان گزینه‌های موجود بر اساس معیارهای مشخص.","foundation"],
+["Model","مدل","نمایش ریاضی یا محاسباتی از یک سامانه که برای پیش‌بینی یا تصمیم‌گیری استفاده می‌شود.","foundation"],
+["Parameter","پارامتر","مقادیر عددی داخلی مدل که در طول آموزش تنظیم می‌شوند.","foundation"],
+["Hyperparameter","فراپارامتر","پارامتری که قبل از آموزش توسط انسان تعیین می‌شود (مثل نرخ یادگیری).","foundation"],
+["Weight","وزن","پارامتری که قدرت ارتباط بین نورون‌ها یا ویژگی‌ها را نشان می‌دهد.","foundation"],
+["Bias (Model)","بایاس مدل","پارامتری که به هر نورون اضافه می‌شود تا مدل بهتر با داده تطبیق یابد.","foundation"],
+["Activation Function","تابع فعال‌سازی","تابعی که به نورون غیرخطیت اضافه می‌کند (ReLU، Sigmoid، Tanh).","foundation"],
+["Loss Function","تابع زیان","معیاری که میزان خطای مدل را اندازه می‌گیرد.","foundation"],
+["Gradient","گرادیان","بردار مشتقات جزئی که جهت افزایش سریع تابع را نشان می‌دهد.","foundation"],
+["Gradient Descent","گرادیان نزولی","الگوریتم بهینه‌سازی برای کمینه کردن تابع زیان.","foundation"],
+["Learning Rate","نرخ یادگیری","عددی که اندازه گام به‌روزرسانی پارامترها را تعیین می‌کند.","foundation"],
+["Linear Algebra","جبر خطی","شاخه‌ای از ریاضیات که به بردارها، ماتریس‌ها و تبدیلات خطی می‌پردازد.","foundation"],
+["Probability","احتمال","شاخه‌ای از ریاضیات برای مدل‌سازی عدم قطعیت.","foundation"],
+["Bayes Theorem","قضیه بیز","فرمولی برای به‌روزرسانی احتمال فرضیه‌ها بر اساس شواهد جدید.","foundation"],
+["Statistics","آمار","شاخه‌ای برای جمع‌آوری، تحلیل و تفسیر داده‌ها.","foundation"],
+["Calculus","حساب دیفرانسیل","شاخه‌ای از ریاضیات برای مطالعه تغییرات و مشتقات.","foundation"],
+["Optimization","بهینه‌سازی","فرایند یافتن بهترین راه‌حل از میان گزینه‌های ممکن.","foundation"],
+["Convex Optimization","بهینه‌سازی محدب","بهینه‌سازی روی توابع محدب که تضمین‌کننده یافتن بهینه مطلق است.","foundation"],
+
+/* === 2. یادگیری === */
+["Machine Learning","یادگیری ماشین","روش‌هایی برای یادگیری الگوها از داده بدون تعریف صریح قواعد.","learning"],
+["Supervised Learning","یادگیری نظارت‌شده","یادگیری از نمونه‌هایی که دارای برچسب یا خروجی هدف هستند.","learning"],
+["Unsupervised Learning","یادگیری بدون نظارت","کشف ساختار یا الگو در داده‌های بدون برچسب هدف.","learning"],
+["Semi-Supervised Learning","یادگیری نیمه‌نظارتی","ترکیب داده‌های برچسب‌دار و بدون برچسب برای آموزش.","learning"],
+["Self-Supervised Learning","یادگیری خودنظارتی","ساخت سیگنال آموزشی از خود داده، مانند پیش‌بینی بخش پنهان.","learning"],
+["Reinforcement Learning","یادگیری تقویتی","یادگیری سیاست تصمیم‌گیری از طریق تعامل با محیط و دریافت پاداش.","learning"],
+["Deep Learning","یادگیری عمیق","زیرمجموعه‌ای از ML که بر شبکه‌های عصبی چندلایه تکیه دارد.","learning"],
+["Neural Network","شبکه عصبی","ساختاری الهام‌گرفته از مغز با واحدهای محاسباتی متصل.","learning"],
+["MLP","پرسپترون چندلایه","شبکه عصبی ساده با لایه‌های کاملاً متصل.","learning"],
+["CNN","شبکه کانولوشنی","معماری مؤثر برای استخراج الگوهای مکانی، به‌ویژه در تصاویر.","learning"],
+["RNN","شبکه بازگشتی","شبکه‌ای برای داده‌های ترتیبی با حافظه از گذشته.","learning"],
+["LSTM","حافظه کوتاه‌مدت بلند","نوع پیشرفته RNN برای مدیریت وابستگی‌های بلندمدت.","learning"],
+["GRU","واحد بازگشتی دروازه‌ای","نسخه ساده‌تر و سریع‌تر LSTM.","learning"],
+["Autoencoder","خودرمزگذار","شبکه‌ای برای فشرده‌سازی و بازسازی داده.","learning"],
+["VAE","خودرمزگذار متغیر","نسخه احتمالاتی خودرمزگذار برای تولید داده جدید.","learning"],
+["GAN","شبکه تخاصمی مولد","دو شبکه رقیب برای تولید داده واقع‌گرایانه.","learning"],
+["Transformer","ترنسفورمر","معماری مبتنی بر Attention که در زبان، بینایی و چندوجهی کاربرد دارد.","learning"],
+["Decision Tree","درخت تصمیم","مدل درختی برای طبقه‌بندی و رگرسیون.","learning"],
+["Random Forest","جنگل تصادفی","مجموعه‌ای از درختان تصمیم برای افزایش دقت.","learning"],
+["SVM","ماشین بردار پشتیبان","مدل طبقه‌بندی که بهترین مرز جداکننده را می‌یابد.","learning"],
+["k-NN","نزدیک‌ترین همسایه‌ها","طبقه‌بندی بر اساس نزدیک‌ترین نمونه‌های آموزشی.","learning"],
+["Gradient Boosting","تقویت گرادیانی","روش ensemble که مدل‌ها را به صورت متوالی بهبود می‌دهد.","learning"],
+["k-Means","خوشه‌بندی k-Means","الگوریتم خوشه‌بندی مبتنی بر مرکز.","learning"],
+["PCA","تحلیل مؤلفه‌های اصلی","روش کاهش ابعاد با حفظ بیشترین واریانس.","learning"],
+["t-SNE","t-SNE","روش کاهش ابعاد برای مصورسازی داده‌های پرابعاد.","learning"],
+["Overfitting","بیش‌برازش","وقتی مدل روی داده آموزشی خوب است اما روی داده جدید ضعیف.","learning"],
+["Underfitting","کم‌برازش","وقتی مدل حتی روی داده آموزشی هم ضعیف است.","learning"],
+["Regularization","نظم‌دهی","تکنیک‌هایی برای جلوگیری از بیش‌برازش.","learning"],
+["Dropout","حذف تصادفی","تکنیکی برای جلوگیری از بیش‌برازش با حذف تصادفی نورون‌ها.","learning"],
+["Transfer Learning","یادگیری انتقالی","استفاده از دانش مدل آموزش‌دیده در حوزه جدید.","learning"],
+["Fine-Tuning","تنظیم دقیق","ادامه آموزش مدل ازپیش‌آموزش‌دیده روی داده تخصصی.","learning"],
+["LoRA","LoRA","روش تنظیم دقیق کم‌پارامتر برای مدل‌های بزرگ.","learning"],
+["Q-Learning","Q-Learning","الگوریتم یادگیری تقویتی بدون مدل.","learning"],
+["DQN","DQN","ترکیب Q-Learning با شبکه عصبی عمیق.","learning"],
+["PPO","PPO","الگوریتم یادگیری تقویتی مبتنی بر سیاست.","learning"],
+
+/* === 3. ادراک و زبان === */
+["Computer Vision","بینایی ماشین","پردازش و تفسیر تصاویر و ویدئو برای استخراج اطلاعات.","perception"],
+["Image Classification","طبقه‌بندی تصویر","تشخیص کلاس یک تصویر.","perception"],
+["Object Detection","تشخیص شیء","یافتن و مکان‌یابی اشیاء در تصویر.","perception"],
+["Semantic Segmentation","تقسیم‌بندی معنایی","دسته‌بندی هر پیکسل تصویر به یک کلاس.","perception"],
+["Instance Segmentation","تقسیم‌بندی نمونه‌ای","تشخیص و جدا کردن هر نمونه از اشیاء.","perception"],
+["Face Recognition","تشخیص چهره","شناسایی هویت افراد از تصویر چهره.","perception"],
+["OCR","OCR","تبدیل تصویر متن به متن قابل ویرایش.","perception"],
+["Pose Estimation","تخمین حالت","تشخیص موقعیت اعضای بدن در تصویر.","perception"],
+["NLP","پردازش زبان طبیعی","حوزه‌ای برای پردازش، درک و تولید زبان انسانی.","perception"],
+["Token","توکن","کوچک‌ترین واحد پردازش متن در مدل‌های زبانی.","perception"],
+["Tokenization","توکن‌سازی","فرایند تبدیل متن خام به توکن‌ها.","perception"],
+["Embedding","تعبیه","نمایش برداری یک شیء در فضای پیوسته.","perception"],
+["Word Embedding","بردار کلمه","نمایش برداری کلمات با حفظ شباهت معنایی.","perception"],
+["Attention","مکانیزم توجه","وزن‌دهی پویا به بخش‌های مختلف ورودی.","perception"],
+["Self-Attention","خودتوجهی","توجه هر توکن به سایر توکن‌های همان دنباله.","perception"],
+["Multi-Head Attention","توجه چندسر","چند مکانیزم توجه موازی برای کشف روابط مختلف.","perception"],
+["Positional Encoding","رمزگذاری موقعیتی","افزودن اطلاعات موقعیت توکن‌ها به مدل.","perception"],
+["Encoder-Decoder","رمزگذار-رمزگشا","ساختاری برای تبدیل دنباله به دنباله.","perception"],
+["LLM","مدل زبانی بزرگ","مدل زبانی بزرگ‌مقیاس برای درک و تولید زبان.","perception"],
+["Context Window","پنجره زمینه","حداکثر تعداد توکن‌هایی که مدل می‌تواند پردازش کند.","perception"],
+["Machine Translation","ترجمه ماشینی","ترجمه خودکار متن از یک زبان به زبان دیگر.","perception"],
+["Sentiment Analysis","تحلیل احساسات","تعیین مثبت، منفی یا خنثی بودن یک متن.","perception"],
+["NER","شناسایی موجودیت نام‌دار","تشخیص و دسته‌بندی موجودیت‌های خاص در متن.","perception"],
+["Summarization","خلاصه‌سازی","تولید نسخه کوتاه‌تر از یک متن با حفظ نکات کلیدی.","perception"],
+["Question Answering","پرسش و پاسخ","سامانه‌ای برای پاسخ به سؤالات بر اساس متن یا دانش.","perception"],
+["Speech Recognition","بازشناسی گفتار","تبدیل گفتار به متن.","perception"],
+["TTS","تبدیل متن به گفتار","تولید صدای انسانی از متن.","perception"],
+
+/* === 4. استدلال و رباتیک === */
+["Search","جست‌وجو","یافتن مسیر یا راه‌حل در فضای حالت.","reason"],
+["BFS","جست‌وجوی سطحی","جست‌وجو سطح به سطح در درخت حالت.","reason"],
+["DFS","جست‌وجوی عمقی","جست‌وجو با پیشروی تا عمق ممکن.","reason"],
+["A*","الگوریتم A*","الگوریتم جست‌وجوی ابتکاری با ترکیب هزینه و تخمین.","reason"],
+["Heuristic","ابتکاری","تابعی برای تخمین نزدیکی به هدف در جست‌وجو.","reason"],
+["Minimax","مینیمکس","الگوریتم تصمیم‌گیری در بازی‌های دو نفره.","reason"],
+["Alpha-Beta Pruning","هرس آلفا-بتا","بهینه‌سازی Minimax با حذف شاخه‌های غیرضروری.","reason"],
+["MCTS","جست‌وجوی درخت مونت‌کارلو","الگوریتم جست‌وجو با نمونه‌برداری تصادفی.","reason"],
+["Knowledge Representation","نمایش دانش","روش‌های نمایش دانش برای استدلال ماشین.","reason"],
+["Logic","منطق","زبان صوری برای استدلال و استنتاج.","reason"],
+["Ontology","هستی‌شناسی","نمایش ساختاریافته مفاهیم و روابط یک حوزه.","reason"],
+["Knowledge Graph","گراف دانش","نمایش گرافی موجودیت‌ها و روابط آن‌ها.","reason"],
+["Expert System","سیستم خبره","سامانه‌ای مبتنی بر دانش و قواعد برای حل مسائل تخصصی.","reason"],
+["Inference Engine","موتور استنتاج","بخشی از سیستم خبره که نتایج را از قواعد استخراج می‌کند.","reason"],
+["Multi-Agent System","سیستم چندعاملی","مجموعه‌ای از عامل‌ها در تعامل با یکدیگر.","reason"],
+["Robotics","رباتیک","حوزه‌ای میان‌رشته‌ای برای ساخت و بهره‌برداری از ربات‌ها.","reason"],
+["SLAM","SLAM","همزمانی مکان‌یابی و نقشه‌سازی در رباتیک.","reason"],
+["Path Planning","برنامه‌ریزی مسیر","یافتن مسیر بهینه از مبدأ به مقصد.","reason"],
+["Motion Planning","برنامه‌ریزی حرکت","طراحی حرکت ربات با در نظر گرفتن قیود.","reason"],
+["Manipulation","دستکاری","توانایی ربات برای گرفتن و جابه‌جایی اشیاء.","reason"],
+["Human-Robot Interaction","تعامل انسان-ربات","مطالعه تعامل بین انسان و ربات.","reason"],
+["Fuzzy Control","کنترل فازی","کنترل مبتنی بر منطق فازی برای سیستم‌های نامعین.","reason"],
+["Model Predictive Control","کنترل پیش‌بین","روش کنترلی با پیش‌بینی رفتار آینده سیستم.","reason"],
+
+/* === 5. AI مدرن === */
+["Generative AI","هوش مصنوعی مولد","سامانه‌هایی برای تولید محتوای جدید (متن، تصویر، صوت، ویدئو).","modern"],
+["Foundation Model","مدل پایه","مدلی که روی داده‌های گسترده آموزش می‌بیند و برای وظایف متنوع تطبیق می‌یابد.","modern"],
+["Diffusion Model","مدل انتشار","خانواده‌ای از مدل‌های مولد با یادگیری معکوس فرایند نویزی‌سازی.","modern"],
+["Multimodal AI","هوش مصنوعی چندوجهی","سامانه‌ای که چند نوع داده (متن، تصویر، صوت) را پردازش می‌کند.","modern"],
+["Vision-Language Model","مدل بینایی-زبان","مدلی که تصویر و متن را همزمان پردازش می‌کند.","modern"],
+["Prompt Engineering","مهندسی پرامپت","طراحی ساختارمند ورودی برای هدایت مدل.","modern"],
+["Zero-Shot","بدون نمونه","انجام وظیفه بدون ارائه نمونه آموزشی.","modern"],
+["Few-Shot","چند-نمونه‌ای","انجام وظیفه با ارائه چند نمونه.","modern"],
+["Chain-of-Thought","زنجیره تفکر","تکنیک پرامپت برای وادار کردن مدل به استدلال گام‌به‌گام.","modern"],
+["RAG","تولید افزوده‌شده با بازیابی","ترکیب بازیابی اطلاعات با تولید پاسخ.","modern"],
+["Vector Search","جست‌وجوی برداری","جست‌وجو بر اساس شباهت برداری.","modern"],
+["Reranking","بازرتبه‌بندی","مرتب‌سازی مجدد نتایج بازیابی برای دقت بیشتر.","modern"],
+["AI Agent","عامل هوش مصنوعی","سامانه‌ای هدف‌محور که برنامه‌ریزی، ابزار و اقدام دارد.","modern"],
+["Agentic AI","هوش مصنوعی عاملی","رویکردی که در آن سامانه‌ها به‌طور مستقل عمل می‌کنند.","modern"],
+["Tool Use","استفاده از ابزار","توانایی عامل برای فراخوانی ابزارهای خارجی.","modern"],
+["Memory (Agent)","حافظه عامل","توانایی ذخیره و بازیابی اطلاعات در طول زمان.","modern"],
+["RLHF","یادگیری تقویتی از بازخورد انسانی","روشی برای هم‌راستاسازی مدل با ترجیحات انسانی.","modern"],
+["AI Alignment","هم‌راستایی AI","تلاش برای هم‌راستا کردن رفتار AI با ارزش‌های انسانی.","modern"],
+["Context Engineering","مهندسی زمینه","مدیریت و ساختاردهی زمینه ورودی برای مدل.","modern"],
+
+/* === 6. مهندسی و ایمنی === */
+["MLOps","عملیات یادگیری ماشین","روش‌ها و زیرساخت‌های مدیریت چرخه عمر مدل.","engineering"],
+["Data Pipeline","خط لوله داده","زنجیره پردازش داده از جمع‌آوری تا آموزش.","engineering"],
+["Model Registry","ثبت مدل","سامانه‌ای برای نسخه‌بندی و مدیریت مدل‌ها.","engineering"],
+["Model Serving","سرو مدل","استقرار مدل برای ارائه پیش‌بینی به کاربران.","engineering"],
+["Quantization","کوانتیزه‌سازی","کاهش دقت عددی پارامترها برای کاهش حافظه.","engineering"],
+["Pruning","هرس","حذف پارامترهای کم‌اهمیت برای کاهش اندازه مدل.","engineering"],
+["Knowledge Distillation","تقطیر دانش","آموزش مدل کوچک از مدل بزرگ.","engineering"],
+["Edge AI","AI لبه","اجرای مدل روی دستگاه‌های لبه به جای ابر.","engineering"],
+["GPU","GPU","پردازنده گرافیکی برای محاسبات موازی.","engineering"],
+["TPU","TPU","پردازنده تخصصی گوگل برای یادگیری ماشین.","engineering"],
+["Explainable AI","هوش مصنوعی توضیح‌پذیر","روش‌هایی برای درک دلایل خروجی مدل.","engineering"],
+["SHAP","SHAP","روشی برای تفسیر پیش‌بینی مدل بر اساس نظریه بازی.","engineering"],
+["LIME","LIME","روشی برای توضیح پیش‌بینی مدل به صورت محلی.","engineering"],
+["Hallucination","توهم مدل","تولید اطلاعات نادرست یا ساختگی توسط مدل مولد.","engineering"],
+["Adversarial Attack","حمله تخاصمی","دستکاری ورودی برای فریب مدل.","engineering"],
+["Data Poisoning","مسموم‌سازی داده","آلوده کردن داده آموزشی برای تخریب مدل.","engineering"],
+["Prompt Injection","تزریق پرامپت","حمله‌ای که دستورات مخرب را به مدل تزریق می‌کند.","engineering"],
+["Jailbreaking","شکستن محدودیت","دور زدن محدودیت‌های ایمنی مدل.","engineering"],
+["Federated Learning","یادگیری فدرال","آموزش مدل بدون متمرکز کردن داده‌ها.","engineering"],
+["Differential Privacy","حریم خصوصی تفاضلی","تکنیکی برای حفظ حریم خصوصی در داده‌ها.","engineering"],
+["AI Safety","ایمنی هوش مصنوعی","روش‌هایی برای افزایش قابلیت اعتماد و کنترل‌پذیری.","engineering"],
+["AI Governance","حکمرانی هوش مصنوعی","چارچوب‌های سیاستی و مدیریتی برای مسئولیت‌پذیری.","engineering"],
+["Algorithmic Bias","سوگیری الگوریتمی","سوگیری ناعادلانه در خروجی مدل.","engineering"],
+["Fairness","عدالت","تضمین رفتار عادلانه مدل با گروه‌های مختلف.","engineering"],
+["Reproducibility","بازتولیدپذیری","توانایی بازتولید نتایج پژوهش.","engineering"]
+];
+
+/* ===================================================
+   SUB-CLUSTERS — زیرشاخه‌های نقشه ذهنی
+   =================================================== */
+const subClusters = {
+  learning: [
+    {en:"ML", fa:"یادگیری ماشین", term:"Machine Learning"},
+    {en:"DL", fa:"یادگیری عمیق", term:"Deep Learning"},
+    {en:"RL", fa:"یادگیری تقویتی", term:"Reinforcement Learning"},
+    {en:"CNN", fa:"شبکه کانولوشنی", term:"CNN"},
+    {en:"RNN", fa:"شبکه بازگشتی", term:"RNN"},
+    {en:"Transformer", fa:"ترنسفورمر", term:"Transformer"}
+  ],
+  perception: [
+    {en:"CV", fa:"بینایی ماشین", term:"Computer Vision"},
+    {en:"NLP", fa:"پردازش زبان", term:"NLP"},
+    {en:"Speech", fa:"گفتار", term:"Speech Recognition"},
+    {en:"Embedding", fa:"تعبیه", term:"Embedding"},
+    {en:"Attention", fa:"توجه", term:"Attention"},
+    {en:"LLM", fa:"مدل زبانی", term:"LLM"}
+  ],
+  modern: [
+    {en:"GenAI", fa:"AI مولد", term:"Generative AI"},
+    {en:"LLM", fa:"مدل زبانی", term:"LLM"},
+    {en:"RAG", fa:"RAG", term:"RAG"},
+    {en:"Agent", fa:"عامل", term:"AI Agent"},
+    {en:"Diffusion", fa:"انتشار", term:"Diffusion Model"},
+    {en:"Fine-Tune", fa:"تنظیم دقیق", term:"Fine-Tuning"}
+  ],
+  reason: [
+    {en:"Reasoning", fa:"استدلال", term:"Reasoning"},
+    {en:"Search", fa:"جست‌وجو", term:"Search"},
+    {en:"Planning", fa:"برنامه‌ریزی", term:"Planning"},
+    {en:"Knowledge", fa:"دانش", term:"Knowledge Representation"},
+    {en:"Robotics", fa:"رباتیک", term:"Robotics"},
+    {en:"MAS", fa:"چندعاملی", term:"Multi-Agent System"}
+  ],
+  foundation: [
+    {en:"Math", fa:"ریاضیات", term:"Linear Algebra"},
+    {en:"AI", fa:"هوش مصنوعی", term:"AI"},
+    {en:"AGI", fa:"AI عمومی", term:"AGI"},
+    {en:"Model", fa:"مدل", term:"Model"},
+    {en:"Loss", fa:"تابع زیان", term:"Loss Function"},
+    {en:"Optimization", fa:"بهینه‌سازی", term:"Optimization"}
+  ],
+  engineering: [
+    {en:"MLOps", fa:"عملیات ML", term:"MLOps"},
+    {en:"Deploy", fa:"استقرار", term:"Model Serving"},
+    {en:"Evaluation", fa:"ارزیابی", term:"Reproducibility"},
+    {en:"Safety", fa:"ایمنی", term:"AI Safety"},
+    {en:"XAI", fa:"توضیح‌پذیری", term:"Explainable AI"},
+    {en:"Governance", fa:"حکمرانی", term:"AI Governance"}
+  ]
+};
+
+const colorMap = {
+  learning:"#a78bfa", perception:"#5ee8a8", modern:"#ff7e93",
+  reason:"#f5c76a", foundation:"#4dd4ff", engineering:"#74a7ff"
+};
+
+/* ===================================================
+   DETAILS — توضیحات کامل
+   =================================================== */
+const details = {
+"AI":"<p>هوش مصنوعی چتر مفهومی اصلی این دانشنامه است. در عمل، AI مجموعه‌ای از روش‌ها و سامانه‌هاست که برای ادراک، یادگیری، استدلال، برنامه‌ریزی، تصمیم‌گیری، تعامل و تولید محتوا به کار می‌روند.</p><p>این حوزه از دهه ۱۹۵۰ میلادی شکل گرفت و در طول زمان از رویکردهای نمادین به یادگیری ماشین و سپس یادگیری عمیق و مدل‌های پایه تکامل یافته است.</p>",
+"AGI":"<p>هوش مصنوعی عمومی (AGI) به سامانه‌ای اشاره دارد که بتواند طیف گسترده‌ای از وظایف شناختی را مانند انسان انجام دهد — از استدلال انتزاعی تا یادگیری در حوزه‌های جدید — بدون اینکه برای هر وظیفه به‌طور خاص طراحی شده باشد.</p><p>AGI هنوز به‌صورت قطعی محقق نشده و درباره تعریف دقیق و معیارهای تحقق آن اجماع واحدی وجود ندارد.</p>",
+"Machine Learning":"<p>در ML مدل به جای اینکه همه قواعد را به‌صورت دستی دریافت کند، الگوها و رابطه‌های مفید را از داده یاد می‌گیرد. مسئله می‌تواند پیش‌بینی، طبقه‌بندی، کشف ساختار یا تصمیم‌گیری باشد.</p><p>ML به سه دسته اصلی تقسیم می‌شود: نظارت‌شده، بدون نظارت و تقویتی. امروزه ML موتور محرک اصلی اکثر پیشرفت‌های AI است.</p>",
+"Deep Learning":"<p>یادگیری عمیق بر شبکه‌های عصبی چندلایه تکیه دارد. قدرت آن در یادگیری بازنمایی‌های چندسطحی از داده‌های پیچیده مانند تصویر، صدا و متن است.</p><p>DL در دهه ۲۰۱۰ با پیشرفت GPUها و داده‌های بزرگ به موفقیت‌های چشمگیری در بینایی ماشین، پردازش زبان و بازشناسی گفتار دست یافت.</p>",
+"Transformer":"<p>Transformer از Attention برای مدل‌سازی ارتباط میان اجزای ورودی استفاده می‌کند. انعطاف آن باعث شده از NLP فراتر رفته و در بینایی، صوت و مدل‌های چندوجهی نیز به‌کار رود.</p><p>معماری Transformer در سال ۲۰۱۷ در مقاله «Attention is All You Need» معرفی شد و پایه مدل‌هایی مثل BERT، GPT و T5 است.</p>",
+"LLM":"<p>LLM یک مدل زبانی در مقیاس بزرگ است که معمولاً با داده متنی بسیار زیاد پیش‌آموزش می‌بیند و سپس می‌تواند برای دستورها، وظایف و کاربردهای گوناگون سازگار شود.</p><p>این مدل‌ها با میلیاردها پارامتر، قادر به تولید متن، ترجمه، خلاصه‌سازی، پاسخ به سؤالات و حتی استدلال هستند.</p>",
+"RAG":"<p>در RAG ابتدا اطلاعات مرتبط از یک منبع یا پایگاه داده بازیابی می‌شود و سپس به مدل داده می‌شود تا پاسخ را بر اساس آن زمینه تولید کند. این روش برای اتصال مدل به دانش خارجی بسیار مهم است.</p><p>RAG دقت مدل را بالا برده و مشکل «توهم» را کاهش می‌دهد، اما تضمین‌کننده صحت مطلق نیست.</p>",
+"AI Agent":"<p>یک Agent صرفاً یک چت‌بات نیست؛ در یک معماری عامل‌محور، سیستم می‌تواند هدف را دریافت کند، وضعیت را بررسی کند، برنامه بسازد، ابزار فراخوانی کند، اقدام انجام دهد و نتیجه را دوباره ارزیابی کند.</p><p>عامل‌ها معمولاً دارای حافظه، توانایی برنامه‌ریزی، استفاده از ابزار و حلقه بازخورد هستند.</p>",
+"Hallucination":"<p>توهم به زمانی گفته می‌شود که مدل مولد با اطمینان ظاهری اطلاعاتی تولید کند که نادرست، ساختگی یا فاقد پشتوانه کافی است. این موضوع نیازمند ارزیابی و راستی‌آزمایی است.</p><p>توهم یکی از بزرگ‌ترین چالش‌ها برای استفاده تجاری از مدل‌های زبانی است.</p>",
+"Robotics":"<p>رباتیک تنها زیرمجموعه AI نیست؛ بلکه حوزه‌ای میان‌رشته‌ای است. AI در رباتیک برای ادراک، یادگیری، برنامه‌ریزی و تصمیم‌گیری در کنار مکانیک، کنترل و حسگرها استفاده می‌شود.</p><p>رباتیک شامل طراحی، ساخت، بهره‌برداری و برنامه‌ریزی ربات‌هاست.</p>",
+"Reinforcement Learning":"<p>در یادگیری تقویتی، عامل با محیط تعامل می‌کند و از پیامد اعمال خود سیگنال یادگیری دریافت می‌کند. هدف معمولاً یادگیری سیاستی است که بازده تجمعی را بیشینه کند.</p><p>RL در بازی‌هایی مثل Go و شطرنج، رباتیک و خودران‌ها کاربرد گسترده دارد.</p>",
+"GAN":"<p>GAN از دو شبکه تشکیل شده: مولد (Generator) که داده جعلی می‌سازد و تمایزگر (Discriminator) که سعی می‌کند جعلی را تشخیص دهد. این رقابت باعث تولید داده‌های بسیار واقع‌گرایانه می‌شود.</p><p>GAN در تولید تصویر، ویدئو، صدا و داده مصنوعی کاربرد دارد.</p>",
+"Diffusion Model":"<p>مدل‌های انتشار با افزودن تدریجی نویز به داده و سپس یادگیری معکوس این فرایند، تصاویر جدید تولید می‌کنند. Stable Diffusion و DALL-E از این خانواده هستند.</p><p>این مدل‌ها کیفیت بالایی در تولید تصویر دارند و امروزه جایگزین GANها شده‌اند.</p>",
+"RLHF":"<p>در RLHF ابتدا مدل با نظارت انسانی تنظیم می‌شود، سپس یک مدل پاداش از ترجیحات انسانی آموزش می‌بیند و در نهایت مدل اصلی با یادگیری تقویتی بهینه می‌شود.</p><p>این روش برای هم‌راستاسازی مدل‌های زبانی با ارزش‌ها و ترجیحات انسانی استفاده می‌شود.</p>",
+"CNN":"<p>شبکه کانولوشنی با استفاده از فیلترهای کوچک، ویژگی‌های محلی مثل لبه، بافت و شکل را در تصویر تشخیص می‌دهد. این معماری انقلابی در بینایی ماشین ایجاد کرد.</p><p>CNN از لایه‌های کانولوشن، Pooling و کاملاً متصل تشکیل شده است.</p>",
+"LSTM":"<p>LSTM با دریچه‌های داخلی تصمیم می‌گیرد چه اطلاعاتی را نگه دارد و چه چیزی را فراموش کند. این ویژگی آن را برای پردازش دنباله‌های طولانی مناسب می‌کند.</p><p>LSTM در ترجمه ماشینی، بازشناسی گفتار و تحلیل سری‌های زمانی کاربرد دارد.</p>",
+"MLOps":"<p>MLOps ترکیبی از Machine Learning، DevOps و Data Engineering است. هدف آن مدیریت چرخه کامل عمر مدل از آموزش تا استقرار و پایش در تولید است.</p><p>MLOps شامل خط لوله داده، نسخه‌بندی مدل، پایش، CI/CD و بازآموزی خودکار است.</p>",
+"Federated Learning":"<p>در یادگیری فدرال، مدل به جای متمرکز کردن داده‌ها، روی دستگاه‌های محلی آموزش می‌بیند و فقط به‌روزرسانی‌های مدل مبادله می‌شوند. این روش حریم خصوصی را حفظ می‌کند.</p><p>کاربرد اصلی آن در حوزه‌های حساس مثل پزشکی و مالی است.</p>",
+"Explainable AI":"<p>XAI مجموعه روش‌هایی است که توضیح می‌دهد مدل چگونه به تصمیم خود رسیده. این موضوع در کاربردهای حساس مثل پزشکی و مالی بسیار مهم است.</p><p>SHAP و LIME از معروف‌ترین روش‌های XAI هستند.</p>"
+};
+
+/* ===================================================
+   RESEARCH FRONTIERS
+   =================================================== */
+const frontiers = [
+  {title:"Scientific AI", icon:"atom", color:"#4dd4ff",
+   desc:"استفاده از AI برای کشف علمی، شبیه‌سازی و مدل‌سازی پدیده‌های فیزیکی.",
+   items:["Physics-Informed Neural Networks","Neural Operators","Scientific Machine Learning","Surrogate Models","AI for PDEs"]},
+  {title:"Embodied AI", icon:"bot", color:"#a78bfa",
+   desc:"هوشی که در یک بدن فیزیکی یا مجازی تجسم یافته و با محیط تعامل می‌کند.",
+   items:["Robot Learning","Vision-Language-Action Models","Sim-to-Real","World Models"]},
+  {title:"Advanced Robotics", icon:"cpu", color:"#5ee8a8",
+   desc:"رباتیک پیشرفته با قابلیت‌های حرکتی و ادراکی فراتر از ربات‌های سنتی.",
+   items:["Soft Robotics","Surgical Robotics","Humanoid Robots","Autonomous Manipulation"]},
+  {title:"Advanced Learning", icon:"graduation-cap", color:"#f5c76a",
+   desc:"روش‌های یادگیری فراتر از supervised و unsupervised سنتی.",
+   items:["Meta-Learning","Continual Learning","Few-Shot Learning","Zero-Shot Learning","Active Learning"]},
+  {title:"Advanced Generative AI", icon:"wand-2", color:"#ff7e93",
+   desc:"تولید محتوای پیچیده‌تر و چندوجهی با کیفیت بالاتر.",
+   items:["Multimodal Generation","Video Generation","3D Generation","World Models"]},
+  {title:"Advanced Agents", icon:"network", color:"#74a7ff",
+   desc:"عامل‌های خودمختار با توانایی همکاری، برنامه‌ریزی و استفاده از ابزار.",
+   items:["Multi-Agent Systems","Autonomous Agents","Agentic Workflows","Tool-Using Agents","Collaborative Agents"]}
+];
+
+/* ===================================================
+   FAQ
+   =================================================== */
+const faqs = [
+["آیا AI و Machine Learning یکی هستند؟","خیر. AI چتر بزرگ‌تری است و ML یکی از مهم‌ترین رویکردهای ساخت سامانه‌های AI است. همه روش‌های AI الزاماً یادگیری ماشین نیستند؛ برای نمونه سیستم‌های نمادین و برخی روش‌های جست‌وجو بدون ML نیز وجود دارند."],
+["آیا Deep Learning همان AI است؟","خیر. Deep Learning زیرمجموعه‌ای از Machine Learning و در نتیجه بخشی از AI است."],
+["تفاوت AI، ML و DL چیست؟","می‌توان رابطه را به‌صورت AI ⊃ ML ⊃ DL در نظر گرفت: AI حوزه بزرگ، ML خانواده‌ای از روش‌های یادگیری از داده و DL خانواده‌ای از روش‌های مبتنی بر شبکه‌های عصبی عمیق است."],
+["تفاوت Generative AI و Predictive AI چیست؟","سامانه‌های پیش‌بین معمولاً برای برآورد یک خروجی یا تصمیم آموزش می‌بینند؛ Generative AI هدف تولید نمونه یا محتوای جدید دارد. مرز کاربردها همیشه کاملاً سخت و مطلق نیست."],
+["LLM چیست؟","مدل زبانی بزرگ است؛ مدلی که در مقیاس بزرگ برای مدل‌سازی زبان آموزش می‌بیند و می‌تواند برای وظایف متعدد زبانی و گاهی چندوجهی استفاده شود."],
+["RAG چه مشکلی را حل می‌کند؟","RAG امکان اتصال مدل مولد به اطلاعات بیرونی و بازیابی‌شده را فراهم می‌کند و می‌تواند پاسخ‌گویی مبتنی بر اسناد و دانش سازمانی را بهبود دهد؛ اما تضمین‌کننده صحت مطلق نیست."],
+["تفاوت RAG و Fine-Tuning چیست؟","RAG بیشتر دانش زمینه‌ای را هنگام تولید پاسخ به مدل می‌رساند؛ Fine-Tuning پارامترهای مدل را برای رفتار یا وظیفه خاص تغییر می‌دهد. این دو حتی می‌توانند با هم استفاده شوند."],
+["آیا رباتیک بخشی از AI است؟","رباتیک یک حوزه میان‌رشته‌ای مستقل است که از AI استفاده زیادی می‌کند، اما علاوه بر AI شامل مکانیک، کنترل، حسگرها، محرک‌ها و طراحی سامانه نیز هست."],
+["Agent چه تفاوتی با LLM دارد؟","LLM معمولاً موتور زبانی/استدلالی است؛ Agent یک سامانه پیرامون مدل است که می‌تواند حافظه، ابزار، برنامه‌ریزی و حلقه اقدام-بازخورد داشته باشد."],
+["Hallucination یعنی چه؟","یعنی مدل محتوایی تولید کند که نادرست یا بدون پشتوانه کافی است. به همین دلیل پاسخ‌های مدل‌های مولد باید متناسب با اهمیت مسئله ارزیابی و راستی‌آزمایی شوند."],
+["آیا AGI وجود دارد؟","AGI یک مفهوم مورد بحث درباره هوش عمومی و انعطاف‌پذیر است. درباره تعریف دقیق و معیار تحقق آن اجماع واحدی وجود ندارد و نباید آن را با یک محصول مشخص یکی دانست."],
+["چرا ارزیابی AI مهم است؟","چون عملکرد مدل فقط با دیدن چند پاسخ خوب مشخص نمی‌شود. باید با داده و معیار مناسب، خطا، تعمیم، پایداری، سوگیری، ایمنی و در صورت نیاز قابلیت بازتولید بررسی شود."],
+["تفاوت Self-Supervised و Unsupervised چیست؟","در یادگیری بدون نظارت، مدل ساختار داده را کشف می‌کند. در خودنظارتی، مدل خودش برچسب می‌سازد (مثلاً پیش‌بینی کلمه پنهان) و از همان داده سیگنال آموزشی می‌گیرد."],
+["چرا Transformer انقلاب ایجاد کرد؟","Transformer با مکانیزم Attention، امکان پردازش موازی و مدل‌سازی وابستگی‌های طولانی را فراهم کرد. این ویژگی مقیاس‌پذیری بی‌سابقه‌ای به مدل‌های زبانی داد."],
+["تفاوت CNN و RNN چیست؟","CNN برای داده‌های مکانی مثل تصویر طراحی شده و RNN برای داده‌های ترتیبی مثل متن و سری زمانی. Transformer امروزه در بسیاری از وظایف جای هر دو را گرفته است."]
+];
+
+/* ===================================================
+   QUIZ
+   =================================================== */
+const questions = [
+["کدام گزینه زیرمجموعه مستقیم Machine Learning است؟",["Computer Vision","Supervised Learning","MLOps","Knowledge Graph"],1],
+["کدام فناوری معمولاً برای اتصال LLM به اسناد خارجی استفاده می‌شود؟",["RAG","CNN","SLAM","Dropout"],0],
+["کدام مورد معماری اصلی Transformer است؟",["Attention","k-Means","A*","Random Forest"],0],
+["در Reinforcement Learning عامل از چه چیزی برای یادگیری استفاده می‌کند؟",["فقط برچسب ثابت","پاداش و پیامد اعمال","فقط داده بدون برچسب","فقط قوانین دست‌نویس"],1],
+["کدام گزینه درباره Robotics دقیق‌تر است؟",["کاملاً همان AI است","فقط شامل مکانیک است","حوزه‌ای میان‌رشته‌ای است که می‌تواند از AI استفاده کند","فقط برای ربات‌های انسان‌نماست"],2],
+["کدام مورد بیشتر به MLOps مربوط است؟",["Model Monitoring","Tokenization","Image Segmentation","Minimax"],0],
+["کدام مدل برای تولید تصویر استفاده می‌شود؟",["Diffusion Model","SVM","k-NN","A*"],0],
+["تفاوت اصلی RAG و Fine-Tuning چیست؟",["RAG پارامترها را تغییر می‌دهد","Fine-Tuning دانش بیرونی اضافه می‌کند","RAG دانش زمینه‌ای می‌دهد و Fine-Tuning پارامترها را تغییر می‌دهد","هیچ تفاوتی ندارند"],2],
+["کدام گزینه درباره AGI درست است؟",["یک محصول موجود است","مفهومی نظری و مورد بحث است","همان Narrow AI است","فقط در رباتیک کاربرد دارد"],1],
+["Hallucination در مدل‌های زبانی به چه معناست؟",["تولید اطلاعات نادرست با اطمینان","کاهش دقت مدل","افزایش سرعت","نوعی حمله سایبری"],0],
+["کدام روش برای حفظ حریم خصوصی در آموزش استفاده می‌شود؟",["Federated Learning","CNN","A*","GAN"],0],
+["Chain-of-Thought چه کاربردی دارد؟",["وادار کردن مدل به استدلال گام‌به‌گام","کاهش اندازه مدل","افزایش سرعت آموزش","تولید تصویر"],0]
+];
+
+/* ===================================================
+   THEME TOGGLE
+   =================================================== */
+/* ===================================================
+   TERMS RENDER
+   =================================================== */
+const grid = document.getElementById("termGrid");
+const search = document.getElementById("termSearch");
+const empty = document.getElementById("empty");
+let activeFilter = "all";
+
+function renderTerms(){
+  const q = search.value.trim().toLowerCase();
+  grid.innerHTML = "";
+  const list = terms.filter(t =>
+    (activeFilter === "all" || t[3] === activeFilter) &&
+    (!q || (t[0]+" "+t[1]+" "+t[2]).toLowerCase().includes(q))
+  );
+  empty.classList.toggle("show", list.length === 0);
+
+  const accentMap = {
+    foundation:"#4dd4ff", learning:"#a78bfa", perception:"#5ee8a8",
+    reason:"#f5c76a", modern:"#ff7e93", engineering:"#74a7ff"
+  };
+
+  list.forEach(t => {
+    const el = document.createElement("article");
+    el.className = "term";
+    el.style.setProperty("--accent", accentMap[t[3]] || "#4dd4ff");
+    el.innerHTML = `<div class="en">${t[0]}</div><h3>${t[1]}</h3><p>${t[2]}</p>`;
+    el.onclick = () => openTerm(t);
+    grid.appendChild(el);
+  });
+}
+
+function openTerm(t){
+  const extra = details[t[0]] || `<p>${t[2]}</p>`;
+  const clusterName = {
+    foundation:"مبانی و مفاهیم بنیادی",
+    learning:"یادگیری ماشین و عمیق",
+    perception:"ادراک، زبان و بازنمایی",
+    reason:"استدلال، دانش، برنامه‌ریزی و اقدام",
+    modern:"هوش مصنوعی مولد و مدرن",
+    engineering:"کاربرد، مهندسی، ارزیابی و ایمنی"
+  }[t[3]];
+
+  const related = terms.filter(x => x[3] === t[3] && x[0] !== t[0]).slice(0, 6);
+
+  document.getElementById("modalContent").innerHTML = `
+    <div class="en">${t[0]}</div>
+    <h2>${t[1]}</h2>
+    <div class="desc">${extra}</div>
+    <div class="formula"><b>خوشه:</b> ${clusterName}</div>
+    <div class="related">
+      <h4>اصطلاحات مرتبط</h4>
+      <div class="rel-tags">
+        ${related.map(r => `<span class="rel-tag" data-term="${r[0]}">${r[1]}</span>`).join("")}
+      </div>
+    </div>
+  `;
+  document.getElementById("modal").classList.add("open");
+  window.lucide && lucide.createIcons();
+
+  document.querySelectorAll(".rel-tag").forEach(tag => {
+    tag.onclick = () => {
+      const found = terms.find(x => x[0] === tag.dataset.term);
+      if(found) openTerm(found);
+    };
+  });
+}
+
+search.addEventListener("input", renderTerms);
+document.querySelectorAll(".filter[data-filter]").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll(".filter[data-filter]").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    activeFilter = b.dataset.filter;
+    renderTerms();
+  };
+});
+
+document.getElementById("closeModal").onclick = () =>
+  document.getElementById("modal").classList.remove("open");
+document.getElementById("modal").onclick = e => {
+  if(e.target.id === "modal") document.getElementById("modal").classList.remove("open");
+};
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape") document.getElementById("modal").classList.remove("open");
+});
+
+/* ===================================================
+   AI CYCLE DIAGRAM
+   =================================================== */
+const cycleSteps = [
+  {label:"داده", sub:"Data", icon:"database", color:"#4dd4ff"},
+  {label:"بازنمایی", sub:"Representation", icon:"layout-grid", color:"#a78bfa"},
+  {label:"یادگیری", sub:"Learning", icon:"brain", color:"#5ee8a8"},
+  {label:"مدل", sub:"Model", icon:"box", color:"#f5c76a"},
+  {label:"استدلال", sub:"Reasoning", icon:"git-branch", color:"#ff7e93"},
+  {label:"تصمیم", sub:"Decision", icon:"check-circle", color:"#74a7ff"},
+  {label:"اقدام", sub:"Action", icon:"play", color:"#4dd4ff"},
+  {label:"بازخورد", sub:"Feedback", icon:"refresh-cw", color:"#a78bfa"},
+  {label:"بهبود", sub:"Improvement", icon:"trending-up", color:"#5ee8a8"}
+];
+
+const cycleContainer = document.getElementById("cycleContainer");
+cycleSteps.forEach((step, i) => {
+  const el = document.createElement("div");
+  el.className = "cycleStep";
+  el.innerHTML = `
+    <div class="circle" style="--cc:${step.color}">
+      <i data-lucide="${step.icon}"></i>
+    </div>
+    <div class="label">${step.label}</div>
+    <div class="sub">${step.sub}</div>
+  `;
+  cycleContainer.appendChild(el);
+  if(i < cycleSteps.length - 1){
+    const arrow = document.createElement("i");
+    arrow.className = "cycleArrow";
+    arrow.setAttribute("data-lucide", "arrow-left");
+    arrow.style.width = "20px";
+    arrow.style.height = "20px";
+    cycleContainer.appendChild(arrow);
+  }
+});
+
+/* ===================================================
+   RESEARCH FRONTIERS RENDER
+   =================================================== */
+const frontiersContainer = document.getElementById("frontiersContainer");
+frontiers.forEach(f => {
+  const el = document.createElement("article");
+  el.className = "frontier";
+  el.style.setProperty("--accent", f.color);
+  el.innerHTML = `
+    <div class="ficon"><i data-lucide="${f.icon}"></i></div>
+    <h3>${f.title}</h3>
+    <p>${f.desc}</p>
+    <ul>${f.items.map(i => `<li>${i}</li>`).join("")}</ul>
+  `;
+  frontiersContainer.appendChild(el);
+});
+
+/* ===================================================
+   FAQ RENDER
+   =================================================== */
+const faqList = document.getElementById("faqList");
+faqs.forEach((f, i) => {
+  const el = document.createElement("div");
+  el.className = "faq";
+  el.innerHTML = `
+    <button><span>${i+1}. ${f[0]}</span><i data-lucide="chevron-down"></i></button>
+    <div class="answer">${f[1]}</div>
+  `;
+  el.querySelector("button").onclick = () => el.classList.toggle("open");
+  faqList.appendChild(el);
+});
+
+/* ===================================================
+   QUIZ RENDER + LOCALSTORAGE
+   =================================================== */
+const quizList = document.getElementById("quizList");
+const quizStatus = document.getElementById("quizStatus");
+const quizProgress = document.getElementById("quizProgress");
+const QUIZ_KEY = "ai-quiz-progress";
+
+let quizState = {}; try { quizState = JSON.parse(localStorage.getItem(QUIZ_KEY) || "{}"); } catch(e) {}
+let solved = Object.keys(quizState).length;
+updateQuizProgress();
+
+function updateQuizProgress(){
+  const pct = (solved / questions.length) * 100;
+  quizProgress.style.width = pct + "%";
+  quizStatus.textContent = `${solved} از ${questions.length} پرسش پاسخ داده شده (${Math.round(pct)}%)`;
+}
+
+function buildQuiz(){
+quizList.innerHTML = "";
+questions.forEach((q, qi) => {
+  const card = document.createElement("div");
+  card.className = "qcard";
+  card.dataset.qid = qi;
+  card.innerHTML = `
+    <div class="qnum">پرسش ${qi+1}</div>
+    <h3>${q[0]}</h3>
+    <div class="options">
+      ${q[1].map((x, i) =>
+        `<div class="option" data-i="${i}"><b>${String.fromCharCode(65+i)}.</b> <bdi>${x}</bdi></div>`
+      ).join("")}
+    </div>
+  `;
+
+  // بازیابی وضعیت ذخیره‌شده
+  if(quizState[qi] !== undefined){
+    card.dataset.done = "1";
+    const chosen = quizState[qi];
+    const correct = q[2];
+    card.querySelectorAll(".option").forEach((o, i) => {
+      if(i === chosen) o.classList.add(i === correct ? "correct" : "wrong");
+      if(i === correct && i !== chosen) o.classList.add("correct");
+    });
+  }
+
+  card.querySelectorAll(".option").forEach((o, i) => {
+    o.onclick = () => {
+      if(card.dataset.done) return;
+      card.dataset.done = "1";
+      const ok = i === q[2];
+      o.classList.add(ok ? "correct" : "wrong");
+      if(!ok) card.querySelectorAll(".option")[q[2]].classList.add("correct");
+      quizState[qi] = i;
+      solved = Object.keys(quizState).length;
+      try { localStorage.setItem(QUIZ_KEY, JSON.stringify(quizState)); } catch(e) {}
+      updateQuizProgress();
+    };
+  });
+
+  quizList.appendChild(card);
+});
+
+}
+buildQuiz();
+
+document.getElementById("resetQuiz").onclick = () => {
+  if(confirm("آیا می‌خواهید پیشرفت خود را بازنشانی کنید؟")){
+    try { localStorage.removeItem(QUIZ_KEY); } catch(e) {}
+    quizState = {};
+    solved = 0;
+    updateQuizProgress();
+    buildQuiz();
+  }
+};
+
+/* ===================================================
+   MIND MAP — گوی‌های فرعی با موقعیت دقیق
+   =================================================== */
+const constellation = document.getElementById("constellation");
+
+function positionSubOrbs(clusterKey, mainOrb){
+  // حذف گوی‌های فرعی قبلی
+  document.querySelectorAll(".subOrb").forEach(el => el.remove());
+
+  // حذف حالت active از همه گوی‌ها
+  document.querySelectorAll(".orb").forEach(o => o.classList.remove("active"));
+  mainOrb.classList.add("active");
+
+  const containerRect = constellation.getBoundingClientRect();
+  const parentRect = mainOrb.getBoundingClientRect();
+  const cx = parentRect.left - containerRect.left + parentRect.width/2;
+  const cy = parentRect.top - containerRect.top + parentRect.height/2;
+
+  const subs = subClusters[clusterKey] || [];
+  const isMobile = window.innerWidth < 760;
+  const orbSize = isMobile ? 60 : 76;
+  const radius = isMobile ? 95 : 115;
+  const count = subs.length;
+
+  // محدوده امن داخل کادر
+  const padding = 10;
+  const minX = padding + orbSize/2;
+  const maxX = containerRect.width - padding - orbSize/2;
+  const minY = padding + orbSize/2;
+  const maxY = containerRect.height - padding - orbSize/2;
+
+  subs.forEach((s, i) => {
+    const angle = (i / count) * Math.PI * 2 - Math.PI/2;
+    let x = cx + Math.cos(angle) * radius;
+    let y = cy + Math.sin(angle) * radius;
+
+    // محدودسازی به مرزهای کادر
+    x = Math.max(minX, Math.min(maxX, x));
+    y = Math.max(minY, Math.min(maxY, y));
+
+    const orb = document.createElement("div");
+    orb.className = "subOrb";
+    orb.dataset.parent = clusterKey;
+    orb.style.setProperty("--sc", colorMap[clusterKey]);
+    orb.style.left = (x - orbSize/2) + "px";
+    orb.style.top = (y - orbSize/2) + "px";
+    orb.innerHTML = `<b>${s.en}</b>`;
+
+    orb.onclick = (e) => {
+      e.stopPropagation();
+      const found = terms.find(t => t[0] === s.term);
+      if(found){
+        openTerm(found);
+      } else {
+        // جستجو در واژه‌نامه
+        search.value = s.term;
+        renderTerms();
+        document.getElementById("terms").scrollIntoView({behavior:"smooth"});
+      }
+    };
+
+    constellation.appendChild(orb);
+    requestAnimationFrame(() => orb.classList.add("show"));
+  });
+}
+
+document.querySelectorAll(".orb").forEach(orb => {
+  orb.onclick = (e) => {
+    e.stopPropagation();
+    const clusterKey = orb.dataset.cluster;
+    const isActive = orb.classList.contains("active");
+
+    if(isActive){
+      // اگر قبلاً فعال بود، ببند
+      document.querySelectorAll(".subOrb").forEach(el => el.remove());
+      orb.classList.remove("active");
+    } else {
+      positionSubOrbs(clusterKey, orb);
+    }
+  };
+});
+
+// کلیک روی فضای خالی، گوی‌های فرعی را حذف می‌کند
+constellation.addEventListener("click", (e) => {
+  if(!e.target.closest(".orb") && !e.target.closest(".subOrb")) {
+    document.querySelectorAll(".subOrb").forEach(el => el.remove());
+    document.querySelectorAll(".orb").forEach(o => o.classList.remove("active"));
+  }
+});
+
+// با تغییر اندازه پنجره، موقعیت‌ها را دوباره محاسبه کن
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const activeOrb = document.querySelector(".orb.active");
+    if(activeOrb){
+      positionSubOrbs(activeOrb.dataset.cluster, activeOrb);
+    }
+  }, 200);
+});
+
+/* ===================================================
+   CLUSTER CLICK
+   =================================================== */
+document.querySelectorAll(".cluster").forEach(c => {
+  c.onclick = (e) => {
+    if(e.target.closest(".tag")) return;
+    c.scrollIntoView({behavior:"smooth", block:"center"});
+  };
+});
+
+if (window.THREE) {
+/* ===================================================
+   MIND MAP THREE.JS
+   =================================================== */
+const canvas = document.getElementById("mindmapCanvas");
+const ctxHost = canvas.parentElement;
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(60, (ctxHost.clientWidth||1)/(ctxHost.clientHeight||1), 0.1, 100);
+camera.position.z = 8;
+
+const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(ctxHost.clientWidth, ctxHost.clientHeight);
+
+const starGeo = new THREE.BufferGeometry();
+const starPositions = [];
+for(let i=0; i<180; i++){
+  starPositions.push(
+    (Math.random()-0.5)*16,
+    (Math.random()-0.5)*10,
+    (Math.random()-0.5)*8
+  );
+}
+starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPositions, 3));
+const starMat = new THREE.PointsMaterial({
+  color:0x4dd4ff, size:0.035, transparent:true, opacity:0.65
+});
+scene.add(new THREE.Points(starGeo, starMat));
+
+const nodeGroup = new THREE.Group();
+const colors = [0x4dd4ff, 0xa78bfa, 0x5ee8a8, 0xf5c76a, 0xff7e93, 0x74a7ff];
+for(let i=0; i<30; i++){
+  const geo = new THREE.SphereGeometry(0.05 + Math.random()*0.05, 10, 10);
+  const mat = new THREE.MeshBasicMaterial({
+    color: colors[i % colors.length],
+    transparent:true, opacity:0.75
+  });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.set(
+    (Math.random()-0.5)*12,
+    (Math.random()-0.5)*7,
+    (Math.random()-0.5)*5
+  );
+  nodeGroup.add(mesh);
+}
+scene.add(nodeGroup);
+
+const lineMaterial = new THREE.LineBasicMaterial({
+  color:0x4dd4ff, transparent:true, opacity:0.12
+});
+for(let i=0; i<30; i++){
+  for(let j=i+1; j<30; j++){
+    if(Math.random() < 0.08){
+      const a = nodeGroup.children[i].position;
+      const b = nodeGroup.children[j].position;
+      const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+      scene.add(new THREE.Line(geo, lineMaterial));
+    }
+  }
+}
+
+let mouseX = 0, mouseY = 0;
+document.addEventListener("mousemove", (e) => {
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+function animate(t){
+  if(!ctxHost.clientWidth){ requestAnimationFrame(animate); return; }
+  nodeGroup.rotation.y = t * 0.00008 + mouseX * 0.15;
+  nodeGroup.rotation.x = t * 0.00003 + mouseY * 0.08;
+  camera.position.x += (mouseX * 0.4 - camera.position.x) * 0.02;
+  camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.02;
+  camera.lookAt(0, 0, 0);
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+window.addEventListener("resize", () => {
+  if(!ctxHost.clientWidth) return;
+  camera.aspect = ctxHost.clientWidth / ctxHost.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(ctxHost.clientWidth, ctxHost.clientHeight);
+});
+
+
+}
+
+renderTerms();
+const setT = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = faNum(v); };
+setT("encTermCount", terms.length); setT("encFaqCount", faqs.length); setT("encQuizCount", questions.length);
+})();
+
+/* ============ مسیریابی با hash: #encyclopedia ، #lab ، #lab-ga ============ */
+AILab.init();
+(function route(){
+  const h = location.hash.slice(1);
+  if(!h) return;
+  if(h.startsWith("lab-")){ switchTab("lab", true); setTimeout(() => AILab.open(h.slice(4)), 250); }
+  else if(document.getElementById("tab-" + h)) switchTab(h, true);
+  else if(document.getElementById(h) && document.getElementById(h).closest("#tab-encyclopedia")){ switchTab("encyclopedia", true); setTimeout(() => document.getElementById(h).scrollIntoView(), 200); }
+})();
+
+window.lucide && lucide.createIcons();
+</script>
+<script>
+document.querySelectorAll('.encNav a').forEach(a => a.addEventListener('click', e => { e.preventDefault(); const t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({behavior:'smooth'}); }));
 </script>
 </body>
 </html>
