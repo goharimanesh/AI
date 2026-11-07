@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>راهنمای تعاملی SVM — دیتاست Ionosphere (متلب + پایتون)</title>
+
+<!-- کتابخانه نمودار Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- کتابخانه هایلایت کد Prism.js -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-matlab.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+
+<style>
+/* ================= متغیرهای تم ================= */
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+  --primary:#3949ab; --primary-light:#e8eaf6; --accent:#00897b;
+  --border:#e5e7eb; --code-bg:#1e1e1e;
+}
+[data-theme="dark"]{
+  --bg:#0f172a; --card:#1e293b; --text:#e2e8f0; --muted:#94a3b8;
+  --primary:#818cf8; --primary-light:#312e81; --accent:#2dd4bf;
+  --border:#334155; --code-bg:#0b1120;
+}
+
+/* ================= پایه ================= */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Tahoma,sans-serif;
+  background:var(--bg); color:var(--text);
+  line-height:1.9; transition:background .3s,color .3s;
+  padding:20px;
+}
+.wrap{max-width:1100px;margin:auto}
+
+/* ================= سربرگ ================= */
+header{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff; padding:26px 30px; border-radius:14px;
+  display:flex; justify-content:space-between; align-items:center;
+  box-shadow:0 8px 22px rgba(57,73,171,.25);
+}
+header h1{font-size:1.7rem;line-height:1.4}
+header p{opacity:.9;font-size:.95rem;margin-top:6px}
+.theme-btn{
+  background:rgba(255,255,255,.2); border:none; color:#fff;
+  padding:10px 16px; border-radius:10px; cursor:pointer;
+  font-size:1rem; transition:.2s; white-space:nowrap;
+}
+.theme-btn:hover{background:rgba(255,255,255,.35)}
+
+/* ================= ناوبری ================= */
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0}
+nav button{
+  background:var(--card); border:2px solid var(--border); color:var(--text);
+  padding:9px 18px; border-radius:30px; cursor:pointer;
+  font-weight:600; transition:.25s; font-size:.92rem;
+}
+nav button.active,nav button:hover{
+  background:var(--primary); color:#fff; border-color:var(--primary);
+  transform:translateY(-2px); box-shadow:0 6px 14px rgba(57,73,171,.3);
+}
+
+/* ================= اسلایدها ================= */
+.slide{
+  display:none; background:var(--card); border-radius:14px;
+  padding:26px 30px; box-shadow:0 4px 16px rgba(0,0,0,.06);
+  animation:fade .4s ease;
+}
+.slide.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+h2{
+  color:var(--primary); font-size:1.35rem; margin-bottom:14px;
+  padding-bottom:8px; border-bottom:2px dashed var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+h2 .badge{
+  background:var(--primary); color:#fff; font-size:.75rem;
+  padding:2px 10px; border-radius:20px; font-weight:700;
+}
+
+/* ================= یادداشت‌ها ================= */
+.note{
+  background:var(--primary-light); color:var(--text);
+  padding:12px 16px; border-right:5px solid var(--primary);
+  border-radius:8px; margin:14px 0; font-size:.95rem;
+}
+
+/* ================= جعبه کد ================= */
+.code-box{position:relative;margin:14px 0}
+.code-box pre{
+  background:var(--code-bg)!important; border-radius:10px;
+  padding:16px 18px!important; overflow-x:auto;
+  direction:ltr; text-align:left; font-size:13.5px;
+  line-height:1.65; margin:0!important;
+}
+.copy-btn{
+  position:absolute; top:10px; left:10px;
+  background:var(--accent); color:#fff; border:none;
+  padding:5px 12px; border-radius:6px; cursor:pointer;
+  font-size:.8rem; opacity:.85; transition:.2s;
+}
+.copy-btn:hover{opacity:1;transform:scale(1.05)}
+.copy-btn.copied{background:#16a34a}
+
+/* ================= نمودارها ================= */
+.chart-wrap{
+  background:var(--bg); border-radius:12px;
+  padding:16px; margin:16px 0; max-width:640px;
+}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+
+/* ================= SVG ================= */
+.svg-illustration{
+  background:var(--bg); border-radius:12px;
+  padding:14px; margin:16px 0; display:flex; justify-content:center;
+}
+.svg-illustration svg{max-width:100%;height:auto}
+
+/* ================= جدول ================= */
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.92rem}
+th,td{border:1px solid var(--border);padding:9px 12px;text-align:center}
+th{background:var(--primary);color:#fff}
+tr:nth-child(even) td{background:var(--primary-light)}
+
+/* ================= کارت آمار ================= */
+.stat-grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:14px; margin:16px 0;
+}
+.stat-card{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff; padding:18px; border-radius:12px; text-align:center;
+}
+.stat-card .num{font-size:1.8rem;font-weight:800}
+.stat-card .lbl{font-size:.85rem;opacity:.95;margin-top:4px}
+
+footer{text-align:center;color:var(--muted);margin:30px 0 10px;font-size:.85rem}
+</style>
+</head>
+
+<body data-theme="light">
+<div class="wrap">
+
+<!-- ================= سربرگ ================= -->
+<header>
+  <div>
+    <h1>🛰️ طبقه‌بندی SVM روی دیتاست Ionosphere — راهنمای تعاملی</h1>
+    <p>متلب <code>fitcsvm</code> &nbsp;+&nbsp; پایتون <code>scikit-learn</code> &nbsp;|&nbsp; از دیتاست تا مرز تصمیم‌گیری</p>
+  </div>
+  <button class="theme-btn" onclick="toggleTheme()">🌓 تغییر تم</button>
+</header>
+
+<!-- ================= ناوبری اسلایدها ================= -->
+<nav id="nav">
+  <button class="active" data-t="s1">📡 پیشینهٔ دیتاست</button>
+  <button data-t="s2">📊 آمار داده‌ها</button>
+  <button data-t="s3">📥 بارگذاری داده</button>
+  <button data-t="s4">✂️ تقسیم داده</button>
+  <button data-t="s5">🎯 آموزش SVM</button>
+  <button data-t="s6">🔮 پیش‌بینی و امتیاز</button>
+  <button data-t="s7">🎨 مصورسازی</button>
+  <button data-t="s8">⚙️ تنظیم پارامترها</button>
+</nav>
+
+<!-- ================= اسلاید ۱: پیشینه دیتاست ================= -->
+<section id="s1" class="slide active">
+  <h2><span class="badge">۱</span> پیشینهٔ دیتاست و مفهوم فیزیکی</h2>
+  <p>دیتاست <strong>Ionosphere</strong> توسط سیستم راداری <em>Goose Bay, Labrador</em> جمع‌آوری شده و هدف آن تشخیص وجود ساختار الکترون آزاد در یونوسفر است.</p>
+  <ul style="margin:14px 24px">
+    <li>📡 <strong>پیکربندی سیستم</strong>: آرایهٔ فازی با ۱۶ آنتن فرکانس بالا، توان کل حدود ۶.۴ کیلووات</li>
+    <li>🔊 <strong>پردازش سیگنال</strong>: سیگنال دریافتی با تابع خودهمبستگی پردازش می‌شود (زمان پالس + شمارهٔ پالس)</li>
+    <li>📦 <strong>حجم نمونه</strong>: ۳۵۱ مشاهده، ۳۴ ویژگی پیوسته، <strong>بدون مقدار گمشده</strong></li>
+    <li>🏷️ <strong>برچسب کلاس</strong>: <code>'g'</code> (خوب) در برابر <code>'b'</code> (بد)</li>
+  </ul>
+
+  <!-- تصویر SVG: فرآیند رادار تا برچسب -->
+  <div class="svg-illustration">
+    <svg viewBox="0 0 700 220" width="700">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1">
+          <stop offset="0" stop-color="#3949ab"/>
+          <stop offset="1" stop-color="#00897b"/>
+        </linearGradient>
+      </defs>
+      <!-- رادار -->
+      <circle cx="90" cy="110" r="55" fill="url(#g1)" opacity=".9"/>
+      <circle cx="90" cy="110" r="40" fill="none" stroke="#fff" stroke-width="2" opacity=".7"/>
+      <circle cx="90" cy="110" r="22" fill="none" stroke="#fff" stroke-width="2" opacity=".7"/>
+      <line x1="90" y1="110" x2="130" y2="70" stroke="#fff" stroke-width="3"/>
+      <text x="90" y="195" text-anchor="middle" font-size="13" fill="#1f2937" font-weight="bold">فرستندهٔ رادار</text>
+      <!-- امواج -->
+      <path d="M150 110 Q220 60 300 110 T450 110" stroke="#ff7043" stroke-width="3" fill="none" stroke-dasharray="6 4"/>
+      <text x="300" y="80" text-anchor="middle" font-size="12" fill="#ff7043" font-weight="bold">موج الکترومغناطیسی</text>
+      <!-- یونوسفر -->
+      <ellipse cx="480" cy="110" rx="110" ry="38" fill="#90caf9" opacity=".45"/>
+      <ellipse cx="480" cy="110" rx="80" ry="22" fill="#42a5f5" opacity=".35"/>
+      <text x="480" y="115" text-anchor="middle" font-size="13" fill="#0d47a1" font-weight="bold">ساختار یونوسفر</text>
+      <!-- بازگشتی -->
+      <path d="M390 140 Q300 190 150 150" stroke="#66bb6a" stroke-width="3" fill="none" stroke-dasharray="6 4"/>
+      <text x="270" y="185" text-anchor="middle" font-size="12" fill="#2e7d32" font-weight="bold">سیگنال بازگشتی</text>
+      <!-- برچسب‌ها -->
+      <rect x="580" y="80" width="105" height="30" rx="8" fill="#66bb6a"/>
+      <text x="632" y="100" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">'g' خوب</text>
+      <rect x="580" y="120" width="105" height="30" rx="8" fill="#ef5350"/>
+      <text x="632" y="140" text-anchor="middle" font-size="13" fill="#fff" font-weight="bold">'b' بد</text>
+    </svg>
+  </div>
+  <div class="note">🎯 <strong>وظیفهٔ اصلی</strong>: طبقه‌بندی دودویی — تشخیص اینکه آیا بازگشت رادار ساختار یونوسفری را نشان می‌دهد یا خیر.</div>
+</section>
+
+<!-- ================= اسلاید ۲: آمار داده ================= -->
+<section id="s2" class="slide">
+  <h2><span class="badge">۲</span> نمای کلی آمار داده‌ها</h2>
+  <div class="stat-grid">
+    <div class="stat-card"><div class="num">۳۵۱</div><div class="lbl">کل نمونه‌ها</div></div>
+    <div class="stat-card"><div class="num">۳۴</div><div class="lbl">ویژگی</div></div>
+    <div class="stat-card"><div class="num">۲</div><div class="lbl">کلاس</div></div>
+    <div class="stat-card"><div class="num">۰</div><div class="lbl">مقدار گمشده</div></div>
+  </div>
+  <div class="grid2">
+    <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+    <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+  </div>
+  <div class="note">📌 <strong>عدم توازن کلاس‌ها</strong>: کلاس 'g' حدود ۲۲۵ نمونه (۶۴٪) و کلاس 'b' حدود ۱۲۶ نمونه (۳۶٪). در آموزش باید علاوه بر دقت، معیارهای F1 و AUC را نیز در نظر گرفت.</div>
+</section>
+
+<!-- ================= اسلاید ۳: بارگذاری داده ================= -->
+<section id="s3" class="slide">
+  <h2><span class="badge">۳</span> بارگذاری داده: متلب در برابر پایتون</h2>
+  <p><strong>متلب</strong> (دیتاست داخلی):</p>
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-matlab">% بارگذاری دیتاست داخلی Ionosphere در متلب
+load ionosphere
+% X: آرایه 351×34 از نوع double
+% Y: آرایه سلولی 351×1 شامل {'g','b'}
+n = numel(Y);  % تعداد نمونه‌ها = 351
+disp(['تعداد نمونه: ', num2str(n), ', تعداد ویژگی: ', num2str(size(X,2))]);</code></pre>
+  </div>
+
+  <p><strong>پایتون</strong> (مخزن رسمی UCI):</p>
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-python">import numpy as np
+from ucimlrepo import fetch_ucirepo
+
+# دریافت دیتاست Ionosphere از مخزن UCI (شناسه 52)
+ion = fetch_ucirepo(id=52)
+X = ion.data.features.values              # آرایه 351×34
+y_raw = ion.data.targets.values.ravel()   # برچسب‌های 'g' یا 'b'
+y = (y_raw == 'g').astype(int)            # تبدیل: g→1 و b→0
+print(f"تعداد نمونه: {X.shape[0]}, تعداد ویژگی: {X.shape[1]}")</code></pre>
+  </div>
+  <div class="note">💡 اگر نمی‌خواهید <code>ucimlrepo</code> نصب کنید، فایل <code>ionosphere.data</code> را از UCI دانلود و با <code>np.loadtxt</code> بخوانید.</div>
+</section>
+
+<!-- ================= اسلاید ۴: تقسیم داده ================= -->
+<section id="s4" class="slide">
+  <h2><span class="badge">۴</span> تقسیم داده (حال در برابر آینده)</h2>
+  <p>مطابق مثال رسمی MathWorks: ۳۰۰ نمونهٔ اول برای آموزش و ۵۱ نمونهٔ آخر برای شبیه‌سازی داده‌های آینده استفاده می‌شود.</p>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-matlab">% 300 نمونهٔ اول برای آموزش (حال)
+prsntX = X(1:300,:);  prsntY = Y(1:300);
+% 51 نمونهٔ آخر برای آزمون (آینده)
+ftrX   = X(301:end,:); ftrY  = Y(301:end);</code></pre>
+  </div>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-python"># 300 نمونهٔ اول برای آموزش
+prsntX, prsntY = X[:300], y[:300]
+# 51 نمونهٔ آخر برای آزمون
+ftrX,   ftrY   = X[300:], y[300:]</code></pre>
+  </div>
+
+  <!-- تصویر SVG: نمایش تقسیم زمانی -->
+  <div class="svg-illustration">
+    <svg viewBox="0 0 700 120" width="700">
+      <rect x="20" y="35" width="520" height="50" rx="8" fill="#3949ab"/>
+      <text x="280" y="65" text-anchor="middle" font-size="15" fill="#fff" font-weight="bold">مجموعهٔ آموزش (۳۰۰ نمونه)</text>
+      <rect x="545" y="35" width="135" height="50" rx="8" fill="#ff7043"/>
+      <text x="612" y="65" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">آینده (۵۱)</text>
+      <text x="20" y="25" font-size="12" fill="#6b7280">t=0</text>
+      <text x="530" y="25" font-size="12" fill="#6b7280">t=300</text>
+      <text x="680" y="25" text-anchor="end" font-size="12" fill="#6b7280">t=351</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ================= اسلاید ۵: آموزش SVM ================= -->
+<section id="s5" class="slide">
+  <h2><span class="badge">۵</span> آموزش SVM (استانداردسازی الزامی است)</h2>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-matlab">% آموزش مدل SVM با استانداردسازی خودکار ویژگی‌ها
+svmMdl = fitcsvm(prsntX, prsntY, 'Standardize', true);
+% نمایش ترتیب کلاس‌ها: {'b'; 'g'} → کلاس منفی b، کلاس مثبت g
+disp(svmMdl.ClassNames);</code></pre>
+  </div>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-python">from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+# ساخت خط لوله: استانداردسازی + SVM با کرنل RBF
+svm_clf = make_pipeline(
+    StandardScaler(),                        # استانداردسازی ویژگی‌ها
+    SVC(kernel='rbf', C=1.0, gamma='scale', probability=True)
+)
+svm_clf.fit(prsntX, prsntY)                 # آموزش مدل</code></pre>
+  </div>
+
+  <!-- تصویر SVG: مرز تصمیم‌گیری و بردارهای پشتیبان -->
+  <div class="svg-illustration">
+    <svg viewBox="0 0 700 260" width="700">
+      <rect width="700" height="260" fill="var(--bg)" rx="12"/>
+      <!-- حاشیه‌ها -->
+      <line x1="140" y1="40" x2="560" y2="220" stroke="#90caf9" stroke-width="2" stroke-dasharray="6 4"/>
+      <line x1="180" y1="20" x2="600" y2="200" stroke="#1976d2" stroke-width="3"/>
+      <line x1="100" y1="60" x2="520" y2="240" stroke="#90caf9" stroke-width="2" stroke-dasharray="6 4"/>
+      <!-- بردارهای پشتیبان -->
+      <circle cx="240" cy="80" r="9" fill="#ef5350" stroke="#000" stroke-width="2"/>
+      <circle cx="420" cy="180" r="9" fill="#42a5f5" stroke="#000" stroke-width="2"/>
+      <circle cx="330" cy="130" r="9" fill="#ef5350" stroke="#000" stroke-width="2"/>
+      <!-- نقاط کلاس قرمز -->
+      <g fill="#ef5350">
+        <circle cx="180" cy="60" r="6"/><circle cx="220" cy="50" r="6"/>
+        <circle cx="260" cy="100" r="6"/><circle cx="300" cy="70" r="6"/>
+        <circle cx="200" cy="110" r="6"/><circle cx="340" cy="95" r="6"/>
+      </g>
+      <!-- نقاط کلاس آبی -->
+      <g fill="#42a5f5">
+        <circle cx="500" cy="200" r="6"/><circle cx="460" cy="210" r="6"/>
+        <circle cx="530" cy="160" r="6"/><circle cx="480" cy="150" r="6"/>
+        <circle cx="440" cy="120" r="6"/><circle cx="400" cy="160" r="6"/>
+      </g>
+      <text x="560" y="55" font-size="13" fill="#1976d2" font-weight="bold">مرز تصمیم‌گیری</text>
+      <text x="560" y="75" font-size="12" fill="#1976d2">(ابرصفحهٔ خطی)</text>
+      <text x="30" y="230" font-size="12" fill="#6b7280">بردارهای پشتیبان = نقاط با دایره</text>
+    </svg>
+  </div>
+
+  <div class="note">⚠️ <strong>نکتهٔ کلیدی</strong>: ویژگی‌های Ionosphere مقیاس‌های بسیار متفاوتی دارند و SVM به مقیاس حساس است، پس <strong>استانداردسازی الزامی است</strong>. در متلب ترتیب <code>ClassNames</code> برابر <code>{'b';'g'}</code> است که با ستون‌های ۱ و ۲ خروجی score مطابقت دارد.</div>
+</section>
+
+<!-- ================= اسلاید ۶: پیش‌بینی ================= -->
+<section id="s6" class="slide">
+  <h2><span class="badge">۶</span> پیش‌بینی و امتیازدهی</h2>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-matlab">% پیش‌بینی برچسب و امتیاز برای داده‌های آینده
+[labels, scores] = predict(svmMdl, ftrX);
+% scores(:,1) → امتیاز کلاس b
+% scores(:,2) → امتیاز کلاس g
+pred_g = labels == 'g';
+accuracy = mean(pred_g == (ftrY == 'g'));
+fprintf('دقت روی داده‌های آینده: %.2f%%\n', accuracy*100);</code></pre>
+  </div>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-python"># پیش‌بینی برچسب کلاس
+pred_labels = svm_clf.predict(ftrX)
+accuracy = (pred_labels == ftrY).mean()
+print(f"دقت روی داده‌های آینده: {accuracy*100:.2f}%")
+
+# امتیاز احتمال کلاس مثبت (g)
+scores_g = svm_clf.predict_proba(ftrX)[:, 1]</code></pre>
+  </div>
+
+  <div class="chart-wrap" style="max-width:100%"><canvas id="accChart"></canvas></div>
+  <div class="note">📈 نمودار مقایسهٔ دقت تقریبی برای چند پیکربندی رایج را نشان می‌دهد (مقادیر نمونه؛ اجرای واقعی ممکن است تفاوت جزئی داشته باشد).</div>
+</section>
+
+<!-- ================= اسلاید ۷: مصورسازی ================= -->
+<section id="s7" class="slide">
+  <h2><span class="badge">۷</span> قوی‌ترین مصورسازی: مرز تصمیم + بردارهای پشتیبان</h2>
+  <p>با ۳۴ بُعد نمی‌توان مرز تصمیم را مستقیماً رسم کرد. روش استاندارد: کاهش ابعاد با PCA به ۲ بُعد.</p>
+
+  <div class="grid2">
+    <div class="chart-wrap"><canvas id="pcaChart"></canvas></div>
+    <div class="chart-wrap"><canvas id="boundaryChart"></canvas></div>
+  </div>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.inspection import DecisionBoundaryDisplay
+from sklearn.svm import SVC
+
+# کاهش ابعاد به 2 مؤلفهٔ اصلی
+pca = PCA(n_components=2)
+X_2d = pca.fit_transform(prsntX)
+
+# آموزش SVM دوبعدی صرفاً برای مصورسازی
+svm_2d = SVC(kernel='rbf', C=1.0, gamma='scale').fit(X_2d, prsntY)
+
+fig, ax = plt.subplots(figsize=(10, 7))
+# رسم مرز تصمیم و حاشیه‌ها
+DecisionBoundaryDisplay.from_estimator(
+    svm_2d, X_2d, response_method="predict",
+    plot_method="contour", levels=[-1, 0, 1],
+    colors="k", linestyles=["--", "-", "--"],
+    alpha=0.6, ax=ax
+)
+# نقاط داده
+ax.scatter(X_2d[:,0], X_2d[:,1], c=prsntY, cmap='coolwarm',
+           edgecolors='k', s=40)
+# بردارهای پشتیبان با دایره
+ax.scatter(svm_2d.support_vectors_[:,0], svm_2d.support_vectors_[:,1],
+           s=120, linewidth=1.5, facecolors='none',
+           edgecolors='k', label='بردارهای پشتیبان')
+ax.set_xlabel(f'PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)')
+ax.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)')
+ax.set_title('SVM با کرنل RBF روی Ionosphere — تصویر دوبعدی PCA')
+ax.legend()
+plt.tight_layout(); plt.show()</code></pre>
+  </div>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-matlab">% کاهش ابعاد با PCA
+[coeff, score2d] = pca(prsntX);
+X2 = score2d(:,1:2);
+
+% آموزش SVM دوبعدی برای مصورسازی
+svmVis = fitcsvm(X2, prsntY, 'Standardize', true, 'KernelFunction', 'rbf');
+
+% ساخت شبکهٔ نقاط برای رسم مرز
+x1 = linspace(min(X2(:,1))-1, max(X2(:,1))+1, 200);
+x2 = linspace(min(X2(:,2))-1, max(X2(:,2))+1, 200);
+[X1g, X2g] = meshgrid(x1, x2);
+[~, scoreGrid] = predict(svmVis, [X1g(:), X2g(:)]);
+scoreGrid = reshape(scoreGrid(:,2), size(X1g));
+
+% رسم نمودار
+figure('Position',[100 100 900 650]);
+contourf(X1g, X2g, scoreGrid, 20, 'LineColor', 'none'); hold on;
+contour(X1g, X2g, scoreGrid, [0.5 0.5], 'k-', 'LineWidth', 2);
+gscatter(X2(:,1), X2(:,2), prsntY, 'rb', 'o^', 8);
+title('SVM با کرنل RBF روی Ionosphere — تصویر PCA');
+xlabel('PC1'); ylabel('PC2'); hold off;</code></pre>
+  </div>
+</section>
+
+<!-- ================= اسلاید ۸: تنظیم پارامترها ================= -->
+<section id="s8" class="slide">
+  <h2><span class="badge">۸</span> تنظیم پارامترها و بهترین روش‌ها</h2>
+  <table>
+    <tr><th>پارامتر</th><th>نقش</th><th>محدودهٔ پیشنهادی</th></tr>
+    <tr><td><code>C</code></td><td>ضریب جریمه؛ هرچه بیشتر، سخت‌گیرتر</td><td>۰.۰۱ تا ۱۰۰</td></tr>
+    <tr><td><code>gamma</code></td><td>عرض کرنل RBF؛ هرچه بیشتر، پیچیده‌تر</td><td>scale، ۰.۰۰۱ تا ۱</td></tr>
+    <tr><td><code>kernel</code></td><td>نوع تابع کرنل</td><td>linear / rbf / poly</td></tr>
+  </table>
+
+  <div class="code-box"><button class="copy-btn" onclick="copyCode(this)">کپی</button>
+<pre><code class="language-python">from sklearn.model_selection import GridSearchCV
+
+# شبکهٔ جستجو برای پارامترهای C و gamma
+param_grid = {'svc__C': [0.1, 1, 10],
+              'svc__gamma': ['scale', 0.01, 0.1]}
+gs = GridSearchCV(svm_clf, param_grid, cv=5, scoring='accuracy')
+gs.fit(prsntX, prsntY)
+print(gs.best_params_, gs.best_score_)</code></pre>
+  </div>
+
+  <div class="note">✅ <strong>بهترین روش</strong>: ابتدا با اعتبارسنجی متقابل ۵ تایی پارامترها را انتخاب کنید ← سپس با کل مجموعهٔ آموزش دوباره مدل را بیاموزید ← و در پایان فقط یک بار روی دادهٔ «آینده» ارزیابی کنید. هرگز از دادهٔ آینده برای تنظیم پارامتر استفاده نکنید، وگرنه ارزیابی خوش‌بینانه می‌شود.</div>
+</section>
+
+<footer>📚 بر پایهٔ دیتاست UCI Ionosphere · مثال ClassificationSVM Predict از MathWorks · اکوسیستم Smile / scikit-learn</footer>
+</div>
+
+<script>
+/* ================= تغییر تم ================= */
+function toggleTheme(){
+  const b = document.body;
+  b.dataset.theme = b.dataset.theme === 'dark' ? 'light' : 'dark';
+  // به‌روزرسانی رنگ‌های پیش‌فرض Chart.js
+  Chart.defaults.color = b.dataset.theme === 'dark' ? '#e2e8f0' : '#1f2937';
+  Chart.defaults.borderColor = b.dataset.theme === 'dark' ? '#334155' : '#e5e7eb';
+  Object.values(charts).forEach(c => c.update());
+}
+
+/* ================= ناوبری اسلایدها ================= */
+const navBtns = document.querySelectorAll('nav button');
+navBtns.forEach(btn => {
+  btn.onclick = () => {
+    // غیرفعال کردن دکمهٔ قبلی
+    navBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    // پنهان کردن همهٔ اسلایدها و نمایش اسلاید هدف
+    document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+    document.getElementById(btn.dataset.t).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+  };
+});
+
+
+/* ================= کپی کدها در حافظهٔ موقت ================= */
+function copyCode(btn) {
+  // متن کد از همان جعبه‌ای برداشته می‌شود که دکمه در آن قرار دارد
+  const code = btn.parentElement.querySelector("code").innerText;
+
+  // استفاده از Clipboard API در مرورگرهای جدید
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(code).then(() => showCopied(btn)).catch(() => fallbackCopy(code, btn));
+  } else {
+    // روش جایگزین برای فایل‌هایی که مستقیماً از رایانه باز می‌شوند
+    fallbackCopy(code, btn);
+  }
+}
+
+/* ================= روش جایگزین کپی کد ================= */
+function fallbackCopy(text, btn) {
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.style.position = "fixed";
+  area.style.opacity = "0";
+  document.body.appendChild(area);
+  area.select();
+
+  try {
+    document.execCommand("copy");
+    showCopied(btn);
+  } catch (error) {
+    alert("کپی خودکار انجام نشد؛ لطفاً کد را به‌صورت دستی انتخاب و کپی کنید.");
+  }
+
+  document.body.removeChild(area);
+}
+
+/* ================= نمایش پیام موفقیت کپی ================= */
+function showCopied(btn) {
+  const oldText = btn.textContent;
+  btn.textContent = "کپی شد ✓";
+  btn.classList.add("copied");
+  setTimeout(() => {
+    btn.textContent = oldText;
+    btn.classList.remove("copied");
+  }, 1500);
+}
+
+/* ================= تنظیمات عمومی نمودارها ================= */
+const charts = {};
+
+function chartTextColor() {
+  return document.body.dataset.theme === "dark" ? "#e2e8f0" : "#1f2937";
+}
+
+function chartGridColor() {
+  return document.body.dataset.theme === "dark" ? "#334155" : "#e5e7eb";
+}
+
+function commonChartOptions(title, showLegend = false) {
+  return {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      title: { display: true, text: title, color: chartTextColor(), font: { size: 14 } },
+      legend: { display: showLegend, labels: { color: chartTextColor() } },
+      tooltip: { rtl: true, titleAlign: "right", bodyAlign: "right" }
+    },
+    scales: {
+      x: { ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
+      y: { ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } }
+    }
+  };
+}
+
+/* ================= ایجاد نمودارهای آموزشی ================= */
+function initializeCharts() {
+  // نمودار دایره‌ای: توزیع دو کلاس دیتاست
+  charts.pie = new Chart(document.getElementById("pieChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["کلاس g ـ خوب", "کلاس b ـ بد"],
+      datasets: [{ data: [225, 126], backgroundColor: ["#26a69a", "#ef5350"], borderWidth: 2 }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: { display: true, text: "توزیع نمونه‌ها در دو کلاس", color: chartTextColor() },
+        legend: { position: "bottom", labels: { color: chartTextColor() } },
+        tooltip: { rtl: true, titleAlign: "right", bodyAlign: "right" }
+      }
+    }
+  });
+
+  // نمودار ستونی: همان توزیع کلاس‌ها برای مقایسهٔ مستقیم تعداد نمونه‌ها
+  charts.bar = new Chart(document.getElementById("barChart"), {
+    type: "bar",
+    data: {
+      labels: ["کلاس g ـ خوب", "کلاس b ـ بد"],
+      datasets: [{ label: "تعداد نمونه", data: [225, 126], backgroundColor: ["#26a69a", "#ef5350"] }]
+    },
+    options: commonChartOptions("مقایسهٔ تعداد نمونه‌ها")
+  });
+
+  // نمودار دقت: مقادیر صرفاً نمونه‌ای هستند و نتیجهٔ اجرای واقعی محسوب نمی‌شوند
+  charts.acc = new Chart(document.getElementById("accChart"), {
+    type: "bar",
+    data: {
+      labels: ["خطی، C=1", "RBF، C=1", "RBF، C=10", "چندجمله‌ای"],
+      datasets: [{
+        label: "دقت نمونه‌ای (درصد)",
+        data: [82, 88, 86, 84],
+        backgroundColor: ["#7986cb", "#26a69a", "#ffb74d", "#9575cd"]
+      }]
+    },
+    options: {
+      ...commonChartOptions("مقایسهٔ نمونه‌ای پیکربندی‌ها ـ نه نتیجهٔ اجرای واقعی"),
+      scales: {
+        x: { ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
+        y: { min: 0, max: 100, ticks: { color: chartTextColor(), callback: value => value + "%" }, grid: { color: chartGridColor() } }
+      }
+    }
+  });
+
+  // نمودار پراکندگی شماتیک برای توضیح مفهوم PCA؛ نقاط، خروجی واقعی محاسبه نیستند
+  const classG = [
+    {x:-2.1,y:1.2},{x:-1.7,y:0.8},{x:-1.4,y:1.8},{x:-0.9,y:0.5},
+    {x:-1.2,y:-0.2},{x:-0.4,y:1.1},{x:-0.7,y:-0.8}
+  ];
+  const classB = [
+    {x:0.8,y:-0.7},{x:1.2,y:-1.2},{x:1.7,y:-0.3},{x:2.1,y:-1.0},
+    {x:1.4,y:0.5},{x:0.6,y:0.3},{x:2.3,y:0.4}
+  ];
+
+  charts.pca = new Chart(document.getElementById("pcaChart"), {
+    type: "scatter",
+    data: {
+      datasets: [
+        { label: "کلاس g ـ نمونهٔ شماتیک", data: classG, backgroundColor: "#ef5350" },
+        { label: "کلاس b ـ نمونهٔ شماتیک", data: classB, backgroundColor: "#42a5f5" }
+      ]
+    },
+    options: {
+      ...commonChartOptions("نمایش مفهومی داده‌ها پس از کاهش بُعد با PCA", true),
+      scales: {
+        x: { title: { display: true, text: "مؤلفهٔ اصلی اول", color: chartTextColor() }, ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
+        y: { title: { display: true, text: "مؤلفهٔ اصلی دوم", color: chartTextColor() }, ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } }
+      }
+    }
+  });
+
+  // نمودار مفهومی مرز تصمیم؛ برای نمایش ایده است، نه مرز محاسبه‌شده از دادهٔ اصلی
+  charts.boundary = new Chart(document.getElementById("boundaryChart"), {
+    type: "scatter",
+    data: {
+      datasets: [
+        { label: "کلاس g", data: [{x:-2,y:1},{x:-1.5,y:0.4},{x:-1,y:1.5},{x:-0.7,y:-0.2}], backgroundColor: "#ef5350" },
+        { label: "کلاس b", data: [{x:1,y:-0.8},{x:1.5,y:-0.2},{x:2,y:-1},{x:1.2,y:0.8}], backgroundColor: "#42a5f5" },
+        { label: "مرز تصمیمِ شماتیک", type: "line", data: [{x:-2.5,y:1.6},{x:2.5,y:-1.6}], borderColor: "#ffb300", borderWidth: 2, pointRadius: 0, showLine: true }
+      ]
+    },
+    options: {
+      ...commonChartOptions("مرز تصمیم و تفکیک دو کلاس ـ نمایش شماتیک", true),
+      scales: {
+        x: { title: { display: true, text: "محور ویژگی اول", color: chartTextColor() }, ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
+        y: { title: { display: true, text: "محور ویژگی دوم", color: chartTextColor() }, ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } }
+      }
+    }
+  });
+}
+
+/* ================= تغییر تم تاریک و روشن ================= */
+function toggleTheme() {
+  const body = document.body;
+  body.dataset.theme = body.dataset.theme === "dark" ? "light" : "dark";
+
+  // رنگ نوشته‌ها و خطوط نمودارها متناسب با پوسته به‌روزرسانی می‌شود
+  Chart.defaults.color = chartTextColor();
+  Chart.defaults.borderColor = chartGridColor();
+
+  Object.values(charts).forEach(chart => chart.update());
+}
+
+/* ================= کنترل ناوبری اسلایدها ================= */
+const navButtons = document.querySelectorAll("#nav button");
+
+navButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    // حذف وضعیت فعال از همهٔ دکمه‌ها
+    navButtons.forEach(item => item.classList.remove("active"));
+    button.classList.add("active");
+
+    // پنهان‌کردن همهٔ اسلایدها و نمایش اسلاید انتخاب‌شده
+    document.querySelectorAll(".slide").forEach(slide => slide.classList.remove("active"));
+    document.getElementById(button.dataset.t).classList.add("active");
+
+    // بازگشت صفحه به ابتدای محتوای آموزشی
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+});
+
+/* ================= اجرای اولیه پس از بارگذاری صفحه ================= */
+document.addEventListener("DOMContentLoaded", () => {
+  initializeCharts();
+
+  // تنظیم رنگ پیش‌فرض نمودارها در آغاز
+  Chart.defaults.color = chartTextColor();
+  Chart.defaults.borderColor = chartGridColor();
+});
+</script>
+</body>
+</html>

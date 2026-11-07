@@ -135,7 +135,7 @@ h1{font-size:clamp(36px,5.5vw,72px);line-height:1.1;margin:20px auto 12px;
 .statsBar{padding:20px 0;border-bottom:1px solid var(--line);
   background:color-mix(in srgb,var(--bg),transparent 30%);
   backdrop-filter:blur(10px);position:relative;z-index:3}
-.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;text-align:center}
+.stats{display:grid;grid-template-columns:repeat(7,1fr);gap:14px;text-align:center}
 .stat b{display:block;font-size:22px;font-weight:900;color:var(--cyan);line-height:1}
 .stat small{display:block;color:var(--muted);font-size:11px;margin-top:6px}
 
@@ -800,6 +800,38 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
 @media(min-width:761px){.tabsInner{padding-left:110px}}
 .option bdi{unicode-bidi:isolate}
 
+/* ===== پخش‌کننده پادکست جلسات ===== */
+.podList{margin-top:12px;padding:10px;border-radius:12px;border:1px solid color-mix(in srgb,var(--violet),transparent 72%);
+  background:color-mix(in srgb,var(--violet),transparent 94%);display:flex;flex-direction:column;gap:7px}
+.podHead{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--violet)}
+.podHead svg{width:14px;height:14px}
+.podHead .podCount{margin-inline-start:auto;font-weight:500;color:var(--muted2)}
+.podEmpty{font-size:11px;color:var(--muted2)}
+.podLoading{font-size:11px;color:var(--muted2);display:flex;align-items:center;gap:6px}
+.podLoading::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid var(--violet);border-top-color:transparent;animation:podSpin .8s linear infinite}
+@keyframes podSpin{to{transform:rotate(360deg)}}
+.pod{display:flex;align-items:center;gap:8px}
+.podPlay{flex-shrink:0;width:32px;height:32px;border-radius:50%;border:1px solid color-mix(in srgb,var(--violet),transparent 50%);
+  background:color-mix(in srgb,var(--violet),transparent 85%);color:var(--violet);cursor:pointer;display:grid;place-items:center;transition:.2s}
+.podPlay:hover,.pod.playing .podPlay{background:var(--violet);color:var(--bg)}
+.podPlay svg{width:14px;height:14px}
+.podMid{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.podTitle{white-space:nowrap;display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--text)}
+.podTime{font-family:Consolas,monospace;font-size:10px;color:var(--muted);font-weight:400;direction:ltr}
+.podBar{height:6px;border-radius:4px;background:color-mix(in srgb,var(--text),transparent 90%);cursor:pointer;overflow:hidden;position:relative}
+.podBar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(270deg,var(--violet),var(--cyan))}
+.pod.loading .podBar i{opacity:.5}
+.podSpeed,.podDl{flex-shrink:0;height:26px;min-width:30px;padding:0 5px;border-radius:8px;border:1px solid var(--line);background:transparent;
+  color:var(--muted);font-family:Consolas,monospace;font-size:10px;cursor:pointer;direction:ltr;display:grid;place-items:center;transition:.2s}
+.podSpeed:hover,.podDl:hover{border-color:var(--violet);color:var(--violet)}
+.podDl svg{width:13px;height:13px}
+.sylPod{display:inline-flex;align-items:center;gap:4px;padding:5px 9px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;
+  color:var(--violet);border:1px solid color-mix(in srgb,var(--violet),transparent 65%);background:color-mix(in srgb,var(--violet),transparent 92%);font-family:inherit}
+.sylPod:hover{background:var(--violet);color:var(--bg)}
+.sylPod.none{opacity:.35;pointer-events:none}
+.sessionCard.flash{animation:podFlash 1.6s ease}
+@keyframes podFlash{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 3px var(--violet)}}
+
 </style>
 </head>
 <body>
@@ -878,7 +910,7 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
     <div class="stat"><b>۱۰</b><small>پروژه</small></div>
     <div class="stat"><b>۸+۸</b><small>تمرین+پروژه</small></div>
     <div class="stat"><b>۸</b><small>آزمایشگاه تعاملی</small></div>
-    <div class="stat"><b>۲۴</b><small>پادکست</small></div>
+    <div class="stat"><b id="podcastCount">…</b><small>پادکست</small></div>
   </div>
 </div>
 
@@ -962,10 +994,10 @@ footer .arabic{margin-top:20px;color:var(--muted2);font-size:12px;font-family:se
           <div class="eyebrow">24 SESSIONS</div>
           <h2>جلسات درس</h2>
         </div>
-        <p class="lead">هر جلسه دو خروجی دارد: محتوای جلسه و پادکست/ارائه مجزا. آزمایشگاه‌های تعاملی مرتبط هم زیر هر جلسه آمده‌اند.</p>
+        <p class="lead">هر جلسه محتوای خود را دارد و پادکست‌های آن (یک یا چند بخش) مستقیماً در همین کارت پخش می‌شوند. آزمایشگاه‌های تعاملی مرتبط هم زیر هر جلسه آمده‌اند.</p>
       </div>
       <div class="sessionsGrid" id="sessionsGrid"></div>
-      <p class="folderNote">ساختار پوشه‌ها: <code>sessions/session-XX/index.html</code> و <code>sessions/session-XX/podcast-XX/index.html</code></p>
+      <p class="folderNote">ساختار پوشه‌ها: <code>sessions/session-XX/index.html</code> و پادکست‌ها: <code>Podcast/AI-XX-N.mp3</code> (XX شماره جلسه، N شماره بخش)</p>
     </div>
   </section>
 </div>
@@ -2422,8 +2454,7 @@ const CONFIG = {
 const faNum = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 const labsFor = n => AILab.list.filter(l => l.sessions.includes(n));
 const linkBtns = n => `
-  <a class="sBtn lesson" href="${CONFIG.sessionPath(n)}" data-check><i data-lucide="presentation"></i> جلسه ${faNum(n)}</a>
-  <a class="sBtn podcast" href="${CONFIG.podcastPath(n)}" data-check><i data-lucide="podcast"></i> پادکست ${faNum(n)}</a>`;
+  <a class="sBtn lesson" href="${CONFIG.sessionPath(n)}" data-check><i data-lucide="presentation"></i> جلسه ${faNum(n)}</a>`;
 
 const sessionsGrid = document.getElementById("sessionsGrid");
 sessions.forEach(s => {
@@ -2438,6 +2469,7 @@ sessions.forEach(s => {
     <h4>${s.title}</h4>
     <p>${s.topics}</p>
     ${labs.length ? `<div class="labChips">${labs.map(l => `<button class="labChip" data-lab="${l.id}">🧪 ${l.title}</button>`).join("")}</div>` : ""}
+    <div class="podList" data-pod-session="${s.n}"><div class="podLoading">در حال جست‌وجوی پادکست‌ها…</div></div>
     <div class="sessionLinks">${linkBtns(s.n)}</div>
     <div class="sessionFooter">
       <span class="tag">Phase ${s.phase}</span>
@@ -2455,7 +2487,7 @@ sessions.forEach(s => {
     <td><b>${s.title}</b></td>
     <td>فاز ${s.phase}</td>
     <td style="color:var(--muted);font-size:12px">${s.topics}</td>
-    <td><div class="syllabusLinks">${linkBtns(s.n)}</div></td>
+    <td><div class="syllabusLinks">${linkBtns(s.n)}<button class="sylPod none" data-syl-pod="${s.n}">🎧 پادکست</button></div></td>
   `;
   tbody.appendChild(tr);
 });
@@ -2696,6 +2728,187 @@ if(window.gsap){
 }
 
 /* ============ INIT ============ */
+
+/* =====================================================================
+   پادکست‌های جلسات — کشف خودکار و پخش
+   نام‌گذاری فایل‌ها: Podcast/AI-XX-N.mp3  (XX = شماره جلسه دو رقمی، N = شماره بخش)
+   کافی است فایل جدید را در پوشه Podcast پوش کنید؛ صفحه خودش آن را پیدا می‌کند.
+   ===================================================================== */
+const PODCAST = {
+  folder: "Podcast",      // نام پوشه (در GitHub Pages به بزرگی/کوچکی حروف حساس است)
+  prefix: "AI",           // پیشوند نام فایل
+  ext: "mp3",
+  maxParts: 5,            // بیشترین تعداد بخش هر جلسه که بررسی می‌شود
+  repo: null              // اختیاری: {owner:"USER", name:"REPO", branch:"main"} ؛ اگر null باشد از آدرس github.io تشخیص داده می‌شود
+};
+
+const Podcasts = (() => {
+  const pad = n => String(n).padStart(2, "0");
+  const fileName = (n, k) => `${PODCAST.prefix}-${pad(n)}-${k}.${PODCAST.ext}`;
+  const fileUrl = (n, k) => `${PODCAST.folder}/${fileName(n, k)}`;
+  const RE = new RegExp(`^${PODCAST.prefix}-(\\d{1,3})-(\\d{1,2})\\.${PODCAST.ext}$`, "i");
+  const fmtT = t => { if (!isFinite(t) || t < 0) return "--:--"; t = Math.floor(t); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s).padStart(2, "0"); };
+  const ICON = {
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
+    load: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M12 3a9 9 0 1 0 9 9"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"/></path></svg>',
+    dl: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+    pod: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 14v-2a9 9 0 0 1 18 0v2"/><rect x="2" y="14" width="5" height="7" rx="1.5"/><rect x="17" y="14" width="5" height="7" rx="1.5"/></svg>'
+  };
+  const store = { get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+                  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+
+  /* ---------- ۱) کشف فایل‌ها ---------- */
+  function repoInfo() {
+    if (PODCAST.repo) return PODCAST.repo;
+    const host = location.hostname;
+    if (!/\.github\.io$/i.test(host)) return null;
+    const owner = host.split(".")[0], seg = location.pathname.split("/").filter(Boolean);
+    const name = seg[0] && !seg[0].includes(".") ? seg[0] : `${owner}.github.io`;
+    return { owner, name, branch: null };
+  }
+  async function viaGitHub() {
+    const r = repoInfo(); if (!r) return null;
+    const key = `ai-hub-podlist:${r.owner}/${r.name}`;
+    try { const c = JSON.parse(sessionStorage.getItem(key) || "null"); if (c && Date.now() - c.t < 5 * 60 * 1000) return c.names; } catch (e) {}
+    const url = `https://api.github.com/repos/${r.owner}/${r.name}/contents/${encodeURIComponent(PODCAST.folder)}` + (r.branch ? `?ref=${r.branch}` : "");
+    const res = await fetch(url, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
+    if (!res.ok) return null;                       // محدودیت نرخ/مخزن خصوصی → روش جایگزین
+    const data = await res.json(); if (!Array.isArray(data)) return null;
+    const names = data.filter(f => f.type === "file").map(f => f.name);
+    try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), names })); } catch (e) {}
+    return names;
+  }
+  function probeAudio(url) {
+    return new Promise(res => {
+      const a = new Audio(); let done = false;
+      const end = ok => { if (done) return; done = true; a.removeAttribute("src"); a.load(); res(ok); };
+      a.preload = "metadata"; a.onloadedmetadata = () => end(true); a.onerror = () => end(false);
+      setTimeout(() => end(false), 10000); a.src = url;
+    });
+  }
+  async function exists(url) {
+    if (/^https?:/.test(location.protocol)) {
+      try { const r = await fetch(url, { method: "HEAD", cache: "no-store" }); if (r.ok) return true; if (r.status === 404) return false; } catch (e) {}
+    }
+    return probeAudio(url);                          // file:// یا سرورهایی که HEAD را نمی‌پذیرند
+  }
+  async function discover(nums) {
+    const found = {}; nums.forEach(n => found[n] = []);
+    let names = null; try { names = await viaGitHub(); } catch (e) {}
+    if (names) {
+      names.forEach(nm => { const m = RE.exec(nm); if (m && found[+m[1]]) found[+m[1]].push({ k: +m[2], url: `${PODCAST.folder}/${nm}` }); });
+      Object.values(found).forEach(a => a.sort((x, y) => x.k - y.k));
+      return found;
+    }
+    await Promise.all(nums.map(async n => {
+      for (let k = 1; k <= PODCAST.maxParts; k++) {
+        const url = fileUrl(n, k);
+        if (!(await exists(url))) break;
+        found[n].push({ k, url });
+      }
+    }));
+    return found;
+  }
+
+  /* ---------- ۲) پخش‌کننده (یک صدای مشترک برای همه کارت‌ها) ---------- */
+  const audio = new Audio(); audio.preload = "none";
+  let rate = store.get("ai-hub-pod-rate", 1), cur = null, lastSave = 0;
+  const RATES = [1, 1.25, 1.5, 1.75, 2, 0.75];
+  const rows = () => document.querySelectorAll(".pod");
+  const posKey = url => "ai-hub-pod-pos:" + url;
+
+  function paint(row, t, d) {
+    if (!row) return;
+    row.querySelector(".podBar i").style.width = (d > 0 ? Math.min(100, t / d * 100) : 0) + "%";
+    row.querySelector(".podTime").textContent = `${fmtT(t)} / ${fmtT(d)}`;
+  }
+  function setState(row, st) {
+    rows().forEach(r => { if (r !== row) { r.classList.remove("playing", "loading"); r.querySelector(".podPlay").innerHTML = ICON.play; } });
+    if (!row) return;
+    row.classList.toggle("playing", st === "play"); row.classList.toggle("loading", st === "load");
+    row.querySelector(".podPlay").innerHTML = st === "play" ? ICON.pause : st === "load" ? ICON.load : ICON.play;
+  }
+  function start(row, seekRatio) {
+    const url = row.dataset.src;
+    if (cur !== row) {
+      cur = row; audio.src = url; audio.playbackRate = rate;
+      audio.addEventListener("loadedmetadata", function once() {
+        audio.removeEventListener("loadedmetadata", once);
+        const saved = store.get(posKey(url), null);
+        if (seekRatio != null) audio.currentTime = seekRatio * audio.duration;
+        else if (saved && saved.t > 5 && saved.t < audio.duration - 5) audio.currentTime = saved.t;
+      });
+      if ("mediaSession" in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: row.dataset.title, artist: "دکتر مسعود گوهری‌منش", album: "هوش مصنوعی در مهندسی مکانیک" });
+    } else if (seekRatio != null && isFinite(audio.duration)) audio.currentTime = seekRatio * audio.duration;
+    setState(row, "load");
+    audio.play().catch(() => setState(row, "pause"));
+  }
+  function toggle(row) { if (cur === row && !audio.paused) audio.pause(); else start(row); }
+
+  audio.addEventListener("playing", () => setState(cur, "play"));
+  audio.addEventListener("waiting", () => setState(cur, "load"));
+  audio.addEventListener("pause", () => { setState(cur, "pause"); if (cur) store.set(posKey(cur.dataset.src), { t: audio.currentTime, d: audio.duration }); });
+  audio.addEventListener("timeupdate", () => {
+    if (!cur) return; paint(cur, audio.currentTime, audio.duration);
+    if (Date.now() - lastSave > 4000) { lastSave = Date.now(); store.set(posKey(cur.dataset.src), { t: audio.currentTime, d: audio.duration }); }
+  });
+  audio.addEventListener("ended", () => {
+    if (!cur) return; store.set(posKey(cur.dataset.src), { t: 0, d: audio.duration }); paint(cur, audio.duration, audio.duration);
+    const next = cur.nextElementSibling;               // بخش بعدی همان جلسه به‌صورت خودکار
+    if (next && next.classList.contains("pod")) start(next); else setState(null);
+  });
+  audio.addEventListener("error", () => { if (cur) { setState(cur, "pause"); cur.querySelector(".podTime").textContent = "خطا در بارگذاری"; } });
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.setActionHandler("seekbackward", () => audio.currentTime = Math.max(0, audio.currentTime - 10));
+    navigator.mediaSession.setActionHandler("seekforward", () => audio.currentTime = audio.currentTime + 10);
+  }
+
+  /* ---------- ۳) ساخت رابط ---------- */
+  function render(n, parts) {
+    const box = document.querySelector(`.podList[data-pod-session="${n}"]`);
+    const syl = document.querySelector(`[data-syl-pod="${n}"]`);
+    if (syl) { syl.classList.toggle("none", !parts.length); syl.textContent = parts.length ? `🎧 ${faNum(parts.length)} پادکست` : "🎧 —"; }
+    if (!box) return;
+    if (!parts.length) { box.innerHTML = `<div class="podHead">${ICON.pod} پادکست جلسه</div><div class="podEmpty">پادکست این جلسه به‌زودی منتشر می‌شود.</div>`; return; }
+    box.innerHTML = `<div class="podHead">${ICON.pod} پادکست‌های جلسه <span class="podCount">${faNum(parts.length)} بخش</span></div>` +
+      parts.map(p => {
+        const title = `بخش ${faNum(p.k)}`;
+        return `<div class="pod" data-src="${p.url}" data-title="جلسه ${faNum(n)} — ${title}">
+          <button class="podPlay" type="button" aria-label="پخش">${ICON.play}</button>
+          <div class="podMid"><div class="podTitle"><span>${title}</span><span class="podTime">--:-- / --:--</span></div><div class="podBar" title="جابه‌جایی"><i></i></div></div>
+          <button class="podSpeed" type="button" title="سرعت پخش">${rate}×</button>
+          <a class="podDl" href="${p.url}" download title="دانلود">${ICON.dl}</a>
+        </div>`;
+      }).join("");
+    box.querySelectorAll(".pod").forEach(row => {
+      const saved = store.get(posKey(row.dataset.src), null); if (saved && saved.t > 0) paint(row, saved.t, saved.d);
+      row.querySelector(".podPlay").onclick = () => toggle(row);
+      row.querySelector(".podBar").onclick = e => {           // نوار راست‌به‌چپ
+        const r = e.currentTarget.getBoundingClientRect(); start(row, Math.min(1, Math.max(0, (r.right - e.clientX) / r.width)));
+      };
+      row.querySelector(".podSpeed").onclick = () => {
+        rate = RATES[(RATES.indexOf(rate) + 1) % RATES.length]; audio.playbackRate = rate; store.set("ai-hub-pod-rate", rate);
+        document.querySelectorAll(".podSpeed").forEach(b => b.textContent = rate + "×");
+      };
+    });
+  }
+
+  async function init(nums) {
+    const found = await discover(nums);
+    let total = 0; nums.forEach(n => { render(n, found[n]); total += found[n].length; });
+    const pc = document.getElementById("podcastCount"); if (pc) pc.textContent = faNum(total);
+  }
+  return { init, fileUrl };
+})();
+
+Podcasts.init(sessions.map(s => s.n));
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-syl-pod]"); if (!b) return;
+  switchTab("sessions", true);
+  const card = document.getElementById("session-card-" + b.dataset.sylPod);
+  if (card) { setTimeout(() => { card.scrollIntoView({ behavior: "smooth", block: "center" }); card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash"); }, 80); }
+});
 
 /* ============ بررسی وجود فایل جلسه/پادکست (روی GitHub Pages) ============ */
 (function verifyLinks(){
